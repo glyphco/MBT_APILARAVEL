@@ -44,6 +44,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
+
         if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
             $response = [
                 'code'    => 403,
@@ -78,6 +79,24 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
+            if ($request->expectsJson()) {
+                $code    = (string) 400;
+                $message = $e->getMessage();
+
+                $error[] = [
+                    'status' => '401',
+                    'code'   => 'exception232',
+                    'source' => ["pointer" => "unauthenticated login handler"],
+                    'title'  => $message,
+                    'detail' => 'Must supply a valid token',
+                ];
+                $response = [
+                    'errors' => $error,
+                ];
+                $contenttype = 'application/vnd.api+json';
+                return response()->json($response, $code)->header('Content-Type', $contenttype);
+            }
+
             $message  = $e->getMessage();
             $response = [
                 'code'    => 401,
@@ -86,6 +105,12 @@ class Handler extends ExceptionHandler
                 'message' => $message,
             ];
             return response()->json($response, $response['code']);
+        }
+
+        if ($e instanceof Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } else if ($e instanceof Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+            return response()->json(['token_invalid'], $e->getStatusCode());
         }
 
         return parent::render($request, $e);
