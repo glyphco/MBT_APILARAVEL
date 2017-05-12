@@ -39,13 +39,73 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        return parent::render($request, $exception);
+        if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            $response = [
+                'code'    => 403,
+                'status'  => 'error',
+                'data'    => 'Token Is Expired (Code#exception12)',
+                'message' => 'Unprocessable entity',
+            ];
+            return response()->json($response, $response['code']);
+        }
+
+        if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
+            $response = [
+                'code'    => 401,
+                'status'  => 'error',
+                'data'    => 'Token Is Invalid (Code#exception22)',
+                'message' => 'Unprocessable entity',
+            ];
+            return response()->json($response, $response['code']);
+        }
+
+        if ($e instanceof \Symfony\Component\HttpKernel\Exception\BadRequestHttpException) {
+            if ($e->getMessage() == 'Token not provided') {
+                $message  = $e->getMessage();
+                $response = [
+                    'code'    => 401,
+                    'status'  => 'error',
+                    'data'    => 'Token Not Provided (Code#exception32)',
+                    'message' => $message,
+                ];
+                return response()->json($response, $response['code']);
+            }
+        }
+
+        if ($e instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
+            $message  = $e->getMessage();
+            $response = [
+                'code'    => 401,
+                'status'  => 'error',
+                'data'    => 'Must supply a valid token (Code#exception32)',
+                'message' => $message,
+            ];
+            return response()->json($response, $response['code']);
+        }
+
+        return parent::render($request, $e);
     }
+
+    // /**
+    //  * Convert an authentication exception into an unauthenticated response.
+    //  *
+    //  * @param  \Illuminate\Http\Request  $request
+    //  * @param  \Illuminate\Auth\AuthenticationException  $exception
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // protected function unauthenticated($request, AuthenticationException $exception)
+    // {
+    //     if ($request->expectsJson()) {
+    //         return response()->json(['error' => 'Unauthenticated.'], 401);
+    //     }
+
+    //     return redirect()->guest(route('login'));
+    // }
 
     /**
      * Convert an authentication exception into an unauthenticated response.
@@ -54,12 +114,27 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated($request, AuthenticationException $e)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            $code    = (string) 400;
+            $message = $e->getMessage();
+
+            $error[] = [
+                'status' => '401',
+                'code'   => 'exception232',
+                'source' => ["pointer" => "unauthenticated login handler"],
+                'title'  => $message,
+                'detail' => 'Must supply a valid token',
+            ];
+            $response = [
+                'errors' => $error,
+            ];
+            $contenttype = 'application/vnd.api+json';
+            return response()->json($response, $code)->header('Content-Type', $contenttype);
         }
 
         return redirect()->guest(route('login'));
     }
+
 }
