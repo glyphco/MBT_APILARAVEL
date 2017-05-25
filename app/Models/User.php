@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-// use App\Traits\SpacialdataTrait;
+use App\Traits\SpacialdataTrait;
 // use Illuminate\Auth\Authenticatable;
 // use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 // use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -28,7 +28,7 @@ class User extends Authenticatable
 {
 
     //use Authenticatable, Authorizable, HasRolesAndAbilities, SpacialdataTrait;
-    use HasRolesAndAbilities, Notifiable;
+    use HasRolesAndAbilities, Notifiable, SpacialdataTrait;
     /**
      * The attributes that are mass assignable.
      *

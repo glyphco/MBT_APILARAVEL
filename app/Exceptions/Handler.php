@@ -39,13 +39,13 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
+     * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
 
-        if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
             $response = [
                 'code'    => 403,
                 'status'  => 'error',
@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
             return response()->json($response, $response['code']);
         }
 
-        if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
             $response = [
                 'code'    => 401,
                 'status'  => 'error',
@@ -65,9 +65,9 @@ class Handler extends ExceptionHandler
             return response()->json($response, $response['code']);
         }
 
-        if ($e instanceof \Symfony\Component\HttpKernel\Exception\BadRequestHttpException) {
-            if ($e->getMessage() == 'Token not provided') {
-                $message  = $e->getMessage();
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\BadRequestHttpException) {
+            if ($exception->getMessage() == 'Token not provided') {
+                $message  = $exception->getMessage();
                 $response = [
                     'code'    => 401,
                     'status'  => 'error',
@@ -78,10 +78,10 @@ class Handler extends ExceptionHandler
             }
         }
 
-        if ($e instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
             if ($request->expectsJson()) {
                 $code    = (string) 400;
-                $message = $e->getMessage();
+                $message = $exception->getMessage();
 
                 $error[] = [
                     'status' => '401',
@@ -97,23 +97,23 @@ class Handler extends ExceptionHandler
                 return response()->json($response, $code)->header('Content-Type', $contenttype);
             }
 
-            $message  = $e->getMessage();
+            $message  = $exception->getMessage();
             $response = [
                 'code'    => 401,
                 'status'  => 'error',
-                'data'    => 'Must supply a valid token (Code#exception32)',
+                'data'    => 'Must supply a valid token (Code#exception33)',
                 'message' => $message,
             ];
             return response()->json($response, $response['code']);
         }
 
-        if ($e instanceof Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } else if ($e instanceof Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
+        if ($exception instanceof Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            return response()->json(['token_expired'], $exception->getStatusCode());
+        } else if ($exception instanceof Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+            return response()->json(['token_invalid'], $exception->getStatusCode());
         }
 
-        return parent::render($request, $e);
+        return parent::render($request, $exception);
     }
 
     // /**
@@ -139,11 +139,11 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
-    protected function unauthenticated($request, AuthenticationException $e)
+    protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
             $code    = (string) 400;
-            $message = $e->getMessage();
+            $message = $exception->getMessage();
 
             $error[] = [
                 'status' => '401',

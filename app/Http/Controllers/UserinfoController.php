@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth as Auth;
 
 //use Tymon\JWTAuth\Facades\JWTAuth as JWTAuth;
@@ -14,7 +15,7 @@ class UserinfoController extends BaseController
         $this->auth = $auth;
     }
 
-    public function userinfo()
+    public function userinfo(Request $request)
     {
         $data               = $this->getUser();
         $data['attributes'] = $this->getAttributes();

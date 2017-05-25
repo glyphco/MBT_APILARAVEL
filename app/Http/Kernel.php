@@ -59,5 +59,6 @@ class Kernel extends HttpKernel
         'throttle'    => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'jwt.auth'    => \Tymon\JWTAuth\Http\Middleware\GetUserFromToken::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middlewaree\RefreshToken::class,
+        'cors'        => \App\Http\Middleware\CORS::class,
     ];
 }

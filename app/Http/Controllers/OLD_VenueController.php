@@ -1,13 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller as BaseController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller as Controller;
+use App\Models\User;
+use Bouncer;
+//use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class VenueController extends BaseController
+class OLD_VenueController extends Controller
 {
-
     use HasRolesAndAbilities;
 
     const MODEL                = 'App\Models\Venue';
@@ -24,7 +25,6 @@ class VenueController extends BaseController
 
     public function index(Request $request)
     {
-        //$request = Request::all();
         $m = self::MODEL;
         //$data = $m;
 
