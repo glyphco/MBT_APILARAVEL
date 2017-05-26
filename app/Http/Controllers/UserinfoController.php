@@ -38,8 +38,8 @@ class UserinfoController extends BaseController
         }
 
         $models = [
-            'App\Models\Venue'   => 'venue',
-            'App\Models\Profile' => 'profile',
+            'App\Models\Venue' => 'venue',
+            'App\Models\Page'  => 'page',
         ];
         $modelattributes  = ['edit', 'administer'];
         $returnattributes = [];

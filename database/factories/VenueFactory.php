@@ -9,7 +9,7 @@ $factory->define('App\Models\Venue', function (Faker\Generator $faker) {
     return [
         'name'           => $faker->company,
         'email'          => $faker->safeEmail,
-        'slug'           => $faker->optional()->slug,
+        'slug'           => substr($faker->optional()->slug, 0, 60),
         'category'       => $faker->jobTitle,
         'street_address' => $faker->streetAddress,
         'city'           => $faker->city,

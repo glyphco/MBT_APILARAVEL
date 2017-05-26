@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class ProfilePublicScope implements Scope
+class PageConfirmedScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -17,6 +17,6 @@ class ProfilePublicScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('profiles.public', '=', 1);
+        $builder->where('pages.confirmed', '=', 1);
     }
 }

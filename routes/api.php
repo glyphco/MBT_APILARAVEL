@@ -26,7 +26,7 @@ Route::get('/', function () {
 
 //ONLY Tokened Visitors beyond this point!
 
-Route::group(['middleware' => ['jwt.auth', 'cors']], function () {
+Route::group(['middleware' => ['jwt.auth', 'corsall']], function () {
 
 //debug and general
     Route::get('/userinfo', 'UserinfoController@userinfo');
@@ -41,7 +41,7 @@ Route::group(['middleware' => ['jwt.auth', 'cors']], function () {
     });
 
 //Venues
-
+    Route::options('/venue', 'VenueController@index');
     Route::get('/venue', 'VenueController@index');
     Route::get('/venue/{id}', 'VenueController@show');
     Route::group(['middleware' => 'can:create-venues'], function () {
@@ -51,16 +51,16 @@ Route::group(['middleware' => ['jwt.auth', 'cors']], function () {
         Route::get('/venue/{id}/confirm', 'VenueController@confirm');
         Route::get('/venue/{id}/unconfirm', 'VenueController@unconfirm');
     });
-    // Route::group(['middleware' => 'can:edit-venues'], function () {
-    //     Route::put('/venue/{id}', 'VenueController@update');
-    //     // checks made in controller:
-    //     Route::get('/venue/{id}/giveedit/{userid}', 'VenueController@giveedit');
-    //     Route::get('/venue/{id}/revokeedit/{userid}', 'VenueController@revokeedit');
-    //     Route::get('/venue/{id}/giveadmin/{userid}', 'VenueController@giveadmin');
-    //     Route::get('/venue/{id}/revokeadmin/{userid}', 'VenueController@revokeadmin');
-    //     Route::get('/venue/{id}/editors', 'VenueController@geteditors');
-    //     Route::get('/venue/{id}/admins', 'VenueController@getadmins');
-    // });
+    Route::group(['middleware' => 'can:edit-venues'], function () {
+        Route::put('/venue/{id}', 'VenueController@update');
+        // checks made in controller:
+        Route::get('/venue/{id}/giveedit/{userid}', 'VenueController@giveedit');
+        Route::get('/venue/{id}/revokeedit/{userid}', 'VenueController@revokeedit');
+        Route::get('/venue/{id}/giveadmin/{userid}', 'VenueController@giveadmin');
+        Route::get('/venue/{id}/revokeadmin/{userid}', 'VenueController@revokeadmin');
+        Route::get('/venue/{id}/editors', 'VenueController@geteditors');
+        Route::get('/venue/{id}/admins', 'VenueController@getadmins');
+    });
 
 // //Events
     //     Route::get('/event', 'EventController@index');

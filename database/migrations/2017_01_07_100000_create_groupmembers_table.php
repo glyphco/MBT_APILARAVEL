@@ -31,8 +31,8 @@ class CreateGroupmembersTable extends Migration
             $table->unsignedInteger('created_by')->nullable()->default(null);
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
-            $table->foreign('group_id')->references('id')->on('profiles')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('member_id')->references('id')->on('profiles')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('group_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('member_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('cascade');
 
         });
 

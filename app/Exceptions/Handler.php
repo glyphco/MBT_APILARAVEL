@@ -94,7 +94,35 @@ class Handler extends ExceptionHandler
                     'errors' => $error,
                 ];
                 $contenttype = 'application/vnd.api+json';
-                return response()->json($response, $code)->header('Content-Type', $contenttype);
+
+                // ALLOW OPTIONS METHOD
+                $headers = [
+                    'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
+                    'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin',
+                ];
+
+                $response = response()->json($response, $code)->header('Content-Type', $contenttype);
+
+                $incoming  = 'unknown';
+                $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
+                $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
+
+                if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+                    $incoming = $_SERVER['HTTP_ORIGIN'];
+                }
+
+                if (in_array($incoming, $okorigins)) {
+                    $response->header("Access-Control-Allow-Origin", $incoming);
+                } else {
+                    $response->header("Access-Control-Allow-Origin", $okorigin);
+                }
+
+                foreach ($headers as $key => $value) {
+                    $response->header($key, $value);
+                }
+
+                return $response;
+
             }
 
             $message  = $exception->getMessage();
@@ -104,7 +132,34 @@ class Handler extends ExceptionHandler
                 'data'    => 'Must supply a valid token (Code#exception33)',
                 'message' => $message,
             ];
-            return response()->json($response, $response['code']);
+            // ALLOW OPTIONS METHOD
+            $headers = [
+                'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
+                'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin',
+            ];
+
+            $response = response()->json($response, $response['code']);
+
+            $incoming  = 'unknown';
+            $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
+            $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
+
+            if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+                $incoming = $_SERVER['HTTP_ORIGIN'];
+            }
+
+            if (in_array($incoming, $okorigins)) {
+                $response->header("Access-Control-Allow-Origin", $incoming);
+            } else {
+                $response->header("Access-Control-Allow-Origin", $okorigin);
+            }
+
+            foreach ($headers as $key => $value) {
+                $response->header($key, $value);
+            }
+
+            return $response;
+
         }
 
         if ($exception instanceof Tymon\JWTAuth\Exceptions\TokenExpiredException) {

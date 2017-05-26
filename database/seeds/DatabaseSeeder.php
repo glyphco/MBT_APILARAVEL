@@ -18,11 +18,12 @@ class DatabaseSeeder extends Seeder
 
         // Temporarily increase memory limit to 2048M
         //ini_set('memory_limit', '2048M');
+        $this->call('CategoriesSeeder');
 
         $this->call('UserDataSeeder');
 
         $this->call('VenueDataSeeder');
-        $this->call('ProfileDataSeeder');
+        $this->call('PageDataSeeder');
         $this->call('EventDataSeeder');
 
         $this->call('RolesSeeder');
@@ -75,12 +76,12 @@ class VenueDataSeeder extends Seeder
     }
 }
 
-class ProfileDataSeeder extends Seeder
+class PageDataSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('profiles')->delete();
-        $profiles = factory('App\Models\Profile', 10)->states('chicago')->create();
+        DB::table('pages')->delete();
+        $pages = factory('App\Models\Page', 10)->states('chicago')->create();
     }
 }
 
@@ -100,6 +101,13 @@ class EventDataSeeder extends Seeder
     }
 }
 
+class CategoriesSeeder extends Seeder
+{
+    public function run()
+    {}
+
+}
+
 class RolesSeeder extends Seeder
 {
     public function run()
@@ -112,11 +120,11 @@ class RolesSeeder extends Seeder
         Bouncer::allow('superadmin')->to('view-users'); // sa only
         Bouncer::allow('superadmin')->to('edit-users'); // sa only
         Bouncer::allow('superadmin')->to('ban-users'); // sa only
-        Bouncer::allow('superadmin')->to('admin-profiles'); // sa/a only
-        Bouncer::allow('superadmin')->to('confirm-profiles');
-        Bouncer::allow('superadmin')->to('create-profiles');
-        Bouncer::allow('superadmin')->to('edit-profiles');
-        Bouncer::allow('superadmin')->to('delete-profiles');
+        Bouncer::allow('superadmin')->to('admin-pages'); // sa/a only
+        Bouncer::allow('superadmin')->to('confirm-pages');
+        Bouncer::allow('superadmin')->to('create-pages');
+        Bouncer::allow('superadmin')->to('edit-pages');
+        Bouncer::allow('superadmin')->to('delete-pages');
         Bouncer::allow('superadmin')->to('admin-venues');
         Bouncer::allow('superadmin')->to('confirm-venues');
         Bouncer::allow('superadmin')->to('create-venues');
@@ -126,13 +134,13 @@ class RolesSeeder extends Seeder
         Bouncer::allow('superadmin')->to('edit-events');
         Bouncer::allow('superadmin')->to('delete-events');
 
-        Bouncer::allow('admin')->to('admin-profiles'); // sa/a only
-        Bouncer::allow('admin')->to('confirm-profiles');
+        Bouncer::allow('admin')->to('admin-pages'); // sa/a only
+        Bouncer::allow('admin')->to('confirm-pages');
         Bouncer::allow('admin')->to('view-users');
         Bouncer::allow('admin')->to('edit-users');
-        Bouncer::allow('admin')->to('create-profiles');
-        Bouncer::allow('admin')->to('edit-profiles');
-        Bouncer::allow('admin')->to('delete-profiles');
+        Bouncer::allow('admin')->to('create-pages');
+        Bouncer::allow('admin')->to('edit-pages');
+        Bouncer::allow('admin')->to('delete-pages');
         Bouncer::allow('admin')->to('admin-venues');
         Bouncer::allow('admin')->to('confirm-venues');
         Bouncer::allow('admin')->to('create-venues');
@@ -142,10 +150,10 @@ class RolesSeeder extends Seeder
         Bouncer::allow('admin')->to('edit-events');
         Bouncer::allow('admin')->to('delete-events');
 
-        Bouncer::allow('mastereditor')->to('confirm-profiles');
-        Bouncer::allow('mastereditor')->to('create-profiles');
-        Bouncer::allow('mastereditor')->to('edit-profiles');
-        Bouncer::allow('mastereditor')->to('delete-profiles');
+        Bouncer::allow('mastereditor')->to('confirm-pages');
+        Bouncer::allow('mastereditor')->to('create-pages');
+        Bouncer::allow('mastereditor')->to('edit-pages');
+        Bouncer::allow('mastereditor')->to('delete-pages');
         Bouncer::allow('mastereditor')->to('admin-venues');
         Bouncer::allow('mastereditor')->to('confirm-venues');
         Bouncer::allow('mastereditor')->to('create-venues');

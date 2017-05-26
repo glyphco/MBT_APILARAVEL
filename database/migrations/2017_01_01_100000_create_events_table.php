@@ -13,6 +13,9 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        Schema::dropIfExists('events');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');

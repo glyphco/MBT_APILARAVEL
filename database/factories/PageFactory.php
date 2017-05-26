@@ -1,6 +1,6 @@
 <?php
 
-$factory->define('App\Models\Profile', function (Faker\Generator $faker) {
+$factory->define('App\Models\Page', function (Faker\Generator $faker) {
     static $password;
 
     //    $lat = $faker->latitude($min = -90, $max = 90);
@@ -13,8 +13,9 @@ $factory->define('App\Models\Profile', function (Faker\Generator $faker) {
     return [
         'name'           => $faker->catchPhrase,
         'email'          => $faker->safeEmail,
-        'slug'           => $faker->optional()->slug,
-        'category'       => $faker->jobTitle,
+        'slug'           => substr($faker->optional()->slug, 0, 60),
+        //'category'       => $faker->jobTitle,
+
         'street_address' => $faker->streetAddress,
         'city'           => $faker->city,
         'state'          => $faker->state,
@@ -34,11 +35,15 @@ $factory->define('App\Models\Profile', function (Faker\Generator $faker) {
         'public'         => 1,
         'confirmed'      => 1,
 
+        //'speciality_id'  => 1,
+        'tagline'        => $faker->text($maxNbChars = 25),
+        'summary'        => $faker->text($maxNbChars = 140),
+
     ];
 
 });
 
-$factory->state('App\Models\Profile', 'chicago', function ($faker) {
+$factory->state('App\Models\Page', 'chicago', function ($faker) {
 //Chicago
     $lat = $faker->latitude($min = 41, $max = 42);
     $lng = $faker->longitude($min = -87.77, $max = -87.6);
