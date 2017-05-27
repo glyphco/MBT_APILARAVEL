@@ -104,8 +104,30 @@ class EventDataSeeder extends Seeder
 class CategoriesSeeder extends Seeder
 {
     public function run()
-    {}
+    {
 
+        $pages = [
+            'Comedian'      => ['Stand-up Comedian', 'Comedic Writer', 'Improv Comedian', 'Sketch Comedian'],
+            'Comedy Group'  => ['Improv Group', 'Sketch Comedy Group'],
+            'Musician'      => ['Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
+            'Band'          => ['Rock Band', 'Pop Band', 'Funk Band', 'Psychedelic Band', 'Emo Band', 'Pop-Punk Band', 'Acoustic Band', 'Country Band', 'Americana', 'Cover Band', 'Rock Band'],
+
+            'Athlete'       => ['Roller Derby Player', 'Baseball Player', 'Baseball Player', 'Basketball Player'],
+            'Sports League' => ['Basketball League', 'Rugby League', 'Roller Derby League'],
+            'Sports Team'   => ['Roller Derby Team', 'Basketball Team', 'Rugby Team'],
+        ];
+
+        foreach ($pages as $category => $specialities) {
+            // $id = Pagecategories::create(['name' => $category])->id;
+
+            // foreach ($subCategories as $subCategory) {
+            //     Pagespecialitites::create([
+            //         'parent_id' => $id,
+            //         'name' => $subCategory
+            //     ]);
+            // }
+        }
+    }
 }
 
 class RolesSeeder extends Seeder
@@ -162,6 +184,10 @@ class RolesSeeder extends Seeder
         Bouncer::allow('mastereditor')->to('create-events');
         Bouncer::allow('mastereditor')->to('edit-events');
         Bouncer::allow('mastereditor')->to('delete-events');
+
+        Bouncer::allow('contributor')->to('create-pages');
+        Bouncer::allow('contributor')->to('create-venues');
+        Bouncer::allow('contributor')->to('create-events');
 
     }
 

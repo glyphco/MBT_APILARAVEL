@@ -78,4 +78,15 @@ trait APIResponderTrait
         return response()->json($response, $response['code']);
     }
 
+    protected function reasonedUnauthorizedResponse($reason)
+    {
+        $response = [
+            'code'    => 401,
+            'status'  => 'error',
+            'data'    => $reason,
+            'message' => 'Unauthorized',
+        ];
+        return response()->json($response, $response['code']);
+    }
+
 }
