@@ -71,7 +71,7 @@ class Event extends Model
         return $this->belongsTo('App\Models\Venue');
     }
 
-    public function participant()
+    public function participants()
     {
         return $this->hasMany('App\Models\Participant');
     }
@@ -126,13 +126,13 @@ class Event extends Model
         });
     }
 
-    public function scopeByParticipant($filter, $profile_id)
+    public function scopeByParticipant($filter, $page_id)
     {
-        return $filter->where(function ($query) use ($profile_id) {
+        return $filter->where(function ($query) use ($page_id) {
             $query
             //Start in date range
-            ->whereHas('participant', function ($query) use ($profile_id) {
-                $query->where('profile_id', '=', $profile_id);
+            ->whereHas('participant', function ($query) use ($page_id) {
+                $query->where('page_id', '=', $page_id);
             });
         });
     }

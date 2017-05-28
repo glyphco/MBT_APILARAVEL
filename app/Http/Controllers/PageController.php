@@ -1,16 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller as BaseController;
 use App\Models\User;
-use App\Traits\APIResponderTrait;
-use App\Traits\RestControllerTrait;
+use Bouncer;
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class PageController extends BaseController
 {
-    use RestControllerTrait;
-    use APIResponderTrait;
+    use HasRolesAndAbilities;
     const MODEL                = 'App\Models\Page';
     protected $validationRules = [
         'name'       => 'required',
@@ -269,6 +268,54 @@ class PageController extends BaseController
             return $this->showResponse($users);
         }
         return $this->unauthorizedResponse();
+    }
+
+    public function makepublic($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-pages'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
+        }
+
+    }
+    public function makeprivate($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-pages'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
+        }
     }
 
 }

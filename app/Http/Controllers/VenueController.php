@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
@@ -70,6 +71,7 @@ class VenueController extends BaseController
 
             Bouncer::allow(\Auth::user())->to('administer', $data);
             Bouncer::allow(\Auth::user())->to('edit', $data);
+            Bouncer::refreshFor(\Auth::user());
 
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
@@ -132,13 +134,13 @@ class VenueController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-venue'))) {
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-venues'))) {
             try
             {
                 $input = $request->all();
                 // at this point any of these users can make public
                 // BUT if a user cant set confirmed, strip it:
-                if (!(Bouncer::allows('confirm-venue'))) {
+                if (!(Bouncer::allows('confirm-venues'))) {
                     $input = $request->except(['confirmed']);
                 }
 
@@ -178,9 +180,10 @@ class VenueController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (!(Bouncer::allows('confirm-venues'))) {
-            return $this->unauthorizedResponse();
-        }
+//checked in route
+        // if (!(Bouncer::allows('confirm-venues'))) {
+        //     return $this->unauthorizedResponse();
+        // }
 
         try
         {
@@ -201,9 +204,10 @@ class VenueController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (!(Bouncer::allows('confirm-venues'))) {
-            return $this->unauthorizedResponse();
-        }
+//checked in route
+        // if (!(Bouncer::allows('confirm-venues'))) {
+        //     return $this->unauthorizedResponse();
+        // }
 
         try
         {
@@ -213,6 +217,54 @@ class VenueController extends BaseController
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
+        }
+    }
+
+    public function makepublic($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-venues'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
+        }
+
+    }
+    public function makeprivate($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-venues'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
         }
     }
 

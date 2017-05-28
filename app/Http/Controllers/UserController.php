@@ -62,11 +62,14 @@ class UserController extends BaseController
         }
 
         if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+            Bouncer::retract('admin')->from($user);
+            Bouncer::retract('mastereditor')->from($user);
+            Bouncer::retract('contributor')->from($user);
             Bouncer::assign('superadmin')->to($user);
         } else {
             return $this->reasonedUnauthorizedResponse('nice try dickwad');
         }
-
+        Bouncer::refreshFor($user);
         return $this->showResponse('user is now superadmin');
 
     }
@@ -84,7 +87,10 @@ class UserController extends BaseController
                 return $this->reasonedUnauthorizedResponse('you cant unthrone a king');
             }
         }
+        Bouncer::retract('mastereditor')->from($user);
+        Bouncer::retract('contributor')->from($user);
         Bouncer::assign('admin')->to($user);
+        Bouncer::refreshFor($user);
         return $this->showResponse('user is now admin');
     }
 
@@ -103,7 +109,9 @@ class UserController extends BaseController
         }
 
         Bouncer::retract('admin')->from($user);
+        Bouncer::retract('contributor')->from($user);
         Bouncer::assign('mastereditor')->to($user);
+        Bouncer::refreshFor($user);
         return $this->showResponse('user is now mastereditor');
     }
 
@@ -124,6 +132,7 @@ class UserController extends BaseController
         Bouncer::retract('admin')->from($user);
         Bouncer::retract('mastereditor')->from($user);
         Bouncer::assign('contributor')->to($user);
+        Bouncer::refreshFor($user);
         return $this->showResponse('user is now contributor');
     }
 
@@ -143,7 +152,35 @@ class UserController extends BaseController
         Bouncer::retract('admin')->from($user);
         Bouncer::retract('mastereditor')->from($user);
         Bouncer::retract('contributor')->from($user);
+        Bouncer::refreshFor($user);
         return $this->showResponse('user is now nothing');
     }
 
+    public function getSuperadmins(Request $request)
+    {
+        $m     = self::MODEL;
+        $users = $m::whereIs('superadmin')->get();
+        return $this->listResponse($users);
+    }
+
+    public function getAdmins(Request $request)
+    {
+        $m     = self::MODEL;
+        $users = $m::whereIs('admin')->get();
+        return $this->listResponse($users);
+    }
+
+    public function getMastereditors(Request $request)
+    {
+        $m     = self::MODEL;
+        $users = $m::whereIs('mastereditor')->get();
+        return $this->listResponse($users);
+    }
+
+    public function getContributors(Request $request)
+    {
+        $m     = self::MODEL;
+        $users = $m::whereIs('contributor')->get();
+        return $this->listResponse($users);
+    }
 }
