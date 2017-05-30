@@ -103,23 +103,24 @@ class Handler extends ExceptionHandler
 
                 $response = response()->json($response, $code)->header('Content-Type', $contenttype);
 
-                $incoming  = 'unknown';
-                $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
-                $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
+//Handled in CORS
+                // $incoming  = 'unknown';
+                // $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
+                // $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
 
-                if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
-                    $incoming = $_SERVER['HTTP_ORIGIN'];
-                }
+                // if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+                //     $incoming = $_SERVER['HTTP_ORIGIN'];
+                // }
 
-                if (in_array($incoming, $okorigins)) {
-                    $response->header("Access-Control-Allow-Origin", $incoming);
-                } else {
-                    $response->header("Access-Control-Allow-Origin", $okorigin);
-                }
+                // if (in_array($incoming, $okorigins)) {
+                //     $response->header("Access-Control-Allow-Origin", $incoming);
+                // } else {
+                //     $response->header("Access-Control-Allow-Origin", $okorigin);
+                // }
 
-                foreach ($headers as $key => $value) {
-                    $response->header($key, $value);
-                }
+                // foreach ($headers as $key => $value) {
+                //     $response->header($key, $value);
+                // }
 
                 return $response;
 
@@ -140,23 +141,24 @@ class Handler extends ExceptionHandler
 
             $response = response()->json($response, $response['code']);
 
-            $incoming  = 'unknown';
-            $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
-            $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
+//Handled in CORS
+            // $incoming  = 'unknown';
+            // $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
+            // $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
 
-            if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
-                $incoming = $_SERVER['HTTP_ORIGIN'];
-            }
+            // if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+            //     $incoming = $_SERVER['HTTP_ORIGIN'];
+            // }
 
-            if (in_array($incoming, $okorigins)) {
-                $response->header("Access-Control-Allow-Origin", $incoming);
-            } else {
-                $response->header("Access-Control-Allow-Origin", $okorigin);
-            }
+            // if (in_array($incoming, $okorigins)) {
+            //     $response->header("Access-Control-Allow-Origin", $incoming);
+            // } else {
+            //     $response->header("Access-Control-Allow-Origin", $okorigin);
+            // }
 
-            foreach ($headers as $key => $value) {
-                $response->header($key, $value);
-            }
+            // foreach ($headers as $key => $value) {
+            //     $response->header($key, $value);
+            // }
 
             return $response;
 

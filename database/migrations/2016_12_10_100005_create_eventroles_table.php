@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePageattributesTable extends Migration
+class CreateEventrolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class CreatePageattributesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pageattributes');
+        Schema::dropIfExists('eventroles');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('pageattributes', function (Blueprint $table) {
+        Schema::create('eventroles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('description');
@@ -25,13 +25,13 @@ class CreatePageattributesTable extends Migration
         });
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        $datetime = Carbon::now();
+        $datetime = \Carbon\Carbon::now();
 
         $data = [
 
             [
                 'id'          => '1',
-                'name'        => 'bookable',
+                'name'        => 'participant',
                 'description' => 'Can preform or otherwise be a participant of an event (solo artist, band, sports team)',
                 'created_at'  => $datetime,
                 'updated_at'  => $datetime,
@@ -39,7 +39,7 @@ class CreatePageattributesTable extends Migration
 
             [
                 'id'          => '2',
-                'name'        => 'production',
+                'name'        => 'producer',
                 'description' => 'Can be listed as a production credit (Producer, Production Company)',
                 'created_at'  => $datetime,
                 'updated_at'  => $datetime,
@@ -47,14 +47,6 @@ class CreatePageattributesTable extends Migration
 
             [
                 'id'          => '3',
-                'name'        => 'group',
-                'description' => 'Can have other pages connected to this page (Band, sports team)',
-                'created_at'  => $datetime,
-                'updated_at'  => $datetime,
-            ],
-
-            [
-                'id'          => '4',
                 'name'        => 'show',
                 'description' => 'A Repeatable Show or Major Event (Comedians You Should Know, RiotFest)',
                 'created_at'  => $datetime,
@@ -62,8 +54,8 @@ class CreatePageattributesTable extends Migration
             ],
         ];
 
-        DB::table('pageattributes')->truncate();
-        DB::table('pageattributes')->insert($data);
+        DB::table('eventroles')->truncate();
+        DB::table('eventroles')->insert($data);
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
@@ -77,7 +69,7 @@ class CreatePageattributesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pageattributes');
+        Schema::dropIfExists('eventroles');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

@@ -1,20 +1,18 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller as BaseController;
 use App\Models\Event;
 use App\Models\Page;
 use App\Models\participant;
 use App\Models\User;
 use App\Models\Venue;
-use App\Traits\APIResponderTrait;
 use DB;
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class MaintenanceController extends BaseController
 {
-    use APIResponderTrait;
     use HasRolesAndAbilities;
 
     protected $addressbook;
@@ -36,7 +34,9 @@ class MaintenanceController extends BaseController
             ->select(DB::raw('count(*) as times_used, venue_name'))
             ->wherenull('venue_id')
             ->having('times_used', '>', 1)
-            ->groupBy('venue_name')
+            ->groupBy('venue_name', 'events.start')
+            ->orderBy('venue_name')
+            ->withoutGlobalScopes()
             ->get();
         return $this->listResponse($data);
     }
@@ -50,6 +50,7 @@ class MaintenanceController extends BaseController
             ->wherenull('page_id')
             ->having('times_used', '>', 1)
             ->groupBy('name')
+            ->orderBy('name')
             ->get();
         return $this->listResponse($data);
     }

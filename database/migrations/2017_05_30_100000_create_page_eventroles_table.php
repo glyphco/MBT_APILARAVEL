@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePagecategoriesTable extends Migration
+class CreatePageEventrolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,14 +14,17 @@ class CreatePagecategoriesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pagecategories');
+        Schema::dropIfExists('page_eventroles');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('pagecategories', function (Blueprint $table) {
+        Schema::create('page_eventroles', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('description')->nullable()->default(null);
+            $table->integer('page_id')->unsigned();
+            $table->integer('eventrole_id')->unsigned()->nullable();
+
             $table->timestamps();
 
+            $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('eventrole_id')->references('id')->on('eventroles')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -33,7 +36,7 @@ class CreatePagecategoriesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pagecategories');
+        Schema::dropIfExists('page_eventroles');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePagePageattributesTable extends Migration
+class CreatePagePagesubcategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,17 +14,17 @@ class CreatePagePageattributesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('page_pageattributes');
+        Schema::dropIfExists('page_pagesubcategories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('page_pageattributes', function (Blueprint $table) {
+        Schema::create('page_pagesubcategories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('page_id')->unsigned();
-            $table->string('pageattribute_id')->unsigned()->nullable();
+            $table->integer('pagesubcategories_id')->unsigned()->nullable();
 
             $table->timestamps();
 
             $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('pageattribute_id')->references('id')->on('pageattributes')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('pagesubcategories_id')->references('id')->on('pagesubcategories')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

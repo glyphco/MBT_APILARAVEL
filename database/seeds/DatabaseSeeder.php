@@ -18,13 +18,14 @@ class DatabaseSeeder extends Seeder
 
         // Temporarily increase memory limit to 2048M
         //ini_set('memory_limit', '2048M');
-        $this->call('CategoriesSeeder');
 
         $this->call('UserDataSeeder');
 
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
         $this->call('EventDataSeeder');
+
+        $this->call('PageCategoriesSeeder');
 
         $this->call('RolesSeeder');
     }
@@ -35,7 +36,9 @@ class UserDataSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('users')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('users')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         $datetime    = Carbon::now();
         $lat         = '41.94';
         $lng         = '-87.67';
@@ -71,7 +74,9 @@ class VenueDataSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('venues')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('venues')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         $venues = factory('App\Models\Venue', 10)->states('chicago')->create();
     }
 }
@@ -80,7 +85,10 @@ class PageDataSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('pages')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('pages')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
         $pages = factory('App\Models\Page', 10)->states('chicago')->create();
     }
 }
@@ -89,43 +97,51 @@ class EventDataSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('events')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('events')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
         $events = factory('App\Models\Event', 10)->states('chicago')
             ->create()
             ->each(function ($u) {
-                $u->participant()->save(factory(App\Models\Participant::class)->make());
-                $u->participant()->save(factory(App\Models\Participant::class)->make());
-                $u->participant()->save(factory(App\Models\Participant::class)->make());
-                $u->participant()->save(factory(App\Models\Participant::class)->make());
+
+                $u->participants()->save(factory(App\Models\Participant::class)->make());
+                $u->participants()->save(factory(App\Models\Participant::class)->make());
+                $u->participants()->save(factory(App\Models\Participant::class)->make());
+                $u->participants()->save(factory(App\Models\Participant::class)->make());
             });
     }
 }
 
-class CategoriesSeeder extends Seeder
+class PageCategoriesSeeder extends Seeder
 {
+    //php artisan db:seed --class=CategoriesSeeder
     public function run()
     {
 
-        $pages = [
-            'Comedian'      => ['Stand-up Comedian', 'Comedic Writer', 'Improv Comedian', 'Sketch Comedian'],
-            'Comedy Group'  => ['Improv Group', 'Sketch Comedy Group'],
-            'Musician'      => ['Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
-            'Band'          => ['Rock Band', 'Pop Band', 'Funk Band', 'Psychedelic Band', 'Emo Band', 'Pop-Punk Band', 'Acoustic Band', 'Country Band', 'Americana', 'Cover Band', 'Rock Band'],
+        $pagecategories = [
+            'Comedian'      => ['', 'Stand-up Comedian', 'Comedic Writer', 'Improv Comedian', 'Sketch Comedian'],
+            'Comedy Group'  => ['', 'Improv Group', 'Sketch Comedy Group'],
+            'Musician'      => ['', 'Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
+            'Band'          => ['', 'Rock Band', 'Pop Band', 'Funk Band', 'Psychedelic Band', 'Emo Band', 'Pop-Punk Band', 'Acoustic Band', 'Country Band', 'Americana', 'Cover Band', 'Rock Band'],
 
-            'Athlete'       => ['Roller Derby Player', 'Baseball Player', 'Baseball Player', 'Basketball Player'],
-            'Sports League' => ['Basketball League', 'Rugby League', 'Roller Derby League'],
-            'Sports Team'   => ['Roller Derby Team', 'Basketball Team', 'Rugby Team'],
+            'Athlete'       => ['', 'Roller Derby Player', 'Baseball Player', 'Baseball Player', 'Basketball Player'],
+            'Sports League' => ['', 'Basketball League', 'Rugby League', 'Roller Derby League'],
+            'Sports Team'   => ['', 'Roller Derby Team', 'Basketball Team', 'Rugby Team'],
         ];
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('pagecategories')->truncate();
+        DB::table('pagesubcategories')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        foreach ($pages as $category => $specialities) {
-            // $id = Pagecategories::create(['name' => $category])->id;
-
-            // foreach ($subCategories as $subCategory) {
-            //     Pagespecialitites::create([
-            //         'parent_id' => $id,
-            //         'name' => $subCategory
-            //     ]);
-            // }
+        foreach ($pagecategories as $category => $subCategories) {
+            $id = \App\Models\Pagecategory::create(['name' => $category])->id;
+            foreach ($subCategories as $subCategory) {
+                \App\Models\Pagesubcategory::create([
+                    'category_id' => $id,
+                    'name'        => $subCategory,
+                ]);
+            }
         }
     }
 }

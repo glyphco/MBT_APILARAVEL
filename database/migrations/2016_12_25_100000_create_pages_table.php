@@ -36,7 +36,6 @@ class CreatePagesTable extends Migration
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);
 
-            $table->integer('speciality_id')->unsigned()->nullable()->default(null);
             $table->string('tagline', 25)->nullable();
             $table->string('summary', 140)->nullable();
             $table->text('description')->nullable();
@@ -47,8 +46,6 @@ class CreatePagesTable extends Migration
             $table->timestamps();
             $table->unsignedInteger('created_by')->nullable()->default(null);
             $table->unsignedInteger('updated_by')->nullable()->default(null);
-
-            $table->foreign('speciality_id')->references('id')->on('pagespecialities')->onUpdate('cascade')->onDelete('set null');
 
         });
         /*Spatial Column*/

@@ -104,6 +104,12 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/page/{id}/admins', 'PageController@getadmins');
     });
 
+//Page Participants
+    Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
+        Route::get('/participants', 'EventParticipantController@index');
+        Route::get('/participants/{id}', 'EventParticipantController@show');
+    });
+
 //events
 
     Route::get('/event', 'eventController@index');
@@ -127,6 +133,30 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/event/{id}/revokeadmin/{userid}', 'eventController@revokeadmin');
         Route::get('/event/{id}/editors', 'eventController@geteditors');
         Route::get('/event/{id}/admins', 'eventController@getadmins');
+    });
+
+//Event Participants
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::get('/participants', 'EventParticipantController@index');
+        Route::get('/participants/{id}', 'EventParticipantController@show');
+    });
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:create-events'], function () {
+        Route::post('/participants', 'EventParticipantController@store');
+    });
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::put('/participants/{id}', 'EventParticipantController@update');
+    });
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::delete('/participants/{id}', 'EventParticipantController@destroy');
+    });
+
+//Participants
+    Route::group(['middleware' => 'can:edit-events'], function () {
+        Route::get('/participants', 'ParticipantController@index');
+        Route::get('/participants/{id}', 'ParticipantController@show');
+    });
+    Route::group(['middleware' => 'can:create-events'], function () {
+        Route::post('/participants', 'ParticipantController@store');
     });
 
 // Users (Mostly Admin stuff)
@@ -155,9 +185,11 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         // Route::get('/user/{id}/unban', 'UserController@unban');
     });
 
-// //Events
-    //     Route::get('/event', 'EventController@index');
-    //     Route::get('/event/{id}', 'EventController@show');
+    //Maintenance
+    Route::group(['middleware' => 'can:confirm-pages'], function () {
+        Route::get('/maintenance/unlinkedvenues', 'MaintenanceController@unlinkedvenues');
+        Route::get('/maintenance/unlinkedparticipants', 'MaintenanceController@unlinkedparticipants');
+    });
 
     // Route::get('/giveglypheradmin', function () {
     //     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {

@@ -77,7 +77,11 @@ class EventController extends BaseController
         if ($request->has('pn')) {
             $data = $data->ByParticipantname($request->input('pn'));
         }
-        $data = $data->get();
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+
+        $data = $data->paginate($pp);
 
         return $this->listResponse($data);
 
