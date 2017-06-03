@@ -1,18 +1,23 @@
-<?php namespace App\Models;
+<?php
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Wildside\Userstamps\Userstamps;
 
-class Pagecategory extends Model
+class Producer extends Model
 {
-
+    use Userstamps;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
+        'event_id',
         'name',
-        'description',
+        'details',
+        'page_id',
+        'order',
     ];
 
     /**
@@ -23,12 +28,20 @@ class Pagecategory extends Model
     protected $hidden = [
     ];
 
+    /**
+     * Get all the Venues for an Event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
     public function event()
     {
         return $this->belongsTo('App\Models\Event');
     }
-    public function currentevents()
+
+    public function page()
     {
-        return $this->hasMany('App\Models\Pagesubcategory');
+        return $this->belongsTo('App\Models\Page');
     }
+
 }

@@ -28,6 +28,7 @@ class PageController extends BaseController
     {
         $m    = self::MODEL;
         $data = $m::withCount('events');
+        $data = $data->with('eventroles');
 
         if ($request->exists('Unconfirmed')) {
             $data = $data->Unconfirmed();
@@ -41,7 +42,9 @@ class PageController extends BaseController
         if ($request->exists('PublicAndPrivate')) {
             $data = $data->PublicAndPrivate();
         }
-        $data = $data->get();
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
 
         return $this->listResponse($data);
     }

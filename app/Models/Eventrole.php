@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pagesubcategory extends Model
+class Eventrole extends Model
 {
 
     /**
@@ -11,7 +11,6 @@ class Pagesubcategory extends Model
      * @var array
      */
     protected $fillable = [
-        'category_id',
         'name',
         'description',
     ];
@@ -24,8 +23,8 @@ class Pagesubcategory extends Model
     protected $hidden = [
     ];
 
-    public function pagecategory()
+    public function pages()
     {
-        return $this->belongsTo('App\Models\Pagecategory');
+        return $this->hasMany('App\Models\Page', 'page_eventroles');
     }
 }

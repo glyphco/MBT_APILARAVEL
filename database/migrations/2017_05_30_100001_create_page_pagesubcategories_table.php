@@ -19,12 +19,12 @@ class CreatePagePagesubcategoriesTable extends Migration
         Schema::create('page_pagesubcategories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('page_id')->unsigned();
-            $table->integer('pagesubcategories_id')->unsigned()->nullable();
+            $table->integer('pagecategories_id')->unsigned()->nullable();
 
             $table->timestamps();
 
             $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('pagesubcategories_id')->references('id')->on('pagesubcategories')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('pagecategories_id')->references('id')->on('pagecategories')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

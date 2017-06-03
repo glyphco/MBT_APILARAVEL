@@ -68,10 +68,21 @@ class Page extends Model
         );
     }
 
+    public function eventroles()
+    {
+        return $this->belongsToMany('App\Models\Eventrole', 'page_eventroles', 'page_id', 'eventrole_id');
+    }
+
+    public function pagesubcategories()
+    {
+        return $this->belongsToMany('App\Models\Pagesubcategories', 'page_pagesubcategories', 'page_id', 'pagesubcategory_id');
+    }
+
     public function scopePrivate($query)
     {
         return $query->withoutGlobalScope(\App\Scopes\PagePublicScope::class)->where('public', '=', 0);
     }
+
     public function scopePublicAndPrivate($query)
     {
         return $query->withoutGlobalScope(\App\Scopes\PagePublicScope::class);

@@ -65,7 +65,7 @@ class UserDataSeeder extends Seeder
         //Logging in glypher so we can do all the seeding
         \Auth::login($user);
         \Auth::user()->assign('superadmin');
-        $users = factory('App\Models\User', 'user', 100)->create();
+        $users = factory('App\Models\User', 'user', 20)->create();
 
     }
 }
@@ -87,9 +87,54 @@ class PageDataSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('pages')->truncate();
+        DB::table('page_eventroles')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $pages = factory('App\Models\Page', 10)->states('chicago')->create();
+//my seeding for the percentages (lots of poerfomers, some producers, few shows, few perfomer/producers)
+
+        //make at least one of each page:
+        $pages = factory('App\Models\Page', 1)
+            ->states('chicago')
+            ->create()
+            ->each(function ($u) {
+                $u->eventroles()->syncWithoutDetaching(1);
+            });
+        $pages = factory('App\Models\Page', 1)
+            ->states('chicago')
+            ->create()
+            ->each(function ($u) {
+                $u->eventroles()->syncWithoutDetaching(2);
+            });
+        $pages = factory('App\Models\Page', 1)
+            ->states('chicago')
+            ->create()
+            ->each(function ($u) {
+                $u->eventroles()->syncWithoutDetaching(3);
+            });
+
+        $pages = factory('App\Models\Page', 50)
+            ->states('chicago')
+            ->create()
+            ->each(function ($u) {
+                $seed   = [3, 3, 3, 3, 3, 5, 5, 7, 15];
+                $godwin = Faker\Factory::create()->randomElement($array = $seed);
+
+                if ($godwin % 3 == 0) {
+                    // participant
+                    $u->eventroles()->syncWithoutDetaching(1);
+                }
+
+                if ($godwin % 5 == 0) {
+                    // producer
+                    $u->eventroles()->syncWithoutDetaching(2);
+                }
+
+                if ($godwin % 7 == 0) {
+                    //show
+                    $u->eventroles()->syncWithoutDetaching(3);
+                }
+
+            });
     }
 }
 
@@ -97,18 +142,35 @@ class EventDataSeeder extends Seeder
 {
     public function run()
     {
+
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('events')->truncate();
+        DB::table('participants')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
         $events = factory('App\Models\Event', 10)->states('chicago')
             ->create()
             ->each(function ($u) {
 
-                $u->participants()->save(factory(App\Models\Participant::class)->make());
-                $u->participants()->save(factory(App\Models\Participant::class)->make());
-                $u->participants()->save(factory(App\Models\Participant::class)->make());
-                $u->participants()->save(factory(App\Models\Participant::class)->make());
+                //Make some participants
+                $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+                foreach (range(1, $num_participants) as $index) {
+                    $u->participants()->save(factory(App\Models\Participant::class)->make());
+                }
+
+//Maybe make a producer:
+                $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 2)); // 80% chance of NULL
+                if ($num_producers) {
+                    foreach (range(1, $num_producers) as $index) {
+                        $u->producers()->save(factory(App\Models\Participant::class)->make());
+                    }
+                }
+                //Maybe make it a show:
+                $num_shows = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 80% chance of NULL
+                if ($num_shows) {
+                    foreach (range(1, $num_producers) as $index) {
+                        $u->shows()->save(factory(App\Models\Participant::class)->make());
+                    }
+                }
             });
     }
 }

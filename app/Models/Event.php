@@ -76,6 +76,16 @@ class Event extends Model
         return $this->hasMany('App\Models\Participant');
     }
 
+    public function producers()
+    {
+        return $this->hasMany('App\Models\Participant');
+    }
+
+    public function shows()
+    {
+        return $this->hasMany('App\Models\Participant');
+    }
+
     public function scopePrivate($query)
     {
         return $query->withoutGlobalScope(\App\Scopes\EventPublicScope::class)->where('public', '=', 0);
