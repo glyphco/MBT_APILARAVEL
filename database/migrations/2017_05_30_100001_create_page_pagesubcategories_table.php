@@ -36,7 +36,7 @@ class CreatePagePagesubcategoriesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('page_pageattributes');
+        Schema::dropIfExists('page_pagesubcategories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

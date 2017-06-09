@@ -58,7 +58,9 @@ class Event extends Model
         static::addGlobalScope(new \App\Scopes\EventConfirmedScope);
         static::addGlobalScope(new \App\Scopes\EventOrderStartScope);
         static::addGlobalScope(new \App\Scopes\WithParticipantsScope);
-
+        static::addGlobalScope(new \App\Scopes\WithProducersScope);
+        static::addGlobalScope(new \App\Scopes\WithShowsScope);
+        static::addGlobalScope(new \App\Scopes\WithVenueScope);
     }
 
     /**
@@ -78,12 +80,12 @@ class Event extends Model
 
     public function producers()
     {
-        return $this->hasMany('App\Models\Participant');
+        return $this->hasMany('App\Models\Producer');
     }
 
-    public function shows()
+    public function eventshows()
     {
-        return $this->hasMany('App\Models\Participant');
+        return $this->hasMany('App\Models\Eventshow');
     }
 
     public function scopePrivate($query)

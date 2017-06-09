@@ -29,12 +29,7 @@ class EventController extends BaseController
             $date = $request->input('date');
             if (!((string) (int) $date === $date) && ($date <= PHP_INT_MAX) && ($date >= ~PHP_INT_MAX)) {
                 if (!$date = strtotime($request->input('date'))) {
-                    return response([
-                        'error'   => true,
-                        'message' => 'Invalid Date.',
-                        'errors'  => 'date cannot be converted properly'],
-                        400
-                    );
+                    return $this->clientErrorResponse('Invalid Date: date cannot be converted properly');
                 }
             }
             //Set Enddate while youre at it
@@ -45,12 +40,7 @@ class EventController extends BaseController
 
         if ($request->has('enddate')) {
             if (!$enddate = strtotime($request->input('enddate'))) {
-                return response([
-                    'error'   => true,
-                    'message' => 'Invalid EndDate.',
-                    'errors'  => 'end date provided cannot be converted properly'],
-                    400
-                );
+                return $this->clientErrorResponse('Invalid Date: end date cannot be converted properly');
             }
             $enddate = date('Y-m-d' . ' 23:59:59', $enddate);
         }
@@ -80,8 +70,16 @@ class EventController extends BaseController
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
-
         $data = $data->paginate($pp);
+
+        //dd($data->toArray());
+
+        //dd($data->appends(['category' => 'category_name']));
+        // $data['debug'] = [
+        //     'date'    => $date,
+        //     'enddate' => $enddate,
+        //     'request' => $request->except('page'),
+        // ];
 
         return $this->listResponse($data);
 
@@ -122,7 +120,7 @@ class EventController extends BaseController
     {
         //autorelates venue and participants in model
         $m = self::MODEL;
-        if ($data = $m::where('id', '=', $id)->get()) {
+        if ($data = $m::find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

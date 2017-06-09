@@ -45,13 +45,13 @@ class CreateEventrolesTable extends Migration
                 'updated_at'  => $datetime,
             ],
 
-            [
-                'id'          => '3',
-                'name'        => 'show',
-                'description' => 'A Repeatable Show or Major Event (Comedians You Should Know, RiotFest)',
-                'created_at'  => $datetime,
-                'updated_at'  => $datetime,
-            ],
+            // [
+            //     'id'          => '3',
+            //     'name'        => 'show',
+            //     'description' => 'A Repeatable Show or Major Event (Comedians You Should Know, RiotFest)',
+            //     'created_at'  => $datetime,
+            //     'updated_at'  => $datetime,
+            // ],
         ];
 
         DB::table('eventroles')->truncate();

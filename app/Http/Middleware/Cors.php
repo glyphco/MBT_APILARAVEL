@@ -35,6 +35,7 @@ class CORS
         $headers = [
             'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
             'Access-Control-Allow-Headers' => 'Content-Type, Origin, Authorization, X-Requested-With',
+            'Access-Control-Max-Age'       => '10',
         ];
         if ($request->getMethod() == "OPTIONS") {
             // The client-side application can set only headers allowed in Access-Control-Allow-Headers

@@ -95,4 +95,15 @@ class User extends Authenticatable
             });
         });
     }
+
+    public function likedPages()
+    {
+        return $this->morphedByMany('App\Models\Page', 'likeable');
+    }
+
+    public function likedVenues()
+    {
+        return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
+    }
+
 }

@@ -23,9 +23,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
+        $this->call('ShowpageDataSeeder');
+
         $this->call('EventDataSeeder');
 
         $this->call('PageCategoriesSeeder');
+
+        $this->call('UserLikesSeeder');
 
         $this->call('RolesSeeder');
     }
@@ -105,18 +109,18 @@ class PageDataSeeder extends Seeder
             ->each(function ($u) {
                 $u->eventroles()->syncWithoutDetaching(2);
             });
-        $pages = factory('App\Models\Page', 1)
-            ->states('chicago')
-            ->create()
-            ->each(function ($u) {
-                $u->eventroles()->syncWithoutDetaching(3);
-            });
+        // $pages = factory('App\Models\Page', 1)
+        //     ->states('chicago')
+        //     ->create()
+        //     ->each(function ($u) {
+        //         $u->eventroles()->syncWithoutDetaching(3);
+        //     });
 
         $pages = factory('App\Models\Page', 50)
             ->states('chicago')
             ->create()
             ->each(function ($u) {
-                $seed   = [3, 3, 3, 3, 3, 5, 5, 7, 15];
+                $seed   = [3, 3, 3, 3, 3, 5, 5, 15];
                 $godwin = Faker\Factory::create()->randomElement($array = $seed);
 
                 if ($godwin % 3 == 0) {
@@ -129,12 +133,20 @@ class PageDataSeeder extends Seeder
                     $u->eventroles()->syncWithoutDetaching(2);
                 }
 
-                if ($godwin % 7 == 0) {
-                    //show
-                    $u->eventroles()->syncWithoutDetaching(3);
-                }
-
             });
+    }
+}
+
+class ShowpageDataSeeder extends Seeder
+{
+    public function run()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('showpages')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
+        $showpages = factory('App\Models\Showpage', 15)
+            ->create();
     }
 }
 
@@ -146,8 +158,10 @@ class EventDataSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('events')->truncate();
         DB::table('participants')->truncate();
+        DB::table('producers')->truncate();
+        DB::table('event_shows')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        $events = factory('App\Models\Event', 10)->states('chicago')
+        $events = factory('App\Models\Event', 200)->states('chicago')
             ->create()
             ->each(function ($u) {
 
@@ -161,16 +175,19 @@ class EventDataSeeder extends Seeder
                 $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 2)); // 80% chance of NULL
                 if ($num_producers) {
                     foreach (range(1, $num_producers) as $index) {
-                        $u->producers()->save(factory(App\Models\Participant::class)->make());
+                        $u->producers()->save(factory(App\Models\Producer::class)->make());
                     }
                 }
-                //Maybe make it a show:
-                $num_shows = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 80% chance of NULL
+
+                //Maybe attach a show:
+                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+                //echo ($num_shows);
                 if ($num_shows) {
-                    foreach (range(1, $num_producers) as $index) {
-                        $u->shows()->save(factory(App\Models\Participant::class)->make());
+                    foreach (range(1, $num_shows) as $index) {
+                        $u->eventshows()->save(factory(App\Models\Eventshow::class)->make());
                     }
                 }
+
             });
     }
 }
@@ -206,6 +223,62 @@ class PageCategoriesSeeder extends Seeder
             }
         }
     }
+}
+
+class UserLikesSeeder extends Seeder
+{
+    public function run()
+    {
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('likeables')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
+        $users  = App\Models\User::pluck('id')->toArray();
+        $pages  = App\Models\Page::pluck('id')->toArray();
+        $venues = App\Models\Venue::pluck('id')->toArray();
+
+        foreach ($users as $user_id) {
+            $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
+            $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
+
+//LIKE SOME PAGES
+            $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, $user_id);
+
+//LIKE SOME VENUES
+            $this->makelikes($num_venuelikes, 'App\Models\Venue', $venues, $user_id);
+
+        }
+
+    }
+
+    public function makelikes($num_likes, $likeable_type, $likeable_array, $user_id)
+    {
+        foreach (range(1, $num_likes) as $index) {
+
+            $likeable_id = Faker\Factory::create()->randomElement($array = $likeable_array);
+
+            $existing_like = App\Models\Like::withTrashed()->whereLikeableType($likeable_type)->whereLikeableId($likeable_id)->whereUserId($user_id)->first();
+
+            if (is_null($existing_like)) {
+                App\Models\Like::create([
+                    'user_id'       => $user_id,
+                    'likeable_id'   => $likeable_id,
+                    'likeable_type' => $likeable_type,
+                ]);
+                //return 'liked';
+            } else {
+                if (is_null($existing_like->deleted_at)) {
+                    $existing_like->delete();
+                    //return 'unliked';
+                } else {
+                    $existing_like->restore();
+                    //return 'reliked';
+                }
+            }
+        }
+    }
+
 }
 
 class RolesSeeder extends Seeder

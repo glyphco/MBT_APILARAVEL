@@ -5,9 +5,11 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     $lat = $faker->latitude($min = -90, $max = 90);
     $lng = $faker->longitude($min = -180, $max = 180);
 
-    $start = $faker->dateTimeBetween('now', 'next wednesday');
+    $start = $faker->dateTimeBetween('-3 days', '+7 days');
 
-    $end = $faker->optional()->dateTimeBetween($start, $start->add(new DateInterval('PT4H')));
+    $eventhours = $faker->numberBetween(1, 6);
+
+    $end = $faker->optional()->dateTimeBetween($start, $start->add(new DateInterval('PT' . $eventhours . 'H')));
 
     return [
         'name'           => $faker->company,

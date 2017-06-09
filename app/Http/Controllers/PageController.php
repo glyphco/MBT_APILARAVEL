@@ -27,8 +27,12 @@ class PageController extends BaseController
     public function index(Request $request)
     {
         $m    = self::MODEL;
-        $data = $m::withCount('events');
+        $data = $m::withCount('events')->withCount('likes');
         $data = $data->with('eventroles');
+
+        if ($request->exists('q')) {
+            $data = $data->where('name', 'like', $request['q'] . '%');
+        }
 
         if ($request->exists('Unconfirmed')) {
             $data = $data->Unconfirmed();
@@ -82,7 +86,7 @@ class PageController extends BaseController
     public function show($id)
     {
         $m = self::MODEL;
-        if ($data = $m::with('groups')->with('members')->find($id)) {
+        if ($data = $m::withCount('likes')->with('groups')->with('members')->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -319,6 +323,17 @@ class PageController extends BaseController
         } else {
             return $this->unauthorizedResponse();
         }
+    }
+
+    public function getlikes($id)
+    {
+
+        $m = self::MODEL;
+        if ($data = $m::with('likes')->find($id)->likes) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+
     }
 
 }

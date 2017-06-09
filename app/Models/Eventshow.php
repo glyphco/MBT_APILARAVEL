@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
-class Show extends Model
+class EventShow extends Model
 {
     use Userstamps;
     /**
@@ -13,10 +13,12 @@ class Show extends Model
      * @var array
      */
     protected $fillable = [
+
         'event_id',
         'name',
-        'details',
-        'page_id',
+        'info',
+        'private_info',
+        'showpage_id',
         'order',
     ];
 
@@ -39,9 +41,9 @@ class Show extends Model
         return $this->belongsTo('App\Models\Event');
     }
 
-    public function page()
+    public function showpage()
     {
-        return $this->belongsTo('App\Models\Page');
+        return $this->belongsTo('App\Models\Showpage');
     }
 
 }

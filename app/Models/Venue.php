@@ -81,4 +81,15 @@ class Venue extends Model
         return $query->withoutGlobalScope(\App\Scopes\VenueConfirmedScope::class);
     }
 
+    public function likes()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')->whereDeletedAt(null);
+    }
+
+    public function getIsLikedAttribute()
+    {
+        $like = $this->likes()->whereUserId(Auth::id())->first();
+        return (!is_null($like)) ? true : false;
+    }
+
 }

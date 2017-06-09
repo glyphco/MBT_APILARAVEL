@@ -59,6 +59,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
     Route::get('/venue', 'VenueController@index');
     Route::get('/venue/{id}', 'VenueController@show');
+    Route::get('/venue/like/{id}', ['as' => 'venue.like', 'uses' => 'LikeController@likeVenue']);
     Route::group(['middleware' => 'can:create-venues'], function () {
         Route::post('/venue', 'VenueController@store');
     });
@@ -83,6 +84,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
     Route::get('/page', 'PageController@index');
     Route::get('/page/{id}', 'PageController@show');
+    Route::get('/page/{id}/likes', 'PageController@getLikes');
+    Route::get('/page/like/{id}', ['as' => 'page.like', 'uses' => 'LikeController@likePage']);
+
     Route::group(['middleware' => 'can:create-pages'], function () {
         Route::post('/page', 'PageController@store');
     });
@@ -104,6 +108,35 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/page/{id}/admins', 'PageController@getadmins');
     });
 
+// Show Pages
+    Route::group(array('prefix' => 'showpage'), function () {
+        Route::get('/', 'ShowpageController@index');
+        Route::get('/{id}', 'ShowpageController@show');
+        Route::get('/{id}/likes', 'ShowpageController@getLikes');
+        Route::get('/like/{id}', ['as' => 'showpage.like', 'uses' => 'LikeController@likeShowpage']);
+
+        Route::group(['middleware' => 'can:create-pages'], function () {
+            Route::post('/', 'ShowpageController@store');
+        });
+        Route::group(['middleware' => 'can:confirm-pages'], function () {
+            Route::get('/{id}/confirm', 'ShowpageController@confirm');
+            Route::get('/{id}/unconfirm', 'ShowpageController@unconfirm');
+        });
+
+        Route::group(['middleware' => 'can:edit-pages'], function () {
+            Route::put('/{id}', 'ShowpageController@update');
+            Route::get('/{id}/makepublic', 'ShowpageController@makepublic');
+            Route::get('/{id}/makeprivate', 'ShowpageController@makeprivate');
+            // checks made in controller:
+            Route::get('/{id}/giveedit/{userid}', 'ShowpageController@giveedit');
+            Route::get('/{id}/revokeedit/{userid}', 'ShowpageController@revokeedit');
+            Route::get('/{id}/giveadmin/{userid}', 'ShowpageController@giveadmin');
+            Route::get('/{id}/revokeadmin/{userid}', 'ShowpageController@revokeadmin');
+            Route::get('/{id}/editors', 'ShowpageController@geteditors');
+            Route::get('/{id}/admins', 'ShowpageController@getadmins');
+        });
+    });
+
 //Page Participants
     Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
         Route::get('/participants', 'EventParticipantController@index');
@@ -114,6 +147,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
     Route::get('/event', 'eventController@index');
     Route::get('/event/{id}', 'eventController@show');
+    Route::get('/event/like/{id}', ['as' => 'event.like', 'uses' => 'LikeController@likeEvent']);
     Route::group(['middleware' => 'can:create-events'], function () {
         Route::post('/event', 'eventController@store');
     });

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Bouncer;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,6 +16,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Bouncer::cache();
+        Relation::morphMap([
+            'pages'  => 'App\Model\Page',
+            'venues' => 'App\Model\Venue',
+        ]);
+
         //
     }
 

@@ -52,12 +52,7 @@ class EventParticipantController extends BaseController
         $event = \App\Models\Event::find($request['event_id']);
         if (!($event)) {
             // Oops.
-            return response([
-                'error'   => true,
-                'message' => 'Could not save.',
-                'errors'  => '[event_id] not found'],
-                422
-            );
+            return $this->clientErrorResponse('Could not save: [event_id] not found');
         }
 
         $page_id = $request->input('page_id', null);
@@ -66,12 +61,7 @@ class EventParticipantController extends BaseController
             $page = \App\Models\Page::find($page_id);
             if (!($page)) {
                 // Oops.
-                return response([
-                    'error'   => true,
-                    'message' => 'Could not save.',
-                    'errors'  => '[page_id] not found'],
-                    422
-                );
+                return $this->clientErrorResponse('Could not save: [page_id] not found');
             }
 
         }

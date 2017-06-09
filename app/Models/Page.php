@@ -108,4 +108,14 @@ class Page extends Model
         return $this->belongsToMany('App\Models\Page', 'groupmembers', 'group_id', 'member_id');
     }
 
+    public function likes()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
+    }
+
+    public function getIsLikedAttribute()
+    {
+        $like = $this->likes()->whereUserId(Auth::id())->first();
+        return (!is_null($like)) ? true : false;
+    }
 }
