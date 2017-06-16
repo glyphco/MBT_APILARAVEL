@@ -62,6 +62,25 @@ class UserDataSeeder extends Seeder
             'updated_at'  => $datetime,
         ];
         //NOTE LOCATION is POINT (since we're not using model, but raw DB entry)
+        $careletoninfo = [
+            'name'        => "Carleton Maybell",
+            'username'    => "cmaybell",
+            'email'       => "1555815747766321@facebook.com",
+            'facebook_id' => '1555815747766321',
+            'avatar'      => 'https://graph.facebook.com/v2.8/1555815747766321/picture?type=normal',
+            'lat'         => $lat,
+            'lng'         => $lng,
+            'location'    => DB::raw("POINT($latlngval)"),
+            'confirmed'   => '1',
+            'slug'        => 'cmaybell',
+            'created_at'  => $datetime,
+            'updated_at'  => $datetime,
+        ];
+
+        $id   = DB::table('users')->insertGetId($careletoninfo);
+        $user = User::find($id);
+        \Auth::login($user);
+        \Auth::user()->assign('superadmin');
 
         $id   = DB::table('users')->insertGetId($glypherinfo);
         $user = User::find($id);
@@ -157,25 +176,28 @@ class EventDataSeeder extends Seeder
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('events')->truncate();
-        DB::table('participants')->truncate();
-        DB::table('producers')->truncate();
+        DB::table('event_venues')->truncate();
+        DB::table('event_venue_participants')->truncate();
+        DB::table('event_venue_producers')->truncate();
         DB::table('event_shows')->truncate();
+        DB::table('event_producers')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        $events = factory('App\Models\Event', 200)->states('chicago')
+
+        $events = factory('App\Models\Event', 200)
             ->create()
             ->each(function ($u) {
 
-                //Make some participants
-                $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
-                foreach (range(1, $num_participants) as $index) {
-                    $u->participants()->save(factory(App\Models\Participant::class)->make());
-                }
+                // //Make some participants
+                // $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+                // foreach (range(1, $num_participants) as $index) {
+                //     $u->participants()->save(factory(App\Models\Participant::class)->make());
+                // }
 
 //Maybe make a producer:
                 $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 2)); // 80% chance of NULL
                 if ($num_producers) {
                     foreach (range(1, $num_producers) as $index) {
-                        $u->producers()->save(factory(App\Models\Producer::class)->make());
+                        $u->eventproducers()->save(factory(App\Models\EventProducer::class)->make());
                     }
                 }
 
@@ -184,7 +206,22 @@ class EventDataSeeder extends Seeder
                 //echo ($num_shows);
                 if ($num_shows) {
                     foreach (range(1, $num_shows) as $index) {
-                        $u->eventshows()->save(factory(App\Models\Eventshow::class)->make());
+                        $u->eventshows()->save(factory(App\Models\EventShow::class)->make());
+                    }
+                }
+
+                $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+                //echo ($num_shows);
+                if ($num_venues) {
+                    foreach (range(1, $num_venues) as $index) {
+                        $eventvenue = $u->eventvenues()->save(factory(App\Models\EventVenue::class)->make());
+
+                        // //Make some participants
+                        $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+                        foreach (range(1, $num_participants) as $index) {
+                            $eventvenue->eventvenueparticipants()->save(factory(App\Models\EventVenueParticipant::class)->make());
+                        }
+
                     }
                 }
 
@@ -198,25 +235,22 @@ class PageCategoriesSeeder extends Seeder
     public function run()
     {
 
-        $pagecategories = [
-            'Comedian'      => ['', 'Stand-up Comedian', 'Comedic Writer', 'Improv Comedian', 'Sketch Comedian'],
-            'Comedy Group'  => ['', 'Improv Group', 'Sketch Comedy Group'],
-            'Musician'      => ['', 'Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
-            'Band'          => ['', 'Rock Band', 'Pop Band', 'Funk Band', 'Psychedelic Band', 'Emo Band', 'Pop-Punk Band', 'Acoustic Band', 'Country Band', 'Americana', 'Cover Band', 'Rock Band'],
-
-            'Athlete'       => ['', 'Roller Derby Player', 'Baseball Player', 'Baseball Player', 'Basketball Player'],
-            'Sports League' => ['', 'Basketball League', 'Rugby League', 'Roller Derby League'],
-            'Sports Team'   => ['', 'Roller Derby Team', 'Basketball Team', 'Rugby Team'],
+        $categories = [
+            'Comedy'        => ['', 'Stand-up Comedy', 'Comedic Writing', 'Improv Comedy', 'Sketch Comedy'],
+            'Music'         => ['', 'Rock', 'Pop', 'Funk', 'Psychedelic', 'Emo', 'Pop-Punk', 'Acoustic', 'Country', 'Americana', 'Covers', 'Rock Band', 'Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
+            'Fun and Games' => ['', 'Pinball', 'Arcade', 'Video Games', 'Board Games'],
+            'Arts'          => ['', 'Theatre', 'Film and Movies', 'Visual Arts'],
+            'Sports'        => ['', 'Biking', 'Roller Derby', 'Baseball', 'Basketball', 'Softball'],
         ];
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        DB::table('pagecategories')->truncate();
-        DB::table('pagesubcategories')->truncate();
+        DB::table('categories')->truncate();
+        DB::table('subcategories')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        foreach ($pagecategories as $category => $subCategories) {
-            $id = \App\Models\Pagecategory::create(['name' => $category])->id;
+        foreach ($categories as $category => $subCategories) {
+            $id = \App\Models\Category::create(['name' => $category])->id;
             foreach ($subCategories as $subCategory) {
-                \App\Models\Pagesubcategory::create([
+                \App\Models\Subcategory::create([
                     'category_id' => $id,
                     'name'        => $subCategory,
                 ]);

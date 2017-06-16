@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
-class Producer extends Model
+class EventProducer extends Model
 {
     use Userstamps;
     /**

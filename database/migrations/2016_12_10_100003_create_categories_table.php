@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePagecategoriesTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class CreatePagecategoriesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pagecategories');
+        Schema::dropIfExists('categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('pagecategories', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('description')->nullable()->default(null);
@@ -33,7 +33,7 @@ class CreatePagecategoriesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('pagecategories');
+        Schema::dropIfExists('categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

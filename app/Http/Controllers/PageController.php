@@ -27,8 +27,8 @@ class PageController extends BaseController
     public function index(Request $request)
     {
         $m    = self::MODEL;
-        $data = $m::withCount('events')->withCount('likes');
-        $data = $data->with('eventroles');
+        $data = $m::withCount('eventvenues')->withCount('likes');
+        $data = $data->with(['eventroles', 'categories']);
 
         if ($request->exists('q')) {
             $data = $data->where('name', 'like', $request['q'] . '%');
@@ -70,6 +70,11 @@ class PageController extends BaseController
                 throw new \Exception("ValidationException");
             }
             $data = $m::create($request->all());
+
+            Bouncer::allow(\Auth::user())->to('administer', $data);
+            Bouncer::allow(\Auth::user())->to('edit', $data);
+            Bouncer::refreshFor(\Auth::user());
+
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
@@ -86,7 +91,7 @@ class PageController extends BaseController
     public function show($id)
     {
         $m = self::MODEL;
-        if ($data = $m::withCount('likes')->with('groups')->with('members')->find($id)) {
+        if ($data = $m::withCount('eventvenues')->withCount('likes')->with('groups')->with('members')->with('categories')->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -330,6 +335,17 @@ class PageController extends BaseController
 
         $m = self::MODEL;
         if ($data = $m::with('likes')->find($id)->likes) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+
+    }
+
+    public function getevents($id)
+    {
+
+        $m = self::MODEL;
+        if ($data = $m::with('eventvenues.event')->find($id)->eventvenues) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

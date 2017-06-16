@@ -3,14 +3,12 @@ namespace App\Models;
 
 use App\Scopes\PageConfirmedScope;
 use App\Scopes\PagePublicScope;
-use App\Traits\SpacialdataTrait;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
 class Page extends Model
 {
     use Userstamps;
-    use SpacialdataTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -21,12 +19,11 @@ class Page extends Model
         'email',
         'slug',
         'category',
-        'street_address',
+
         'city',
         'state',
         'postalcode',
-        'lat',
-        'lng',
+
         'phone',
         'location',
         'participant',
@@ -59,11 +56,11 @@ class Page extends Model
         static::addGlobalScope(new \App\Scopes\PageConfirmedScope);
     }
 
-    public function events()
+    public function eventvenues()
     {
         //return $this->hasMany('App\Models\Event');
         return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\participant',
+            'App\Models\EventVenue', 'App\Models\eventvenueparticipant',
             'page_id', 'id'
         );
     }
@@ -118,4 +115,10 @@ class Page extends Model
         $like = $this->likes()->whereUserId(Auth::id())->first();
         return (!is_null($like)) ? true : false;
     }
+
+    public function categories()
+    {
+        return $this->hasMany('App\Models\PageCategory')->with(['category', 'subcategory']);
+    }
+
 }

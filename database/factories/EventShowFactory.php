@@ -1,6 +1,6 @@
 <?php
 
-$factory->define('App\Models\Eventshow', function (Faker\Generator $faker) {
+$factory->define('App\Models\EventShow', function (Faker\Generator $faker) {
     static $password;
 
     $eventshowpage_pages = App\Models\Showpage::pluck('id')->toArray();

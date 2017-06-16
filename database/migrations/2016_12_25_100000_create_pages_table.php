@@ -20,15 +20,17 @@ class CreatePagesTable extends Migration
             $table->increments('id');
             $table->string('name', 60);
             $table->string('slug', 60)->nullable()->default(null);
-
-            $table->string('street_address')->nullable()->default(null);
+            $table->string('tagline', 50)->nullable()->default(null);
+            $table->string('summary', 140)->nullable();
+            $table->text('description')->nullable()->default(null);
             $table->string('city')->nullable()->default(null);
             $table->string('state')->nullable()->default(null);
             $table->string('postalcode')->nullable()->default(null);
-            $table->string('lat')->nullable()->default(null);
-            $table->string('lng')->nullable()->default(null);
+            $table->string('imageurl')->nullable()->default(null);
+            $table->string('backgroundurl')->nullable()->default(null);
             $table->string('phone')->nullable()->default(null);
             $table->string('email')->nullable()->default(null);
+
             $table->boolean('participant')->default(0);
             $table->boolean('production')->default(0);
             $table->boolean('canhavemembers')->default(0);
@@ -36,20 +38,12 @@ class CreatePagesTable extends Migration
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);
 
-            $table->string('tagline', 25)->nullable();
-            $table->string('summary', 140)->nullable();
-            $table->text('description')->nullable();
-
-            $table->string('imageurl')->nullable();
-            $table->string('backgroundurl')->nullable();
-
             $table->timestamps();
             $table->unsignedInteger('created_by')->nullable()->default(null);
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
         });
-        /*Spatial Column*/
-        DB::statement('ALTER TABLE pages ADD location POINT');
+
     }
 
     /**

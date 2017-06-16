@@ -3,8 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\Event;
+use App\Models\EventVenueParticipant;
 use App\Models\Page;
-use App\Models\participant;
 use App\Models\User;
 use App\Models\Venue;
 use DB;
@@ -17,7 +17,7 @@ class MaintenanceController extends BaseController
 
     protected $addressbook;
 
-    public function __construct(Event $event, Venue $venue, Page $page, Participant $participant, User $user)
+    public function __construct(Event $event, Venue $venue, Page $page, EventVenueParticipant $participant, User $user)
     {
         $this->event       = $event;
         $this->venue       = $venue;
@@ -30,11 +30,11 @@ class MaintenanceController extends BaseController
     //that are not linked to venues in the Database
     public function unlinkedVenues(Request $request)
     {
-        $data = $this->event
-            ->select(DB::raw('count(*) as times_used, venue_name'))
+        $data = \App\Models\Eventvenue::
+            select(DB::raw('count(*) as times_used, venue_name'))
             ->wherenull('venue_id')
             ->having('times_used', '>', 1)
-            ->groupBy('venue_name', 'events.start')
+            ->groupBy('venue_name', 'event_venues.start')
             ->orderBy('venue_name')
             ->withoutGlobalScopes()
             ->get();

@@ -7,13 +7,15 @@ use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventController extends BaseController
+class EventVenueController extends BaseController
 {
     use HasRolesAndAbilities;
 
-    const MODEL                = 'App\Models\Event';
+    const MODEL                = 'App\Models\EventVenue';
     protected $validationRules = [
-        'name' => 'required',
+        'name'  => 'required',
+        'venue' => 'required',
+        'start' => 'required',
     ];
 
     public function index(Request $request)
@@ -44,7 +46,7 @@ class EventController extends BaseController
         }
 
         $m    = self::MODEL;
-        $data = $m::with('eventvenues');
+        $data = $m::with('event');
 
         if ($date) {
             $data = $data->InDateRange($date, $enddate);
@@ -101,11 +103,6 @@ class EventController extends BaseController
             }
             $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
             $data = $m::create($request->all());
-
-            Bouncer::allow(\Auth::user())->to('administer', $data);
-            Bouncer::allow(\Auth::user())->to('edit', $data);
-            Bouncer::refreshFor(\Auth::user());
-
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
@@ -153,11 +150,6 @@ class EventController extends BaseController
             }
             $data->fill($request->all());
             $data->save();
-
-            Bouncer::allow(\Auth::user())->to('administer', $data);
-            Bouncer::allow(\Auth::user())->to('edit', $data);
-            Bouncer::refreshFor(\Auth::user());
-
             return $this->showResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];

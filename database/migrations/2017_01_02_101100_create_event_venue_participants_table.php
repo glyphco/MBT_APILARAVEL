@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventsTable extends Migration
+class CreateEventVenueParticipantsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,28 +13,29 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('events');
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('event_venue_participants', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('event_venue_id')->unsigned();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->string('info')->nullable();
+            $table->string('private_info')->nullable();
+            $table->integer('page_id')->unsigned()->nullable();
+
             $table->dateTime('start')->nullable()->default(null);
             $table->dateTime('end')->nullable()->default(null);
+            $table->integer('order')->unsigned()->default(0);
 
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);
+
             $table->timestamps();
             $table->unsignedInteger('created_by')->nullable()->default(null);
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
-            $table->string('imageurl')->nullable();
-            $table->string('backgroundurl')->nullable();
-
+            $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('event_venue_id')->references('id')->on('event_venues')->onDelete('cascade');
         });
-        /*Spatial Column*/
-        DB::statement('ALTER TABLE events ADD location POINT');
+
     }
 
     /**
@@ -44,7 +45,7 @@ class CreateEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('event_venue_participants');
     }
 
 }

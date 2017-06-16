@@ -19,10 +19,11 @@ class CreateShowpagesTable extends Migration
         Schema::create('showpages', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 60);
-            $table->text('description')->nullable()->default(null);
-            $table->string('category')->nullable()->default(null);
-            $table->string('tagline', 50)->nullable()->default(null);
             $table->string('slug', 60)->nullable()->default(null);
+            $table->string('tagline', 50)->nullable()->default(null);
+            $table->string('summary', 140)->nullable();
+            $table->string('category')->nullable()->default(null);
+            $table->text('description')->nullable()->default(null);
 
             $table->string('imageurl')->nullable()->default(null);
             $table->string('backgroundurl')->nullable()->default(null);

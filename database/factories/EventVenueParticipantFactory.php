@@ -1,6 +1,6 @@
 <?php
 
-$factory->define('App\Models\Participant', function (Faker\Generator $faker) {
+$factory->define('App\Models\EventVenueParticipant', function (Faker\Generator $faker) {
     static $password;
 
     $participant_pages = App\Models\Page::wherehas('eventroles', function ($q) {

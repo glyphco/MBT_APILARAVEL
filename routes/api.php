@@ -47,6 +47,12 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/userinfo', 'UserinfoController@userinfo');
     Route::get('/me', 'UserinfoController@userinfo');
 
+///
+    Route::get('adminme', function () {
+        dd(\Auth::user()->id);
+        echo ('done');
+    });
+
     Route::get('/test', function () {
         var_dump(\Auth::user());
         $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
@@ -85,6 +91,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/page', 'PageController@index');
     Route::get('/page/{id}', 'PageController@show');
     Route::get('/page/{id}/likes', 'PageController@getLikes');
+    Route::get('/page/{id}/events', 'PageController@getEvents');
     Route::get('/page/like/{id}', ['as' => 'page.like', 'uses' => 'LikeController@likePage']);
 
     Route::group(['middleware' => 'can:create-pages'], function () {
@@ -143,6 +150,17 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/participants/{id}', 'EventParticipantController@show');
     });
 
+//Page Categories
+    Route::group(['prefix' => 'page/{page_id}'], function () {
+        Route::get('/category', 'PageCategoryController@index');
+    });
+    Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
+        Route::post('/category', 'PageCategoryController@store');
+    });
+    Route::group(['middleware' => 'can:edit-pages'], function () {
+        Route::delete('/pagecategory/{pagecategory_id}', 'PageCategoryController@destroy');
+    });
+
 //events
 
     Route::get('/event', 'eventController@index');
@@ -169,19 +187,43 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/event/{id}/admins', 'eventController@getadmins');
     });
 
-//Event Participants
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::get('/participants', 'EventParticipantController@index');
-        Route::get('/participants/{id}', 'EventParticipantController@show');
+//eventvenuess
+
+    Route::get('/eventvenue', 'EventvenueController@index');
+    Route::get('/eventvenue/{id}', 'EventvenueController@show');
+    Route::group(['middleware' => 'can:edit-events'], function () {
+        Route::post('/eventvenue', 'EventvenueController@store');
+        Route::get('/eventvenue/{id}/confirm', 'EventvenueController@confirm');
+        Route::get('/eventvenue/{id}/unconfirm', 'EventvenueController@unconfirm');
+        Route::put('/eventvenue/{id}', 'EventvenueController@update');
+        Route::get('/eventvenue/{id}/makepublic', 'EventvenueController@makepublic');
+        Route::get('/eventvenue/{id}/makeprivate', 'EventvenueController@makeprivate');
     });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:create-events'], function () {
-        Route::post('/participants', 'EventParticipantController@store');
+
+//EventVenue Categories
+    Route::group(['prefix' => 'eventvenue/{page_id}'], function () {
+        Route::get('/category', 'EventVenueCategoryController@index');
     });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::put('/participants/{id}', 'EventParticipantController@update');
+    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-pages'], function () {
+        Route::post('/category', 'EventVenueCategoryController@store');
     });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::delete('/participants/{id}', 'EventParticipantController@destroy');
+    Route::group(['middleware' => 'can:edit-pages'], function () {
+        Route::delete('/eventvenuecategory/{eventvenuecategory_id}', 'EventVenueCategoryController@destroy');
+    });
+
+//EventVenue Participants
+    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::get('/participants', 'EventVenueParticipantController@index');
+        Route::get('/participants/{id}', 'EventVenueParticipantController@show');
+    });
+    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:create-events'], function () {
+        Route::post('/participants', 'EventVenueParticipantController@store');
+    });
+    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::put('/participants/{id}', 'EventVenueParticipantController@update');
+    });
+    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::delete('/participants/{id}', 'EventVenueParticipantController@destroy');
     });
 
 //Participants
@@ -224,6 +266,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/maintenance/unlinkedvenues', 'MaintenanceController@unlinkedvenues');
         Route::get('/maintenance/unlinkedparticipants', 'MaintenanceController@unlinkedparticipants');
     });
+
+//PageCategories
+    Route::get('/pagecategory', 'PagecategoryController@index');
 
     // Route::get('/giveglypheradmin', function () {
     //     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
