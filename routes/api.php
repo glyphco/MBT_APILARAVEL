@@ -145,10 +145,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     });
 
 //Page Participants
-    Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
-        Route::get('/participants', 'EventParticipantController@index');
-        Route::get('/participants/{id}', 'EventParticipantController@show');
-    });
+    // Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
+    //     Route::get('/participants', 'EventParticipantController@index');
+    //     Route::get('/participants/{id}', 'EventParticipantController@show');
+    // });
 
 //Page Categories
     Route::group(['prefix' => 'page/{page_id}'], function () {
@@ -191,6 +191,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
     Route::get('/eventvenue', 'EventvenueController@index');
     Route::get('/eventvenue/{id}', 'EventvenueController@show');
+//Attending
+    Route::get('/eventvenue/attend/{id}', ['as' => 'eventvenue.attending', 'uses' => 'AttendingController@attendEventVenue']);
+
     Route::group(['middleware' => 'can:edit-events'], function () {
         Route::post('/eventvenue', 'EventvenueController@store');
         Route::get('/eventvenue/{id}/confirm', 'EventvenueController@confirm');

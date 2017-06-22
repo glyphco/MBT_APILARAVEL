@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventvenueCategoriesTable extends Migration
+class CreateEventVenueCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class CreateEventvenueCategoriesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('eventvenue_categories');
+        Schema::dropIfExists('event_venue_categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('eventvenue_categories', function (Blueprint $table) {
+        Schema::create('event_venue_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('eventvenue_id')->unsigned();
             $table->integer('category_id')->unsigned()->nullable();
@@ -37,7 +37,7 @@ class CreateEventvenueCategoriesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('eventvenue_categories');
+        Schema::dropIfExists('event_venue_categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

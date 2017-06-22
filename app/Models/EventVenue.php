@@ -75,7 +75,7 @@ class EventVenue extends Model
 
     public function categories()
     {
-        return $this->hasMany('App\Models\EventVenueCategory')->with(['category', 'subcategory']);
+        return $this->hasMany('App\Models\EventVenueCategory', 'eventvenue_id')->with(['category', 'subcategory']);
     }
 
     public function scopeCurrent($filter)
@@ -88,6 +88,41 @@ class EventVenue extends Model
             //End in date range
                 ->orWhereDate('end', '>=', Carbon::now()->subHours(5)->toDateString());
         });
+    }
+
+//SEARCHES
+    public function scopeByEventVenueParticipant($filter, $page_id)
+    {
+        return $filter->where(function ($query) use ($page_id) {
+            $query->whereHas('eventvenueparticipants', function ($query) use ($page_id) {
+                $query->where('page_id', '=', $page_id);
+            });
+
+        });
+    }
+    public function scopeByEventVenueCategory($filter, $category_id)
+    {
+        return $filter->where(function ($query) use ($category_id) {
+            $query->whereHas('categories', function ($query) use ($category_id) {
+                $query->where('category_id', $category_id);
+            });
+
+        });
+    }
+    public function scopeByEventVenueSubcategory($filter, $subcategory_id)
+    {
+        return $filter->where(function ($query) use ($subcategory_id) {
+            $query->whereHas('categories', function ($query) use ($subcategory_id) {
+                $query->where('subcategory_id', $subcategory_id);
+            });
+
+        });
+    }
+
+    public function attending()
+    {
+
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->select('user_id', 'name', 'avatar');
     }
 
 }

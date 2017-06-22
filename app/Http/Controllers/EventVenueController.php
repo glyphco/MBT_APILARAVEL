@@ -45,8 +45,23 @@ class EventVenueController extends BaseController
             $enddate = date('Y-m-d' . ' 23:59:59', $enddate);
         }
 
-        $m    = self::MODEL;
-        $data = $m::with('event');
+        $ranks = [2, 3];
+
+        $m = self::MODEL;
+
+        $data = $m::with(['event', 'categories'])
+            ->withCount([
+                'attending as attending' => function ($query) use ($ranks) {
+                    $query->wherein('rank', [3]);
+                },
+                'attending as maybe'     => function ($query) use ($ranks) {
+                    $query->wherein('rank', [2]);
+                },
+                'attending as wish'      => function ($query) use ($ranks) {
+                    $query->wherein('rank', [1]);
+                },
+            ])
+        ;
 
         if ($date) {
             $data = $data->InDateRange($date, $enddate);
@@ -66,6 +81,12 @@ class EventVenueController extends BaseController
         }
         if ($request->has('pn')) {
             $data = $data->ByEventVenueParticipantname($request->input('pn'));
+        }
+        if ($request->has('sc')) {
+            $data = $data->ByEventVenueSubcategory($request->input('sc'));
+        }
+        if ($request->has('c')) {
+            $data = $data->ByEventVenueCategory($request->input('c'));
         }
 
         $pp = $request->input('pp', 25);

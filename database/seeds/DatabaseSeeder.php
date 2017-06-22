@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call('EventDataSeeder');
 
-        $this->call('PageCategoriesSeeder');
+        $this->call('CategoriesSeeder');
 
         $this->call('UserLikesSeeder');
 
@@ -222,6 +222,12 @@ class EventDataSeeder extends Seeder
                             $eventvenue->eventvenueparticipants()->save(factory(App\Models\EventVenueParticipant::class)->make());
                         }
 
+                        // //Make some categories
+                        $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
+                        foreach (range(1, $num_categories) as $index) {
+                            $eventvenue->categories()->save(factory(App\Models\EventVenueCategory::class)->make());
+                        }
+
                     }
                 }
 
@@ -229,7 +235,7 @@ class EventDataSeeder extends Seeder
     }
 }
 
-class PageCategoriesSeeder extends Seeder
+class CategoriesSeeder extends Seeder
 {
     //php artisan db:seed --class=CategoriesSeeder
     public function run()
@@ -266,21 +272,27 @@ class UserLikesSeeder extends Seeder
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('likeables')->truncate();
+        DB::table('attending')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $users  = App\Models\User::pluck('id')->toArray();
-        $pages  = App\Models\Page::pluck('id')->toArray();
-        $venues = App\Models\Venue::pluck('id')->toArray();
+        $users       = App\Models\User::pluck('id')->toArray();
+        $pages       = App\Models\Page::pluck('id')->toArray();
+        $venues      = App\Models\Venue::pluck('id')->toArray();
+        $eventvenues = App\Models\EventVenue::pluck('id')->toArray();
 
         foreach ($users as $user_id) {
+
             $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
             $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
+            $num_evattends  = Faker\Factory::create()->numberBetween($min = 0, $max = 7);
 
 //LIKE SOME PAGES
             $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, $user_id);
-
 //LIKE SOME VENUES
             $this->makelikes($num_venuelikes, 'App\Models\Venue', $venues, $user_id);
+
+//Attend SOME Shows
+            $this->makeattends($num_evattends, $eventvenues, $user_id, null);
 
         }
 
@@ -310,6 +322,31 @@ class UserLikesSeeder extends Seeder
                     //return 'reliked';
                 }
             }
+        }
+    }
+
+    public function makeattends($num_attends, $eventvenue_array, $user_id, $rank)
+    {
+        $valid_ranks = [
+            0 => 'not attending',
+            1 => 'maybe attending',
+            2 => 'wish i could',
+            3 => 'attending',
+        ];
+
+        if (!$rank || !array_key_exists($forcerank, $this->valid_ranks)) {
+            $rank = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
+        }
+
+        foreach (range(1, $num_attends) as $index) {
+
+            $eventvenue_id = Faker\Factory::create()->randomElement($array = $eventvenue_array);
+
+            $attending = \App\Models\Attending::updateOrCreate(
+                ['eventvenue_id' => $eventvenue_id, 'user_id' => $user_id],
+                ['rank' => $rank]
+            );
+
         }
     }
 
