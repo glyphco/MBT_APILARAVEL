@@ -47,12 +47,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/userinfo', 'UserinfoController@userinfo');
     Route::get('/me', 'UserinfoController@userinfo');
 
-///
-    Route::get('adminme', function () {
-        dd(\Auth::user()->id);
-        echo ('done');
-    });
-
     Route::get('/test', function () {
         var_dump(\Auth::user());
         $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
@@ -246,7 +240,14 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/getmastereditors', 'UserController@getMastereditors');
         Route::get('/user/getcontributors', 'UserController@getContributors');
 
+        Route::get('/user/friends/', 'UserController@getFriends');
+
+        Route::get('/user/friend/{id}', 'FriendshipController@addFriend');
+        Route::get('/user/unfriend/{id}', 'FriendshipController@unFriend');
+        Route::get('/user/blockfriend/{id}', 'FriendshipController@blockFriend');
+
         Route::get('/user/{id}', 'UserController@show');
+
     });
 
     Route::group(['middleware' => 'can:edit-users'], function () {

@@ -183,4 +183,21 @@ class UserController extends BaseController
         $users = $m::whereIs('contributor')->get();
         return $this->listResponse($users);
     }
+
+    public function getFriends()
+    {
+
+        $m    = self::MODEL;
+        $data = $m::with('friendsOfMine')->find(\Auth::user()->id)->friendsOfMine->except('pivot');
+        dd($data->toArray());
+
+        $data = $m::mergeFriends()->find(\Auth::user()->id);
+        dd($data->toArray());
+
+        if ($data = $m::mergeFriends()->find(\Auth::user()->id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
 }

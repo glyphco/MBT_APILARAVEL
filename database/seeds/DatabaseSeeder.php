@@ -24,10 +24,9 @@ class DatabaseSeeder extends Seeder
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
         $this->call('ShowpageDataSeeder');
+        $this->call('CategoriesSeeder');
 
         $this->call('EventDataSeeder');
-
-        $this->call('CategoriesSeeder');
 
         $this->call('UserLikesSeeder');
 
@@ -212,8 +211,10 @@ class EventDataSeeder extends Seeder
 
                 $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
                 //echo ($num_shows);
+
                 if ($num_venues) {
                     foreach (range(1, $num_venues) as $index) {
+
                         $eventvenue = $u->eventvenues()->save(factory(App\Models\EventVenue::class)->make());
 
                         // //Make some participants
@@ -230,7 +231,6 @@ class EventDataSeeder extends Seeder
 
                     }
                 }
-
             });
     }
 }

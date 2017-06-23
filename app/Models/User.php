@@ -106,4 +106,44 @@ class User extends Authenticatable
         return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
     }
 
+    // friendship that I started
+    public function friendsOfMine()
+    {
+        return $this->belongsToMany('App\Models\User', 'friends', 'user_id', 'friend_id')
+            ->wherePivot('user_accepted', 1)
+            ->wherePivot('friend_accepted', 1)->select('friend_id as user_id', 'name', 'avatar');
+    }
+
+    // friendship that I was invited to
+    public function friendOf()
+    {
+        return $this->belongsToMany('App\Models\User', 'friends', 'friend_id', 'user_id')
+            ->wherePivot('user_accepted', 1)
+            ->wherePivot('friend_accepted', 1)->select('user_id as user_id', 'name', 'avatar');
+    }
+
+// accessor allowing you call $user->friends
+    public function getFriendsAttribute()
+    {
+        if (!array_key_exists('friends', $this->relations)) {
+            $this->loadFriends();
+        }
+
+        return $this->getRelation('friends');
+    }
+
+    protected function loadFriends()
+    {
+        if (!array_key_exists('friends', $this->relations)) {
+            $friends = $this->mergeFriends();
+
+            $this->setRelation('friends', $friends);
+        }
+    }
+
+    protected function mergeFriends()
+    {
+        return $this->friendsOfMine->merge($this->friendOf);
+    }
+
 }
