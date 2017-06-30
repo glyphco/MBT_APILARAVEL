@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
         //ini_set('memory_limit', '2048M');
 
         $this->call('UserDataSeeder');
-
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
         $this->call('ShowpageDataSeeder');
@@ -273,6 +272,7 @@ class UserLikesSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('likeables')->truncate();
         DB::table('attending')->truncate();
+        DB::table('friendships')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         $users       = App\Models\User::pluck('id')->toArray();
@@ -285,6 +285,7 @@ class UserLikesSeeder extends Seeder
             $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
             $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
             $num_evattends  = Faker\Factory::create()->numberBetween($min = 0, $max = 7);
+            $num_friends    = Faker\Factory::create()->numberBetween($min = 0, $max = 5);
 
 //LIKE SOME PAGES
             $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, $user_id);
@@ -294,6 +295,8 @@ class UserLikesSeeder extends Seeder
 //Attend SOME Shows
             $this->makeattends($num_evattends, $eventvenues, $user_id, null);
 
+//Friend some users
+            $this->makefriendships($num_friends, $users, $user_id);
         }
 
     }
@@ -325,7 +328,7 @@ class UserLikesSeeder extends Seeder
         }
     }
 
-    public function makeattends($num_attends, $eventvenue_array, $user_id, $rank)
+    public function makeattends($num_attends, $eventvenue_array, $user_id = null, $rank = null)
     {
         $valid_ranks = [
             0 => 'not attending',
@@ -345,6 +348,23 @@ class UserLikesSeeder extends Seeder
             $attending = \App\Models\Attending::updateOrCreate(
                 ['eventvenue_id' => $eventvenue_id, 'user_id' => $user_id],
                 ['rank' => $rank]
+            );
+
+        }
+    }
+
+    public function makefriendships($num_friends, $users, $user_id)
+    {
+
+        foreach (range(1, $num_friends) as $index) {
+
+            $friend_id = Faker\Factory::create()->randomElement($array = $users);
+
+            $friendship = \App\Models\Friendships::firstOrCreate(
+                ['user_id' => $user_id, 'friend_id' => $friend_id]
+            );
+            $inversefriendship = \App\Models\Friendships::firstOrCreate(
+                ['user_id' => $friend_id, 'friend_id' => $user_id]
             );
 
         }

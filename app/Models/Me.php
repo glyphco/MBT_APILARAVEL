@@ -18,7 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class User extends Authenticatable
+class Me extends Authenticatable
 //extends Model
 // implements
 // AuthenticatableContract,
@@ -35,7 +35,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'avatar', 'slug', 'confirmed', 'is_banned', 'banned_until', 'last_active_desc', 'last_active', 'is_online', 'remember_token',
+        'name',
+        'avatar',
+        'slug',
         'street_address',
         'city',
         'state',
@@ -43,9 +45,13 @@ class User extends Authenticatable
         'lat',
         'lng',
         'location',
+        'locationname',
+        'subloactionname',
         'imageurl',
         'backgroundurl',
     ];
+
+    protected $table = 'users';
 
     /**
      * The attributes that should be hidden for arrays.

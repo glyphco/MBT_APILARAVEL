@@ -39,13 +39,15 @@ Route::group(['middleware' => ['cors']], function () {
         ])
         ->where(['any' => '.*']);
 
+// Guest
+    Route::get('/public/eventvenues', 'pub\EventvenueController@getEventvenues');
+    Route::get('/public/eventvenue/{id}', 'pub\EventvenueController@getEventvenue');
 });
 
 Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 //debug and general
     Route::get('/userinfo', 'UserinfoController@userinfo');
-    Route::get('/me', 'UserinfoController@userinfo');
 
     Route::get('/test', function () {
         var_dump(\Auth::user());
@@ -54,6 +56,15 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         $attributes = \Auth::user()->getAbilities()->toarray();
         var_dump($attributes);
     });
+
+// ME
+    Route::get('/me', 'MeController@userinfo');
+    Route::get('/me/friends', 'MeController@getFriendships');
+    Route::put('/me/setlocation', 'MeController@setLocation');
+    Route::get('/me/friendships', 'MeController@getFriendships');
+    Route::get('/me/friend/{id}', 'FriendshipController@addFriend');
+    Route::get('/me/unfriend/{id}', 'FriendshipController@unFriend');
+    Route::get('/me/blockfriend/{id}', 'FriendshipController@blockFriend');
 
 //Venues
 
@@ -240,11 +251,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/getmastereditors', 'UserController@getMastereditors');
         Route::get('/user/getcontributors', 'UserController@getContributors');
 
-        Route::get('/user/friends/', 'UserController@getFriends');
-
-        Route::get('/user/friend/{id}', 'FriendshipController@addFriend');
-        Route::get('/user/unfriend/{id}', 'FriendshipController@unFriend');
-        Route::get('/user/blockfriend/{id}', 'FriendshipController@blockFriend');
+        // Route::get('/user/friends/', 'UserController@getFriendships');
 
         Route::get('/user/{id}', 'UserController@show');
 
@@ -258,6 +265,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/{id}/makemastereditor', 'UserController@makemastereditor');
         Route::get('/user/{id}/makecontributor', 'UserController@makecontributor');
         Route::get('/user/{id}/makenothing', 'UserController@makenothing');
+        Route::get('/user/{id}/friends', 'UserController@getFriendships');
     });
 
     Route::group(['middleware' => 'can:ban-users'], function () {
@@ -272,7 +280,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     });
 
 //PageCategories
-    Route::get('/pagecategory', 'PagecategoryController@index');
+    Route::get('/category', 'CategoryController@index');
 
     // Route::get('/giveglypheradmin', function () {
     //     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {

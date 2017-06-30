@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 
-class UserinfoController extends BaseController
+class MeController extends BaseController
 {
 
     //use HasRolesAndAbilities;
 
-    const MODEL = 'App\Models\User';
+    const MODEL = 'App\Models\Me';
 
     public function userinfo(Request $request)
     {
-        $data               = $this->getUser();
+        $data               = $this->getUser()->toArray();
         $data['attributes'] = $this->getAttributes();
         $data['token']      = app('request')->header('Authorization');
         return $this->showResponse($data);
@@ -52,6 +52,49 @@ class UserinfoController extends BaseController
         }
         return $returnattributes;
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
+    }
+
+    public function getFriendships()
+    {
+
+        $m = self::MODEL;
+
+        if ($data = $m::with(['friendships'])->find(\Auth::id())->friendships) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
+    public function setLocation(Request $request)
+    {
+        $m               = self::MODEL;
+        $validationRules = [
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ];
+
+        if (!$data = $m::find(\Auth::id())) {
+            return $this->notFoundResponse();
+        }
+
+        try
+        {
+            $v = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
+
+            if ($v->fails()) {
+                throw new \Exception("ValidationException");
+            }
+
+            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+
+            $data->fill($request->only('lat', 'lng', 'location', 'locationname', 'sublocationname'));
+            $data->save();
+
+            return $this->createdResponse($data);
+        } catch (\Exception $ex) {
+            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($data);
+        }
     }
 
 }

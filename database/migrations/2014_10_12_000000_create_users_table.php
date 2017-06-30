@@ -32,6 +32,8 @@ class CreateUsersTable extends Migration
             $table->string('state')->nullable()->default(null);
             $table->string('postalcode')->nullable()->default(null);
 
+            $table->string('locationname')->nullable()->default(null);
+            $table->string('sublocationname')->nullable()->default(null);
             $table->decimal('lat', 10, 8)->nullable()->default(null);
             $table->decimal('lng', 11, 8)->nullable()->default(null);
 

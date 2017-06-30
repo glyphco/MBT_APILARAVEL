@@ -23,7 +23,7 @@ class Category extends Model
     protected $hidden = [
     ];
 
-    public function pagesubcategories()
+    public function subcategories()
     {
         return $this->hasMany('App\Models\Subcategory', 'category_id');
     }

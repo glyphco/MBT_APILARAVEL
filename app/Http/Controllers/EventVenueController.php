@@ -89,6 +89,13 @@ class EventVenueController extends BaseController
             $data = $data->ByEventVenueCategory($request->input('c'));
         }
 
+        if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {
+            // /^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/
+            // /^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/
+
+            $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+        }
+
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
         $data = $data->paginate($pp);
@@ -325,6 +332,24 @@ class EventVenueController extends BaseController
 
         } else {
             return $this->unauthorizedResponse();
+        }
+    }
+
+    public function isValidLongitude($longitude)
+    {
+        if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function isValidLatitude($latitude)
+    {
+
+        if (preg_match("/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/", $latitude)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
