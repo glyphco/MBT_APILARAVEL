@@ -23,6 +23,13 @@ class EventVenue extends Model
         'city',
         'state',
         'postalcode',
+
+        'price',
+        'pricemin',
+        'pricemax',
+        'pricedescription',
+        'pricelink',
+
         'lat',
         'lng',
         'venue_tagline',

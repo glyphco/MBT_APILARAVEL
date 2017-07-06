@@ -15,7 +15,13 @@ class CreateEventVenuesTable extends Migration
     {
         Schema::create('event_venues', function (Blueprint $table) {
             $table->increments('id');
+//event stuff
             $table->integer('event_id')->unsigned();
+            $table->string('event_name');
+            $table->text('event_description')->nullable();
+//show stuff
+            $table->text('showjson')->nullable()->default(null);
+//venue stuff
             $table->integer('venue_id')->unsigned()->nullable();
             $table->string('venue_name');
             $table->string('street_address');
@@ -25,6 +31,12 @@ class CreateEventVenuesTable extends Migration
             $table->decimal('lat', 10, 8);
             $table->decimal('lng', 11, 8);
             $table->string('venue_tagline', 50)->nullable();
+//pricing
+            $table->integer('price')->unsigned()->nullable();
+            $table->integer('pricemin')->unsigned()->nullable();
+            $table->integer('pricemax')->unsigned()->nullable();
+            $table->string('pricedescription')->nullable();
+            $table->string('pricelink')->nullable();
 
             $table->dateTime('start');
             $table->dateTime('end')->nullable()->default(null);

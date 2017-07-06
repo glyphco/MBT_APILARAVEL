@@ -50,6 +50,7 @@ class EventvenueController extends BaseController
                     $query->wherein('rank', [1]);
                 },
             ])
+            ->current()
         ;
 
         if ($date) {
@@ -83,6 +84,7 @@ class EventvenueController extends BaseController
             // /^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/
 
             $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+
         }
 
         $pp = $request->input('pp', 25);

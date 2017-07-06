@@ -39,6 +39,99 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
 
     //dd($datetime, $start, $eventhours, $end);
 
+    //prices
+
+    $a = $faker->numberBetween(2, 10);
+    $z = $a + $faker->numberBetween(2, 10);
+
+    $PRICE_EMPTY = 0; // 1
+    //1  0,00
+    //7  0,0z
+    //11 0,a0
+    //13 0,az
+    //17 0,za
+
+    $PRICE_FREE = 1; // 2
+    //2  1,00
+    //14 1,0z
+    //22 1,a0
+    //26 1,az
+    //34 1,za
+
+    $PRICE_DONATION = 2; // 3
+    //3  2,00
+    //21 2,0z
+    //33 2,a0
+    //39 2,az
+    //51 2,za
+
+    $PRICE_PAID = 3; // 5
+    //5  3,00
+    //35 3,0z
+    //55 3,a0
+    //65 3,az
+    //85 3,za
+
+    $price    = $PRICE_EMPTY;
+    $pricemin = 0;
+    $pricemax = 0;
+
+    $seed = [
+        1, 1, 1, 1, 1,
+        7,
+        11,
+        13,
+        17,
+
+        2, 2, 2, 2, 2, 2, 2, 2,
+        14,
+        22,
+        26,
+        34,
+
+        3,
+        21,
+        33,
+        39, 39, 39, 39, 39, 39, 39, 39, 39,
+        51,
+
+        5,
+        35,
+        55,
+        65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
+        85,
+
+    ];
+    $godwin = Faker\Factory::create()->randomElement($array = $seed);
+
+// prices
+    if ($godwin % 2 == 0) {
+        $price = $PRICE_FREE;
+    }
+
+    if ($godwin % 3 == 0) {
+        $price = $PRICE_DONATION;
+    }
+
+    if ($godwin % 5 == 0) {
+        $price = $PRICE_PAID;
+    }
+
+//minmax
+
+    if (($godwin % 11) == 0 || ($godwin % 13 == 0)) {
+        $pricemin = $a;
+    }
+
+    if (($godwin % 7) == 0 || ($godwin % 13 == 0)) {
+        $pricemax = $z;
+    }
+
+    if ($godwin % 17 == 0) {
+        $pricemin = $z;
+        $pricemax = $a;
+    }
+
     return [
         'venue_id'       => $faker->optional()->randomElement($eventvenues_venues),
 
@@ -47,6 +140,10 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
         'city'           => $faker->city,
         'state'          => $faker->state,
         'postalcode'     => $faker->postcode,
+
+        'price'          => $price,
+        'pricemin'       => $pricemin,
+        'pricemax'       => $pricemax,
 
         'lat'            => $lat,
         'lng'            => $lng,

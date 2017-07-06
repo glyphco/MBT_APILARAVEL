@@ -22,6 +22,15 @@ class CreateEventsTable extends Migration
             $table->text('description')->nullable();
             $table->dateTime('start')->nullable()->default(null);
             $table->dateTime('end')->nullable()->default(null);
+//shows
+            $table->text('showjson')->nullable()->default(null);
+
+//pricing
+            $table->integer('price')->unsigned()->nullable();
+            $table->integer('pricemin')->unsigned()->nullable();
+            $table->integer('pricemax')->unsigned()->nullable();
+            $table->string('pricedescription')->nullable();
+            $table->string('pricelink')->nullable();
 
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);
