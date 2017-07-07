@@ -17,6 +17,7 @@ class EventVenueController extends BaseController
         'venue' => 'required',
         'start' => 'required',
     ];
+    protected $friends;
 
     public function index(Request $request)
     {
@@ -49,17 +50,24 @@ class EventVenueController extends BaseController
 
         $m = self::MODEL;
 
+        $this->friends = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
         $data = $m::with(['event', 'categories'])
             ->withCount([
-                'attending as attending' => function ($query) use ($ranks) {
-                    $query->wherein('rank', [3]);
-                },
-                'attending as maybe'     => function ($query) use ($ranks) {
-                    $query->wherein('rank', [2]);
-                },
-                'attending as wish'      => function ($query) use ($ranks) {
-                    $query->wherein('rank', [1]);
-                },
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
+            ])
+            ->with([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
             ])
         ;
 

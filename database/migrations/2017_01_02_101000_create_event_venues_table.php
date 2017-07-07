@@ -17,7 +17,7 @@ class CreateEventVenuesTable extends Migration
             $table->increments('id');
 //event stuff
             $table->integer('event_id')->unsigned();
-            $table->string('event_name');
+            $table->string('event_name')->nullable()->default(null);
             $table->text('event_description')->nullable();
 //show stuff
             $table->text('showjson')->nullable()->default(null);
@@ -38,6 +38,8 @@ class CreateEventVenuesTable extends Migration
             $table->string('pricedescription')->nullable();
             $table->string('pricelink')->nullable();
 
+            $table->integer('ages')->unsigned()->nullable();
+
             $table->dateTime('start');
             $table->dateTime('end')->nullable()->default(null);
 
@@ -45,6 +47,9 @@ class CreateEventVenuesTable extends Migration
             $table->string('private_info')->nullable();
 
             $table->integer('order')->unsigned()->default(0);
+
+            $table->string('imageurl')->nullable();
+            $table->string('backgroundurl')->nullable();
 
             $table->timestamps();
             $table->unsignedInteger('created_by')->nullable()->default(null);

@@ -65,7 +65,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/me/friend/{id}', 'FriendshipController@addFriend');
     Route::get('/me/unfriend/{id}', 'FriendshipController@unFriend');
     Route::get('/me/blockfriend/{id}', 'FriendshipController@blockFriend');
-
+    Route::get('/me/attend/{id}', 'AttendingController@attendEventVenue');
+    Route::get('/me/eventvenues', 'me\EventvenueController@getEventvenues');
 //Venues
 
     Route::get('/venue', 'VenueController@index');

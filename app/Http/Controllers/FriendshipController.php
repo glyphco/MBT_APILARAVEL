@@ -6,12 +6,6 @@ use Illuminate\Http\Request;
 
 class FriendshipController extends BaseController
 {
-    protected $valid_ranks = [
-        0 => 'not attending',
-        1 => 'maybe attending',
-        2 => 'wish i could',
-        3 => 'attending',
-    ];
 
     public function addfriend(Request $request, $id)
     {

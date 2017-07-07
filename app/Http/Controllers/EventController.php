@@ -154,6 +154,8 @@ class EventController extends BaseController
             $data->fill($request->all());
             $data->save();
 
+            $this->updateEventVenues($data);
+
             Bouncer::allow(\Auth::user())->to('administer', $data);
             Bouncer::allow(\Auth::user())->to('edit', $data);
             Bouncer::refreshFor(\Auth::user());
@@ -313,6 +315,11 @@ class EventController extends BaseController
         } else {
             return $this->unauthorizedResponse();
         }
+    }
+
+    public function updateEventVenues($event)
+    {
+
     }
 
 }

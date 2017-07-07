@@ -133,8 +133,8 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
     }
 
     return [
+        'event_name'     => $faker->company,
         'venue_id'       => $faker->optional()->randomElement($eventvenues_venues),
-
         'venue_name'     => $faker->company,
         'street_address' => $faker->streetAddress,
         'city'           => $faker->city,
@@ -144,6 +144,11 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
         'price'          => $price,
         'pricemin'       => $pricemin,
         'pricemax'       => $pricemax,
+
+        'ages'           => $faker->optional()->randomElement($array = [0, 1, 2, 3, 4]),
+
+        'imageurl'       => $faker->imageUrl(200, 200, 'nightlife'),
+        'backgroundurl'  => $faker->imageUrl(1400, 656, 'nightlife'),
 
         'lat'            => $lat,
         'lng'            => $lng,

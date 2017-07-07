@@ -9,13 +9,16 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     $end = $faker->optional()->dateTimeBetween($start, $start->add(new DateInterval('PT' . $eventhours . 'H')));
 
     return [
-        'name'        => $faker->company,
-        'description' => $faker->paragraph($nbSentences = 3, $variableNbSentences = true),
+        'name'          => $faker->company,
+        'description'   => $faker->paragraph($nbSentences = 3, $variableNbSentences = true),
 
-        'start'       => $start,
-        'end'         => $end,
-        'public'      => 1,
-        'confirmed'   => 1,
+        'imageurl'      => $faker->imageUrl(200, 200, 'nightlife'),
+        'backgroundurl' => $faker->imageUrl(1400, 656, 'nightlife'),
+
+        'start'         => $start,
+        'end'           => $end,
+        'public'        => 1,
+        'confirmed'     => 1,
     ];
 
 });

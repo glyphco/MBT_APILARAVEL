@@ -30,6 +30,8 @@ class EventVenue extends Model
         'pricedescription',
         'pricelink',
 
+        'ages',
+
         'lat',
         'lng',
         'venue_tagline',
@@ -58,6 +60,8 @@ class EventVenue extends Model
         parent::boot();
         static::addGlobalScope(new \App\Scopes\WithEventVenueParticipantsScope);
     }
+
+    protected $friends;
 
     /**
      * Get all the Venues for an Event.
@@ -116,6 +120,18 @@ class EventVenue extends Model
 
         });
     }
+
+    public function scopeByEventVenueMyAttending($filter)
+    {
+        return $filter->where(function ($query) {
+            $query->whereHas('attending', function ($query) {
+                $query->where('user_id', \Auth::user()->id)
+                    ->where('rank', 3);
+            });
+
+        });
+    }
+
     public function scopeByEventVenueSubcategory($filter, $subcategory_id)
     {
         return $filter->where(function ($query) use ($subcategory_id) {
@@ -130,6 +146,71 @@ class EventVenue extends Model
     {
 
         return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->select('user_id', 'name', 'avatar');
+    }
+
+    public function attendingyes()
+    {
+
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+            ->where('rank', 3)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function attendingwish()
+    {
+
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->where('rank', 2)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function attendingmaybe()
+    {
+
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->where('rank', 1)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function friendsattending()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+            ->wherePivotIn('user_id', $this->friends)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function friendsattendingyes()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+            ->where('rank', 3)
+            ->wherein('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from(with(new friendships)->getTable())
+                    ->where('user_id', \Auth::user()->id);
+            })->
+            select('user_id', 'name', 'avatar');
+    }
+
+    public function friendsattendingwish()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+            ->where('rank', 2)
+            ->wherein('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from(with(new friendships)->getTable())
+                    ->where('user_id', \Auth::user()->id);
+            })->
+            select('user_id', 'name', 'avatar');
+    }
+
+    public function friendsattendingmaybe()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+            ->where('rank', 1)
+            ->wherein('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from(with(new friendships)->getTable())
+                    ->where('user_id', \Auth::user()->id);
+            })->
+            select('user_id', 'name', 'avatar');
     }
 
 }

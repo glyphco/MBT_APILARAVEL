@@ -40,15 +40,9 @@ class EventvenueController extends BaseController
 
         $data = $m::with(['event.eventshows', 'event.eventproducers', 'categories', 'venue'])
             ->withCount([
-                'attending as attending' => function ($query) use ($ranks) {
-                    $query->wherein('rank', [3]);
-                },
-                'attending as maybe'     => function ($query) use ($ranks) {
-                    $query->wherein('rank', [2]);
-                },
-                'attending as wish'      => function ($query) use ($ranks) {
-                    $query->wherein('rank', [1]);
-                },
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
             ])
             ->current()
         ;
