@@ -292,4 +292,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     //     }
     // });
 
+//BOTS!!
+    Route::get('/bots/bot1', 'bots\Bot1Controller@index');
 });
