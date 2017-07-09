@@ -294,4 +294,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 //BOTS!!
     Route::get('/bots/bot1', 'bots\Bot1Controller@index');
+    Route::get('/bots/bot2', 'bots\Bot2Controller@index');
+    Route::get('/bots/bot3', 'bots\Bot3Controller@index');
 });

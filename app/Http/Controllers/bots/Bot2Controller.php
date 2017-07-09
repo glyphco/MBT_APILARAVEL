@@ -6,10 +6,10 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 
-class Bot1Controller extends BaseController
+class Bot2Controller extends BaseController
 {
 
-//This bot grabs the most popular eventvenues
+//This bot grabs the eventvenue the most of your friends are going to (popular with friends)
 
     public function index(Request $request)
     {
@@ -19,13 +19,27 @@ class Bot1Controller extends BaseController
 //Dates unneeded, just grabbing current
 
 // RAW:
+        $raw = "
+select ev.*,eventvenue_id, rank, count(user_id) as attending from attending a
+left join event_venues ev on (ev.id = a.eventvenue_id)
+where (rank =?)
+and ev.start > ?
+and user_id in (
+select friend_id from friendships
+where (user_id =?))
+group by eventvenue_id, rank
+order by attending desc
 
+";
         $raw = "
 select ev.*, ST_AsText(location) as location,eventvenue_id, rank, count(user_id) as attending from attending a
 left join event_venues ev on (ev.id = a.eventvenue_id)
 where (rank =?)
 and ev.start >= ?
 and ev.end >= ?
+and user_id in (
+select friend_id from friendships
+where (user_id =?))
 group by eventvenue_id, rank
 order by attending desc
 limit ?

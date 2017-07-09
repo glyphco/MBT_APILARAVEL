@@ -6,10 +6,10 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 
-class Bot1Controller extends BaseController
+class Bot3Controller extends BaseController
 {
 
-//This bot grabs the most popular eventvenues
+//This bot grabs the most popular "shows" this week
 
     public function index(Request $request)
     {
@@ -19,25 +19,27 @@ class Bot1Controller extends BaseController
 //Dates unneeded, just grabbing current
 
 // RAW:
-
-        $raw = "
-select ev.*, ST_AsText(location) as location,eventvenue_id, rank, count(user_id) as attending from attending a
+        $raw = "select s.*, rank, count(user_id) as attending from attending a
 left join event_venues ev on (ev.id = a.eventvenue_id)
+left join events e on (e.id = ev.event_id)
+left join event_shows es on (es.event_id = e.id)
+left join showpages s on (es.showpage_id = s.id)
+
 where (rank =?)
+and s.id is not null
 and ev.start >= ?
 and ev.end >= ?
-group by eventvenue_id, rank
-order by attending desc
-limit ?
-";
 
+group by rank, s.id
+order by attending desc
+
+
+
+";
         $timestart = Carbon::now()->subHours(5)->toDateString();
         $timeend   = Carbon::now()->subHours(5)->toDateString();
 
-        $events = DB::select($raw, [3, $timestart, $timeend, \Auth::id(), 25]);
-        // dd($event_ids);
-
-        // $data = collect($events);
+        $shows = DB::select($raw, [3, $timestart, $timeend]);
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -46,8 +48,8 @@ limit ?
         $page   = 1;
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
-            array_slice($events, $offset, $pp, true), // Only grab the items we need
-            count($events), // Total items
+            array_slice($shows, $offset, $pp, true), // Only grab the items we need
+            count($shows), // Total items
             $pp, // Items per page
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()]// We need this so we can keep all old query parameters from the url
