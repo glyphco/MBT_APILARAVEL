@@ -5,20 +5,20 @@ use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventVenueCategoryController extends BaseController
+class EventCategoryController extends BaseController
 {
     use HasRolesAndAbilities;
 
-    const MODEL                = 'App\Models\EventVenueCategory';
+    const MODEL                = 'App\Models\EventCategory';
     protected $validationRules = [
         'category_id' => 'required',
     ];
 
-    public function index(Request $request, $eventvenue_id)
+    public function index(Request $request, $event_id)
     {
 
         $m    = self::MODEL;
-        $data = $m::where('eventvenue_id', $eventvenue_id)->with(['category', 'subcategory']);
+        $data = $m::where('event_id', $event_id)->with(['category', 'subcategory']);
         $data = $data->get();
 
         return $this->listResponse($data);
@@ -30,15 +30,15 @@ class EventVenueCategoryController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $eventvenue_id)
+    public function store(Request $request, $event_id)
     {
         $m = self::MODEL;
 
-        $category_id              = $request->input('category_id', null);
-        $subcategory_id           = $request->input('subcategory_id', null);
-        $request['eventvenue_id'] = $eventvenue_id;
-        if (!\App\Models\EventVenue::find($eventvenue_id)) {
-            return $this->clientErrorResponse('Could not save: [eventvenue_id] not found');
+        $category_id         = $request->input('category_id', null);
+        $subcategory_id      = $request->input('subcategory_id', null);
+        $request['event_id'] = $event_id;
+        if (!\App\Models\Event::find($event_id)) {
+            return $this->clientErrorResponse('Could not save: [event_id] not found');
         }
         if (!$category_id) {
             return $this->clientErrorResponse('Could not save: [category_id] not found');

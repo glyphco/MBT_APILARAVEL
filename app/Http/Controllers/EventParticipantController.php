@@ -5,13 +5,13 @@ use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventVenueParticipantController extends BaseController
+class EventParticipantController extends BaseController
 {
     use HasRolesAndAbilities;
-    const MODEL                = 'App\Models\EventVenueParticipant';
+    const MODEL                = 'App\Models\EventParticipant';
     protected $validationRules = [
-        'name'           => 'required',
-        'event_venue_id' => 'required',
+        'name'     => 'required',
+        'event_id' => 'required',
     ];
 
     /**
@@ -19,19 +19,19 @@ class EventVenueParticipantController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, $event_venue_id)
+    public function index(Request $request, $event_id)
     {
         $m    = self::MODEL;
-        $data = $m::where('event_venue_id', $event_venue_id);
+        $data = $m::where('event_id', $event_id);
         $data = $data->get();
 
         return $this->listResponse($data);
     }
 
-    public function show(Request $request, $event_venue_id, $id)
+    public function show(Request $request, $event_id, $id)
     {
         $m = self::MODEL;
-        if ($data = $m::where('event_venue_id', $event_venue_id)->find($id)) {
+        if ($data = $m::where('event_id', $event_id)->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -43,16 +43,16 @@ class EventVenueParticipantController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $event_venue_id)
+    public function store(Request $request, $event_id)
     {
-        $request['event_venue_id'] = $event_venue_id;
-        $m                         = self::MODEL;
+        $request['event_id'] = $event_id;
+        $m                   = self::MODEL;
 
 // make sure event is there
-        $event = \App\Models\EventVenue::find($request['event_venue_id']);
+        $event = \App\Models\Event::find($request['event_id']);
         if (!($event)) {
             // Oops.
-            return $this->clientErrorResponse('Could not save: [event_venue_id] not found');
+            return $this->clientErrorResponse('Could not save: [event_id] not found');
         }
 
         $page_id = $request->input('page_id', null);
@@ -88,12 +88,12 @@ class EventVenueParticipantController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $event_venue_id, $id)
+    public function update(Request $request, $event_id, $id)
     {
-        $request['event_venue_id'] = $event_venue_id;
-        $m                         = self::MODEL;
+        $request['event_id'] = $event_id;
+        $m                   = self::MODEL;
 
-        if (!$data = $m::where('event_venue_id', $event_venue_id)->find($id)) {
+        if (!$data = $m::where('event_id', $event_id)->find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -119,10 +119,10 @@ class EventVenueParticipantController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $event_venue_id, $id)
+    public function destroy(Request $request, $event_id, $id)
     {
         $m = self::MODEL;
-        if (!$data = $m::where('event_venue_id', $event_venue_id)->find($id)) {
+        if (!$data = $m::where('event_id', $event_id)->find($id)) {
             return $this->notFoundResponse();
         }
         $data->delete();

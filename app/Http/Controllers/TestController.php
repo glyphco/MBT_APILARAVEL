@@ -8,7 +8,7 @@ class TestController extends BaseController
 {
     use HasRolesAndAbilities;
 
-    const MODEL                = 'App\Models\EventVenue';
+    const MODEL                = 'App\Models\Event';
     protected $validationRules = [
         'name'  => 'required',
         'venue' => 'required',

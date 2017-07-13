@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventVenuesTable extends Migration
+class CreateEventsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateEventVenuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_venues', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
 // id for MVE
             $table->integer('mve_id')->unsigned()->nullable()->default(null);
 
-            $table->string('event_name')->nullable()->default(null);
-            $table->text('event_description')->nullable();
             $table->string('name')->nullable()->default(null);
             $table->text('description')->nullable();
 //show stuff
@@ -66,7 +64,7 @@ class CreateEventVenuesTable extends Migration
             $table->foreign('mve_id')->references('id')->on('mves')->onDelete('set null');
         });
         /*Spatial Column*/
-        DB::statement('ALTER TABLE event_venues ADD location POINT');
+        DB::statement('ALTER TABLE events ADD location POINT');
     }
 
     /**
@@ -76,7 +74,7 @@ class CreateEventVenuesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_venues');
+        Schema::dropIfExists('events');
     }
 
 }

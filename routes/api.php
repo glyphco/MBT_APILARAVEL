@@ -40,8 +40,8 @@ Route::group(['middleware' => ['cors']], function () {
         ->where(['any' => '.*']);
 
 // Guest
-    Route::get('/public/eventvenues', 'pub\EventvenueController@getEventvenues');
-    Route::get('/public/eventvenue/{id}', 'pub\EventvenueController@getEventvenue');
+    Route::get('/public/events', 'pub\EventController@getEvents');
+    Route::get('/public/event/{id}', 'pub\EventController@getEvent');
 });
 
 Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
@@ -65,8 +65,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/me/friend/{id}', 'FriendshipController@addFriend');
     Route::get('/me/unfriend/{id}', 'FriendshipController@unFriend');
     Route::get('/me/blockfriend/{id}', 'FriendshipController@blockFriend');
-    Route::get('/me/attend/{id}', 'AttendingController@attendEventVenue');
-    Route::get('/me/eventvenues', 'me\EventvenueController@getEventvenues');
+    Route::get('/me/attend/{id}', 'AttendingController@attendEvent');
+    Route::get('/me/events', 'me\EventController@getEvents');
 //Venues
 
     Route::get('/venue', 'VenueController@index');
@@ -192,46 +192,46 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/mve/{id}/admins', 'MveController@getadmins');
     });
 
-//eventvenuess
+//events
 
-    Route::get('/eventvenue', 'EventvenueController@index');
-    Route::get('/eventvenue/{id}', 'EventvenueController@show');
+    Route::get('/event', 'EventController@index');
+    Route::get('/event/{id}', 'EventController@show');
 //Attending
-    Route::get('/eventvenue/attend/{id}', ['as' => 'eventvenue.attending', 'uses' => 'AttendingController@attendEventVenue']);
+    Route::get('/event/attend/{id}', ['as' => 'event.attending', 'uses' => 'AttendingController@attendEvent']);
 
     Route::group(['middleware' => 'can:edit-events'], function () {
-        Route::post('/eventvenue', 'EventvenueController@store');
-        Route::get('/eventvenue/{id}/confirm', 'EventvenueController@confirm');
-        Route::get('/eventvenue/{id}/unconfirm', 'EventvenueController@unconfirm');
-        Route::put('/eventvenue/{id}', 'EventvenueController@update');
-        Route::get('/eventvenue/{id}/makepublic', 'EventvenueController@makepublic');
-        Route::get('/eventvenue/{id}/makeprivate', 'EventvenueController@makeprivate');
+        Route::post('/event', 'EventController@store');
+        Route::get('/event/{id}/confirm', 'EventController@confirm');
+        Route::get('/event/{id}/unconfirm', 'EventController@unconfirm');
+        Route::put('/event/{id}', 'EventController@update');
+        Route::get('/event/{id}/makepublic', 'EventController@makepublic');
+        Route::get('/eventv/{id}/makeprivate', 'EventController@makeprivate');
     });
 
-//EventVenue Categories
-    Route::group(['prefix' => 'eventvenue/{page_id}'], function () {
-        Route::get('/category', 'EventVenueCategoryController@index');
+//Event Categories
+    Route::group(['prefix' => 'event/{page_id}'], function () {
+        Route::get('/category', 'EventCategoryController@index');
     });
-    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-pages'], function () {
-        Route::post('/category', 'EventVenueCategoryController@store');
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-pages'], function () {
+        Route::post('/category', 'EventCategoryController@store');
     });
     Route::group(['middleware' => 'can:edit-pages'], function () {
-        Route::delete('/eventvenuecategory/{eventvenuecategory_id}', 'EventVenueCategoryController@destroy');
+        Route::delete('/eventcategory/{eventcategory_id}', 'EventCategoryController@destroy');
     });
 
-//EventVenue Participants
-    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::get('/participants', 'EventVenueParticipantController@index');
-        Route::get('/participants/{id}', 'EventVenueParticipantController@show');
+//Event Participants
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::get('/participants', 'EventParticipantController@index');
+        Route::get('/participants/{id}', 'EventParticipantController@show');
     });
-    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:create-events'], function () {
-        Route::post('/participants', 'EventVenueParticipantController@store');
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:create-events'], function () {
+        Route::post('/participants', 'EventParticipantController@store');
     });
-    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::put('/participants/{id}', 'EventVenueParticipantController@update');
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::put('/participants/{id}', 'EventParticipantController@update');
     });
-    Route::group(['prefix' => 'eventvenue/{eventvenue_id}', 'middleware' => 'can:edit-events'], function () {
-        Route::delete('/participants/{id}', 'EventVenueParticipantController@destroy');
+    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
+        Route::delete('/participants/{id}', 'EventParticipantController@destroy');
     });
 
 //Participants

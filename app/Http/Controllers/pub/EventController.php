@@ -4,10 +4,10 @@ namespace App\Http\Controllers\pub;
 use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 
-class EventvenueController extends BaseController
+class EventController extends BaseController
 {
 
-    public function getEventvenues(Request $request)
+    public function getEvents(Request $request)
     {
         $date    = null;
         $enddate = null;
@@ -36,7 +36,7 @@ class EventvenueController extends BaseController
 
         $ranks = [2, 3];
 
-        $m = '\App\Models\EventVenue';
+        $m = '\App\Models\Event';
 
         $data = $m::with(['event.eventshows', 'event.eventproducers', 'categories', 'venue'])
             ->withCount([
@@ -55,22 +55,22 @@ class EventvenueController extends BaseController
             $data = $data->Current();
         }
         if ($request->has('v')) {
-            $data = $data->AtEventVenue($request->input('v'));
+            $data = $data->AtEvent($request->input('v'));
         }
         if ($request->has('vn')) {
-            $data = $data->AtEventVenuename($request->input('vn'));
+            $data = $data->AtEventName($request->input('vn'));
         }
         if ($request->has('p')) {
-            $data = $data->ByEventVenueParticipant($request->input('p'));
+            $data = $data->ByEventParticipant($request->input('p'));
         }
         if ($request->has('pn')) {
-            $data = $data->ByEventVenueParticipantname($request->input('pn'));
+            $data = $data->ByEventParticipantname($request->input('pn'));
         }
         if ($request->has('sc')) {
-            $data = $data->ByEventVenueSubcategory($request->input('sc'));
+            $data = $data->ByEventSubcategory($request->input('sc'));
         }
         if ($request->has('c')) {
-            $data = $data->ByEventVenueCategory($request->input('c'));
+            $data = $data->ByEventCategory($request->input('c'));
         }
 
         if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {
@@ -106,7 +106,7 @@ class EventvenueController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function getEventvenue($id)
+    public function getEvent($id)
     {
         //autorelates venue and participants in model
         $m = self::MODEL;

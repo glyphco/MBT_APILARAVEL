@@ -29,7 +29,7 @@ class VenueController extends BaseController
         $m = self::MODEL;
         //$data = $m;
 
-        $data = $m::withCount(['currenteventvenues', 'eventvenues']);
+        $data = $m::withCount(['currentevents', 'events']);
         //$data = $data->with('currentevents');
 
         if ($request->exists('q')) {
@@ -97,7 +97,7 @@ class VenueController extends BaseController
     {
         $m = self::MODEL;
 
-        $data = $m::withCount(['currenteventvenues', 'eventvenues']);
+        $data = $m::withCount(['currentevents', 'events']);
 
         // if ($request->exists('User')) {
         //     $edit       = User::WhereCan('edit', $data)->get();

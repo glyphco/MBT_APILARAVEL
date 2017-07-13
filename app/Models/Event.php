@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
-class EventVenue extends Model
+class Event extends Model
 {
     use Userstamps;
     use SpacialdataTrait;
@@ -62,7 +62,7 @@ class EventVenue extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\WithEventVenueParticipantsScope);
+        static::addGlobalScope(new \App\Scopes\WithEventParticipantsScope);
     }
 
     protected $friends;
@@ -88,19 +88,19 @@ class EventVenue extends Model
         return $this->belongsTo('App\Models\Venue');
     }
 
-    public function eventvenueshows()
+    public function eventshows()
     {
-        return $this->hasMany('App\Models\EventVenueShow');
+        return $this->hasMany('App\Models\EventShow');
     }
 
-    public function eventvenueparticipants()
+    public function eventparticipants()
     {
-        return $this->hasMany('App\Models\EventVenueParticipant');
+        return $this->hasMany('App\Models\EventParticipant');
     }
 
     public function categories()
     {
-        return $this->hasMany('App\Models\EventVenueCategory', 'eventvenue_id')->with(['category', 'subcategory']);
+        return $this->hasMany('App\Models\EventCategory', 'event_id')->with(['category', 'subcategory']);
     }
 
     public function scopeCurrent($filter)
@@ -116,16 +116,16 @@ class EventVenue extends Model
     }
 
 //SEARCHES
-    public function scopeByEventVenueParticipant($filter, $page_id)
+    public function scopeByEventParticipant($filter, $page_id)
     {
         return $filter->where(function ($query) use ($page_id) {
-            $query->whereHas('eventvenueparticipants', function ($query) use ($page_id) {
+            $query->whereHas('eventparticipants', function ($query) use ($page_id) {
                 $query->where('page_id', '=', $page_id);
             });
 
         });
     }
-    public function scopeByEventVenueCategory($filter, $category_id)
+    public function scopeByEventCategory($filter, $category_id)
     {
         return $filter->where(function ($query) use ($category_id) {
             $query->whereHas('categories', function ($query) use ($category_id) {
@@ -135,7 +135,7 @@ class EventVenue extends Model
         });
     }
 
-    public function scopeByEventVenueMyAttending($filter)
+    public function scopeByEventMyAttending($filter)
     {
         return $filter->where(function ($query) {
             $query->whereHas('attending', function ($query) {
@@ -146,7 +146,7 @@ class EventVenue extends Model
         });
     }
 
-    public function scopeByEventVenueSubcategory($filter, $subcategory_id)
+    public function scopeByEventSubcategory($filter, $subcategory_id)
     {
         return $filter->where(function ($query) use ($subcategory_id) {
             $query->whereHas('categories', function ($query) use ($subcategory_id) {
@@ -159,13 +159,13 @@ class EventVenue extends Model
     public function attending()
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->select('user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->select('user_id', 'name', 'avatar');
     }
 
     public function attendingyes()
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
             ->where('rank', 3)
             ->select('user_id', 'name', 'avatar');
     }
@@ -173,27 +173,27 @@ class EventVenue extends Model
     public function attendingwish()
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->where('rank', 2)
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 2)
             ->select('user_id', 'name', 'avatar');
     }
 
     public function attendingmaybe()
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')->where('rank', 1)
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 1)
             ->select('user_id', 'name', 'avatar');
     }
 
     public function friendsattending()
     {
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
             ->wherePivotIn('user_id', $this->friends)
             ->select('user_id', 'name', 'avatar');
     }
 
     public function friendsattendingyes()
     {
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
             ->where('rank', 3)
             ->wherein('user_id', function ($query) {
                 $query->select('friend_id')
@@ -205,7 +205,7 @@ class EventVenue extends Model
 
     public function friendsattendingwish()
     {
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
             ->where('rank', 2)
             ->wherein('user_id', function ($query) {
                 $query->select('friend_id')
@@ -217,7 +217,7 @@ class EventVenue extends Model
 
     public function friendsattendingmaybe()
     {
-        return $this->belongsToMany('App\Models\User', 'attending', 'eventvenue_id')
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
             ->where('rank', 1)
             ->wherein('user_id', function ($query) {
                 $query->select('friend_id')

@@ -7,11 +7,11 @@ use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventVenueController extends BaseController
+class EventController extends BaseController
 {
     use HasRolesAndAbilities;
 
-    const MODEL                = 'App\Models\EventVenue';
+    const MODEL                = 'App\Models\Event';
     protected $validationRules = [
         'name'        => 'required',
         'venue'       => 'required',
@@ -81,22 +81,22 @@ class EventVenueController extends BaseController
             $data = $data->Current();
         }
         if ($request->has('v')) {
-            $data = $data->AtEventVenue($request->input('v'));
+            $data = $data->AtVenue($request->input('v'));
         }
         if ($request->has('vn')) {
-            $data = $data->AtEventVenuename($request->input('vn'));
+            $data = $data->AtVenuename($request->input('vn'));
         }
         if ($request->has('p')) {
-            $data = $data->ByEventVenueParticipant($request->input('p'));
+            $data = $data->ByEventParticipant($request->input('p'));
         }
         if ($request->has('pn')) {
-            $data = $data->ByEventVenueParticipantname($request->input('pn'));
+            $data = $data->ByEventParticipantname($request->input('pn'));
         }
         if ($request->has('sc')) {
-            $data = $data->ByEventVenueSubcategory($request->input('sc'));
+            $data = $data->ByEventSubcategory($request->input('sc'));
         }
         if ($request->has('c')) {
-            $data = $data->ByEventVenueCategory($request->input('c'));
+            $data = $data->ByEventCategory($request->input('c'));
         }
 
         if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {

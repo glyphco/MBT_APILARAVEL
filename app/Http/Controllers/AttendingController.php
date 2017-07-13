@@ -14,13 +14,13 @@ class AttendingController extends BaseController
         3 => 'attending',
     ];
 
-    public function attendEventVenue(Request $request, $id)
+    public function attendEvent(Request $request, $id)
     {
 
         if (!$request->has('rank') || !array_key_exists($request['rank'], $this->valid_ranks)) {
             return $this->clientErrorResponse('[rank] not found');
         }
-        if (!\App\Models\EventVenue::find($id)) {
+        if (!\App\Models\Event::find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -31,7 +31,7 @@ class AttendingController extends BaseController
     public function handleAttend($id, $rank)
     {
         $attending = \App\Models\Attending::updateOrCreate(
-            ['eventvenue_id' => $id, 'user_id' => \Auth::id()],
+            ['event_id' => $id, 'user_id' => \Auth::id()],
             ['rank' => $rank]
         );
         return $this->valid_ranks[$rank];

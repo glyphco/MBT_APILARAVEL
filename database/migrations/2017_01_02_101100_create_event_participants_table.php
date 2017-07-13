@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventVenueProducersTable extends Migration
+class CreateEventParticipantsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,17 @@ class CreateEventVenueProducersTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_venue_producers', function (Blueprint $table) {
+        Schema::create('event_participants', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('event_venue_id')->unsigned();
+            $table->integer('event_id')->unsigned();
             $table->string('name');
             $table->string('info')->nullable();
             $table->string('private_info')->nullable();
             $table->integer('page_id')->unsigned()->nullable();
+            $table->string('imageurl')->nullable()->default(null);
 
+            $table->dateTime('start')->nullable()->default(null);
+            $table->dateTime('end')->nullable()->default(null);
             $table->integer('order')->unsigned()->default(0);
 
             $table->boolean('public')->default(0);
@@ -31,7 +34,7 @@ class CreateEventVenueProducersTable extends Migration
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
             $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('set null');
-            $table->foreign('event_venue_id')->references('id')->on('event_venues')->onDelete('cascade');
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
 
     }
@@ -43,7 +46,7 @@ class CreateEventVenueProducersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_venue_producers');
+        Schema::dropIfExists('event_participants');
     }
 
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class EventConfirmedScope implements Scope
+class WithEventParticipantsScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -17,6 +17,6 @@ class EventConfirmedScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('events.confirmed', '=', 1);
+        $builder->with('eventparticipants.page');
     }
 }

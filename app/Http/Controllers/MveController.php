@@ -44,7 +44,7 @@ class MveController extends BaseController
         }
 
         $m    = self::MODEL;
-        $data = $m::with('eventvenues');
+        $data = $m::with('events');
 
         if ($date) {
             //$data = $data->InDateRange($date, $enddate);
@@ -138,7 +138,7 @@ class MveController extends BaseController
             $data->fill($request->all());
             $data->save();
 
-            $this->updateEventVenues($data);
+            $this->updateEvents($data);
 
             Bouncer::allow(\Auth::user())->to('administer', $data);
             Bouncer::allow(\Auth::user())->to('edit', $data);
@@ -301,7 +301,7 @@ class MveController extends BaseController
         }
     }
 
-    public function updateEventVenues($event)
+    public function updateEvents($event)
     {
 
     }

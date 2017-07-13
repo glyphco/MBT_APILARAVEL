@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class Bot2Controller extends BaseController
 {
 
-//This bot grabs the eventvenue the most of your friends are going to (popular with friends)
+//This bot grabs the event the most of your friends are going to (popular with friends)
 
     public function index(Request $request)
     {
@@ -20,27 +20,27 @@ class Bot2Controller extends BaseController
 
 // RAW:
         $raw = "
-select ev.*,eventvenue_id, rank, count(user_id) as attending from attending a
-left join event_venues ev on (ev.id = a.eventvenue_id)
+select e.*,event_id, rank, count(user_id) as attending from attending a
+left join events e on (e.id = a.event_id)
 where (rank =?)
-and ev.start > ?
+and e.start > ?
 and user_id in (
 select friend_id from friendships
 where (user_id =?))
-group by eventvenue_id, rank
+group by event_id, rank
 order by attending desc
 
 ";
         $raw = "
-select ev.*, ST_AsText(location) as location,eventvenue_id, rank, count(user_id) as attending from attending a
-left join event_venues ev on (ev.id = a.eventvenue_id)
+select e.*, ST_AsText(location) as location,event_id, rank, count(user_id) as attending from attending a
+left join events e on (e.id = a.event_id)
 where (rank =?)
-and ev.start >= ?
-and ev.end >= ?
+and e.start >= ?
+and e.end >= ?
 and user_id in (
 select friend_id from friendships
 where (user_id =?))
-group by eventvenue_id, rank
+group by event_id, rank
 order by attending desc
 limit ?
 ";

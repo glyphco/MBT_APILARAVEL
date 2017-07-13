@@ -12,13 +12,13 @@ class Attending extends Model
 
     protected $fillable = [
         'user_id',
-        'eventvenue_id',
+        'event_id',
         'rank',
     ];
 
-    public function eventvenue()
+    public function event()
     {
-        return $this->belongsTo('App\Models\EventVenue')->where('rank', '>', 0);
+        return $this->belongsTo('App\Models\Event')->where('rank', '>', 0);
     }
 
 }

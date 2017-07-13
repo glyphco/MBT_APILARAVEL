@@ -4,10 +4,10 @@ namespace App\Http\Controllers\me;
 use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 
-class EventvenueController extends BaseController
+class EventController extends BaseController
 {
 
-    public function getEventvenues(Request $request)
+    public function getEvents(Request $request)
     {
         $date    = null;
         $enddate = null;
@@ -37,7 +37,7 @@ class EventvenueController extends BaseController
 
         $ranks = [2, 3];
 
-        $m = '\App\Models\EventVenue';
+        $m = '\App\Models\Event';
 
         $data = $m::with(['event.eventshows', 'event.eventproducers', 'categories', 'venue'])
             ->withCount([
@@ -59,40 +59,7 @@ class EventvenueController extends BaseController
             ->current()
         ;
 
-        $data = $data->ByEventVenueMyAttending();
-        // if ($date) {
-        //     $data = $data->InDateRange($date, $enddate);
-        // }
-
-        // if ($request->exists('current')) {
-        //     $data = $data->Current();
-        // }
-        // if ($request->has('v')) {
-        //     $data = $data->AtEventVenue($request->input('v'));
-        // }
-        // if ($request->has('vn')) {
-        //     $data = $data->AtEventVenuename($request->input('vn'));
-        // }
-        // if ($request->has('p')) {
-        //     $data = $data->ByEventVenueParticipant($request->input('p'));
-        // }
-        // if ($request->has('pn')) {
-        //     $data = $data->ByEventVenueParticipantname($request->input('pn'));
-        // }
-        // if ($request->has('sc')) {
-        //     $data = $data->ByEventVenueSubcategory($request->input('sc'));
-        // }
-        // if ($request->has('c')) {
-        //     $data = $data->ByEventVenueCategory($request->input('c'));
-        // }
-
-        // if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {
-        //     // /^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/
-        //     // /^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/
-
-        //     $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
-
-        // }
+        $data = $data->ByEventMyAttending();
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -117,7 +84,7 @@ class EventvenueController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function getEventvenue($id)
+    public function getEvent($id)
     {
         //autorelates venue and participants in model
         $m = self::MODEL;

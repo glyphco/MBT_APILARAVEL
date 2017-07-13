@@ -2,19 +2,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Wildside\Userstamps\Userstamps;
 
-class EventVenueCategory extends Model
+class EventShow extends Model
 {
-
+    use Userstamps;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'eventvenue_id',
-        'category_id',
-        'subcategory_id',
+
+        'event_id',
+        'showpage_id',
+        'order',
     ];
 
     /**
@@ -31,19 +33,14 @@ class EventVenueCategory extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
 
-    public function category()
+    public function event()
     {
-        return $this->belongsTo('App\Models\Category');
+        return $this->belongsTo('App\Models\Event');
     }
 
-    public function subcategory()
+    public function showpage()
     {
-        return $this->belongsTo('App\Models\Subcategory');
-    }
-
-    public function eventvenue()
-    {
-        return $this->belongsTo('App\Models\EventVenue');
+        return $this->belongsTo('App\Models\Showpage');
     }
 
 }

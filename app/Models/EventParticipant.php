@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
-class EventVenueParticipant extends Model
+class EventParticipant extends Model
 {
     use Userstamps;
     /**
@@ -13,7 +13,7 @@ class EventVenueParticipant extends Model
      * @var array
      */
     protected $fillable = [
-        'event_venue_id',
+        'event_id',
         'name',
         'details',
         'page_id',
@@ -36,19 +36,9 @@ class EventVenueParticipant extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
 
-    public function eventvenue()
-    {
-        return $this->belongsTo('App\Models\EventVenue');
-    }
-
     public function event()
     {
-        return $this->hasManyThrough('App\Models\Event', 'App\Models\EventVenue');
-    }
-
-    public function venue()
-    {
-        return $this->eventvenue()->belongsTo('App\Models\Venue');
+        return $this->belongsTo('App\Models\Event');
     }
 
     public function page()

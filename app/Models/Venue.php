@@ -52,14 +52,14 @@ class Venue extends Model
         static::addGlobalScope(new \App\Scopes\VenueConfirmedScope);
     }
 
-    public function eventvenues()
+    public function events()
     {
-        return $this->hasMany('App\Models\EventVenue');
+        return $this->hasMany('App\Models\Event');
     }
 
-    public function currenteventvenues()
+    public function currentevents()
     {
-        return $this->hasMany('App\Models\EventVenue')->Current();
+        return $this->hasMany('App\Models\Event')->Current();
     }
 
     public function scopePrivate($query)

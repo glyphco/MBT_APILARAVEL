@@ -1,6 +1,6 @@
 <?php
 
-$factory->define('App\Models\EventVenueCategory', function (Faker\Generator $faker) {
+$factory->define('App\Models\EventCategory', function (Faker\Generator $faker) {
     static $password;
 
     $subcategories = App\Models\Subcategory::get()->random();

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventVenueCategoriesTable extends Migration
+class CreateEventCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,16 +14,16 @@ class CreateEventVenueCategoriesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('event_venue_categories');
+        Schema::dropIfExists('event_categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('event_venue_categories', function (Blueprint $table) {
+        Schema::create('event_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('eventvenue_id')->unsigned();
+            $table->integer('event_id')->unsigned();
             $table->integer('category_id')->unsigned()->nullable();
             $table->integer('subcategory_id')->unsigned()->nullable();
             $table->timestamps();
 
-            $table->foreign('eventvenue_id')->references('id')->on('event_venues')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('event_id')->references('id')->on('events')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('subcategory_id')->references('id')->on('subcategories')->onUpdate('cascade')->onDelete('cascade');
         });
@@ -37,7 +37,7 @@ class CreateEventVenueCategoriesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('event_venue_categories');
+        Schema::dropIfExists('event_categories');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

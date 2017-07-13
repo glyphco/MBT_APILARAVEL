@@ -56,11 +56,11 @@ class Page extends Model
         static::addGlobalScope(new \App\Scopes\PageConfirmedScope);
     }
 
-    public function eventvenues()
+    public function events()
     {
 
         return $this->hasManyThrough(
-            'App\Models\EventVenue', 'App\Models\eventvenueparticipant',
+            'App\Models\Event', 'App\Models\eventparticipant',
             'page_id', 'id'
         );
     }

@@ -51,11 +51,11 @@ class ParticipantController extends BaseController
         $m = self::MODEL;
 
 // make sure event is there
-        $event_id = $request->input('eventvenue_id', null);
-        $event    = \App\Models\Event::find($eventvenue_id);
+        $event_id = $request->input('event_id', null);
+        $event    = \App\Models\Event::find($event_id);
         if (!($event)) {
             // Oops.
-            return $this->clientErrorResponse('Could not save: [eventvenue_id] not found');
+            return $this->clientErrorResponse('Could not save: [event_id] not found');
         }
 
         $page_id = $request->input('page_id', null);
@@ -91,12 +91,12 @@ class ParticipantController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $eventvenue_id, $id)
+    public function update(Request $request, $event_id, $id)
     {
-        $request['eventvenue_id'] = $eventvenue_id;
-        $m                        = self::MODEL;
+        $request['event_id'] = $event_id;
+        $m                   = self::MODEL;
 
-        if (!$data = $m::where('eventvenue_id', $eventvenue_id)->find($id)) {
+        if (!$data = $m::where('event_id', $event_id)->find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -122,10 +122,10 @@ class ParticipantController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $eventvenue_id, $id)
+    public function destroy(Request $request, $event_id, $id)
     {
         $m = self::MODEL;
-        if (!$data = $m::where('eventvenue_id', $eventvenue_id)->find($id)) {
+        if (!$data = $m::where('event_id', $event_id)->find($id)) {
             return $this->notFoundResponse();
         }
         $data->delete();
