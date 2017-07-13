@@ -13,9 +13,11 @@ class EventVenueController extends BaseController
 
     const MODEL                = 'App\Models\EventVenue';
     protected $validationRules = [
-        'name'  => 'required',
-        'venue' => 'required',
-        'start' => 'required',
+        'name'        => 'required',
+        'venue'       => 'required',
+        'UTC_start'   => 'required',
+        'local_start' => 'required',
+        'local_tz'    => 'required',
     ];
     protected $friends;
 

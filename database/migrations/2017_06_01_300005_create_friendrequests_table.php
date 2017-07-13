@@ -31,7 +31,7 @@ class CreateFriendrequestsTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('friends');
+        Schema::dropIfExists('friendrequests');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 

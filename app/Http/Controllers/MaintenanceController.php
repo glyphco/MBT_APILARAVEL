@@ -34,7 +34,7 @@ class MaintenanceController extends BaseController
             select(DB::raw('count(*) as times_used, venue_name'))
             ->wherenull('venue_id')
             ->having('times_used', '>', 1)
-            ->groupBy('venue_name', 'event_venues.start')
+            ->groupBy('venue_name', 'event_venues.UTC_start')
             ->orderBy('venue_name')
             ->withoutGlobalScopes()
             ->get();

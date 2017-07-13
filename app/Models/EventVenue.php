@@ -74,9 +74,19 @@ class EventVenue extends Model
         return $this->belongsTo('App\Models\Event');
     }
 
+    public function mve()
+    {
+        return $this->belongsTo('App\Models\Mve');
+    }
+
     public function venue()
     {
         return $this->belongsTo('App\Models\Venue');
+    }
+
+    public function eventvenueshows()
+    {
+        return $this->hasMany('App\Models\EventVenueShow');
     }
 
     public function eventvenueparticipants()
@@ -95,9 +105,9 @@ class EventVenue extends Model
         return $filter->where(function ($query) {
             $query
             //Start in date range
-            ->whereDate('start', '>=', Carbon::now()->subHours(5)->toDateString())
+            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateString())
             //End in date range
-                ->orWhereDate('end', '>=', Carbon::now()->subHours(5)->toDateString());
+                ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateString());
         });
     }
 

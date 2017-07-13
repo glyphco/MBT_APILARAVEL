@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventsTable extends Migration
+class CreateMvesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class CreateEventsTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('mves');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('mves', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->text('description')->nullable();
@@ -31,8 +31,6 @@ class CreateEventsTable extends Migration
             $table->string('backgroundurl')->nullable();
 
         });
-        /*Spatial Column*/
-        DB::statement('ALTER TABLE events ADD location POINT');
     }
 
     /**
@@ -42,7 +40,7 @@ class CreateEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('mves');
     }
 
 }

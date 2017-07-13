@@ -15,7 +15,11 @@ class CreateEventVenuesTable extends Migration
     {
         Schema::create('event_venues', function (Blueprint $table) {
             $table->increments('id');
+// id for MVE
+            $table->integer('mve_id')->unsigned()->nullable()->default(null);
+
 //event stuff
+
             $table->integer('event_id')->unsigned();
             $table->string('event_name')->nullable()->default(null);
             $table->text('event_description')->nullable();
@@ -40,8 +44,12 @@ class CreateEventVenuesTable extends Migration
 
             $table->integer('ages')->unsigned()->nullable();
 
-            $table->dateTime('start');
-            $table->dateTime('end')->nullable()->default(null);
+            $table->dateTime('UTC_start');
+            $table->dateTime('UTC_end')->nullable()->default(null);
+
+            $table->dateTime('local_start');
+            $table->dateTime('local_end')->nullable()->default(null);
+            $table->string('local_tz');
 
             $table->string('info')->nullable();
             $table->string('private_info')->nullable();
@@ -56,6 +64,7 @@ class CreateEventVenuesTable extends Migration
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
             $table->foreign('venue_id')->references('id')->on('venues')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('mve_id')->references('id')->on('mves')->onDelete('set null');
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
         /*Spatial Column*/

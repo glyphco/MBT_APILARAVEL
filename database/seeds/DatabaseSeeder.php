@@ -177,7 +177,8 @@ class EventDataSeeder extends Seeder
         DB::table('event_venues')->truncate();
         DB::table('event_venue_participants')->truncate();
         DB::table('event_venue_producers')->truncate();
-        DB::table('event_shows')->truncate();
+        DB::table('event_shows')->truncate(); //REMOVE
+        DB::table('event_venue_shows')->truncate();
         DB::table('event_producers')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
@@ -199,15 +200,6 @@ class EventDataSeeder extends Seeder
                     }
                 }
 
-                //Maybe attach a show:
-                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
-                //echo ($num_shows);
-                if ($num_shows) {
-                    foreach (range(1, $num_shows) as $index) {
-                        $u->eventshows()->save(factory(App\Models\EventShow::class)->make());
-                    }
-                }
-
                 $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
                 //echo ($num_shows);
 
@@ -226,6 +218,28 @@ class EventDataSeeder extends Seeder
                         $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
                         foreach (range(1, $num_categories) as $index) {
                             $eventvenue->categories()->save(factory(App\Models\EventVenueCategory::class)->make());
+                        }
+
+                        //Maybe attach a show:
+                        $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+                        //echo ($num_shows);
+                        $showjson = null;
+                        if ($num_shows) {
+                            foreach (range(1, $num_shows) as $index) {
+                                $eventvenue->eventvenueshows()->save(factory(App\Models\EventVenueShow::class)->make());
+                            }
+                            $showjson = [];
+                            foreach ($eventvenue->eventvenueshows as $evshow) {
+                                $eventvenueshowpage_page = App\Models\Showpage::find($evshow['showpage_id'])->toArray();
+                                $showjson[]              =
+                                    [
+                                    'id'       => $eventvenueshowpage_page['id'],
+                                    'name'     => $eventvenueshowpage_page['name'],
+                                    'imageurl' => $eventvenueshowpage_page['imageurl'],
+                                ];
+                            }
+                            $eventvenue->showjson = json_encode($showjson);
+                            $eventvenue->save();
                         }
 
                     }

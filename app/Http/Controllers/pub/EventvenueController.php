@@ -81,6 +81,8 @@ class EventvenueController extends BaseController
 
         }
 
+        $data = $data->orderBy('UTC_start');
+
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
         $data = $data->paginate($pp);

@@ -17,6 +17,6 @@ class EventOrderStartScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->orderBy('events.start');
+        $builder->orderBy('events.UTC_start');
     }
 }

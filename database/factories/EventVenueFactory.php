@@ -37,6 +37,17 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
     $end->add(new DateInterval('PT' . $eventhours . 'H'));
     $end = $faker->optional()->randomElement($array = array($end));
 
+//calculate local times!
+    $local_start = clone $start;
+    $local_end   = null;
+    $local_tz    = 'America/Chicago';
+    $local_start->setTimezone(new DateTimeZone($local_tz));
+
+    if ($end) {
+        $local_end = clone $end;
+        $local_end->setTimezone(new DateTimeZone($local_tz));
+    }
+
     //dd($datetime, $start, $eventhours, $end);
 
     //prices
@@ -133,29 +144,35 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
     }
 
     return [
-        'event_name'     => $faker->company,
-        'venue_id'       => $faker->optional()->randomElement($eventvenues_venues),
-        'venue_name'     => $faker->company,
-        'street_address' => $faker->streetAddress,
-        'city'           => $faker->city,
-        'state'          => $faker->state,
-        'postalcode'     => $faker->postcode,
+        'event_name'        => $faker->company,
+        'event_description' => $faker->paragraph($nbSentences = 3, $variableNbSentences = true),
+        'venue_id'          => $faker->optional()->randomElement($eventvenues_venues),
+        'venue_name'        => $faker->company,
+        'street_address'    => $faker->streetAddress,
+        'city'              => $faker->city,
+        'state'             => $faker->state,
+        'postalcode'        => $faker->postcode,
 
-        'price'          => $price,
-        'pricemin'       => $pricemin,
-        'pricemax'       => $pricemax,
+        'price'             => $price,
+        'pricemin'          => $pricemin,
+        'pricemax'          => $pricemax,
 
-        'ages'           => $faker->optional()->randomElement($array = [0, 1, 2, 3, 4]),
+        'ages'              => $faker->optional()->randomElement($array = [0, 1, 2, 3, 4]),
 
-        'imageurl'       => $faker->imageUrl(200, 200, 'nightlife'),
-        'backgroundurl'  => $faker->imageUrl(1400, 656, 'nightlife'),
+        'imageurl'          => $faker->imageUrl(200, 200, 'nightlife'),
+        'backgroundurl'     => $faker->imageUrl(1400, 656, 'nightlife'),
 
-        'lat'            => $lat,
-        'lng'            => $lng,
-        'venue_tagline'  => $faker->text($maxNbChars = 50),
-        'start'          => $start,
-        'end'            => $end,
-        'location'       => DB::raw($lat . ', ' . $lng),
+        'lat'               => $lat,
+        'lng'               => $lng,
+        'venue_tagline'     => $faker->text($maxNbChars = 50),
+        'UTC_start'         => $start,
+        'UTC_end'           => $end,
+
+        'local_start'       => $local_start,
+        'local_end'         => $local_end,
+        'local_tz'          => $local_tz,
+
+        'location'          => DB::raw($lat . ', ' . $lng),
     ];
 
 });
