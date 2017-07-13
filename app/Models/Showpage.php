@@ -46,9 +46,9 @@ class Showpage extends Model
         static::addGlobalScope(new \App\Scopes\ShowpageConfirmedScope);
     }
 
-    public function events()
+    public function eventvenues()
     {
-        return $this->belongsToMany('App\Models\Event', 'event_shows');
+        return $this->belongsToMany('App\Models\Eventvenues', 'event_venue_shows');
     }
 
     // public function showpagesubcategories()

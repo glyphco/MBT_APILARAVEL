@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
-use App\Models\Event;
 use App\Models\EventVenueParticipant;
 use App\Models\Page;
 use App\Models\User;
@@ -17,9 +16,9 @@ class MaintenanceController extends BaseController
 
     protected $addressbook;
 
-    public function __construct(Event $event, Venue $venue, Page $page, EventVenueParticipant $participant, User $user)
+    public function __construct(Venue $venue, Page $page, EventVenueParticipant $participant, User $user)
     {
-        $this->event       = $event;
+
         $this->venue       = $venue;
         $this->page        = $page;
         $this->participant = $participant;

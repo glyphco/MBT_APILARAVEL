@@ -58,7 +58,7 @@ class Page extends Model
 
     public function eventvenues()
     {
-        //return $this->hasMany('App\Models\Event');
+
         return $this->hasManyThrough(
             'App\Models\EventVenue', 'App\Models\eventvenueparticipant',
             'page_id', 'id'
