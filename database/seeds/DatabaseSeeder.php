@@ -25,7 +25,9 @@ class DatabaseSeeder extends Seeder
         $this->call('ShowpageDataSeeder');
         $this->call('CategoriesSeeder');
 
-        $this->call('EventDataSeeder');
+        $this->call('EventVenueDataSeeder');
+
+        $this->call('MveDataSeeder');
 
         $this->call('UserLikesSeeder');
 
@@ -167,7 +169,88 @@ class ShowpageDataSeeder extends Seeder
     }
 }
 
-class EventDataSeeder extends Seeder
+// class EventDataSeeder extends Seeder
+// {
+//     public function run()
+//     {
+
+//         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+//         DB::table('events')->truncate();
+//         DB::table('event_venues')->truncate();
+//         DB::table('event_venue_participants')->truncate();
+//         DB::table('event_venue_producers')->truncate();
+//         DB::table('event_shows')->truncate(); //REMOVE
+//         DB::table('event_venue_shows')->truncate();
+//         DB::table('event_producers')->truncate();
+//         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
+//         $events = factory('App\Models\Event', 200)
+//             ->create()
+//             ->each(function ($u) {
+
+//                 // //Make some participants
+//                 // $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+//                 // foreach (range(1, $num_participants) as $index) {
+//                 //     $u->participants()->save(factory(App\Models\Participant::class)->make());
+//                 // }
+
+// //Maybe make a producer:
+//                 $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 2)); // 80% chance of NULL
+//                 if ($num_producers) {
+//                     foreach (range(1, $num_producers) as $index) {
+//                         $u->eventproducers()->save(factory(App\Models\EventProducer::class)->make());
+//                     }
+//                 }
+
+//                 $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+//                 //echo ($num_shows);
+
+//                 if ($num_venues) {
+//                     foreach (range(1, $num_venues) as $index) {
+
+//                         $eventvenue = $u->eventvenues()->save(factory(App\Models\EventVenue::class)->make());
+
+//                         // //Make some participants
+//                         $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+//                         foreach (range(1, $num_participants) as $index) {
+//                             $eventvenue->eventvenueparticipants()->save(factory(App\Models\EventVenueParticipant::class)->make());
+//                         }
+
+//                         // //Make some categories
+//                         $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
+//                         foreach (range(1, $num_categories) as $index) {
+//                             $eventvenue->categories()->save(factory(App\Models\EventVenueCategory::class)->make());
+//                         }
+
+//                         //Maybe attach a show:
+//                         $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+//                         //echo ($num_shows);
+//                         $showjson = null;
+//                         if ($num_shows) {
+//                             foreach (range(1, $num_shows) as $index) {
+//                                 $eventvenue->eventvenueshows()->save(factory(App\Models\EventVenueShow::class)->make());
+//                             }
+//                             $showjson = [];
+//                             foreach ($eventvenue->eventvenueshows as $evshow) {
+//                                 $eventvenueshowpage_page = App\Models\Showpage::find($evshow['showpage_id'])->toArray();
+//                                 $showjson[]              =
+//                                     [
+//                                     'id'       => $eventvenueshowpage_page['id'],
+//                                     'name'     => $eventvenueshowpage_page['name'],
+//                                     'imageurl' => $eventvenueshowpage_page['imageurl'],
+//                                 ];
+//                             }
+//                             $eventvenue->showjson = json_encode($showjson);
+//                             $eventvenue->save();
+//                         }
+
+//                     }
+//                 }
+//             });
+//     }
+// }
+
+class EventVenueDataSeeder extends Seeder
 {
     public function run()
     {
@@ -193,12 +276,6 @@ class EventDataSeeder extends Seeder
                 // }
 
 //Maybe make a producer:
-                $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 2)); // 80% chance of NULL
-                if ($num_producers) {
-                    foreach (range(1, $num_producers) as $index) {
-                        $u->eventproducers()->save(factory(App\Models\EventProducer::class)->make());
-                    }
-                }
 
                 $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
                 //echo ($num_shows);
@@ -246,6 +323,44 @@ class EventDataSeeder extends Seeder
                 }
             });
     }
+}
+
+class MveDataSeeder extends Seeder
+{
+    public function run()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('mves')->truncate();
+        DB::table('mve_producers')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
+        $showpages = factory('App\Models\Mve', 5)
+            ->create()
+            ->each(function ($mve) {
+
+                $num_producers = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 2)); // 20% chance of NULL
+                if ($num_producers) {
+                    foreach (range(1, $num_producers) as $index) {
+                        $mve->mveproducers()->save(factory(App\Models\MveProducer::class)->make());
+                    }
+                }
+
+//Add some eventvenues to this MVE
+                $num_eventvenues = Faker\Factory::create()->randomElement($array = array(3, 5, 7));
+                if ($num_eventvenues) {
+                    App\Models\EventVenue::wherenull('mve_id')->inRandomOrder()->take($num_eventvenues)->get()
+                        ->each(function ($ev) use ($mve) {
+                            //dump($ev);
+                            $ev->mve_id = $mve->id;
+                            //dd($ev);
+                            $ev->save();
+                        });
+
+                }
+
+            });
+    }
+
 }
 
 class CategoriesSeeder extends Seeder

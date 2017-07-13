@@ -17,6 +17,7 @@ class EventVenue extends Model
      */
     protected $fillable = [
         'event_id',
+        'mve_id',
         'venue_id',
         'venue_name',
         'street_address',
