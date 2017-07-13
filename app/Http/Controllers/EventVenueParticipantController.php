@@ -49,7 +49,7 @@ class EventVenueParticipantController extends BaseController
         $m                         = self::MODEL;
 
 // make sure event is there
-        $event = \App\Models\Event::find($request['event_venue_id']);
+        $event = \App\Models\EventVenue::find($request['event_venue_id']);
         if (!($event)) {
             // Oops.
             return $this->clientErrorResponse('Could not save: [event_venue_id] not found');

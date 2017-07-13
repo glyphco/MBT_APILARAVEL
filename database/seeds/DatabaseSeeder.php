@@ -256,7 +256,6 @@ class EventVenueDataSeeder extends Seeder
     {
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        DB::table('events')->truncate();
         DB::table('event_venues')->truncate();
         DB::table('event_venue_participants')->truncate();
         DB::table('event_venue_producers')->truncate();
@@ -265,62 +264,44 @@ class EventVenueDataSeeder extends Seeder
         DB::table('event_producers')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $events = factory('App\Models\Event', 200)
+        $events = factory('App\Models\EventVenue', 200)
             ->create()
-            ->each(function ($u) {
+            ->each(function ($ev) {
+
+                // //Make some categories
+                $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
+                foreach (range(1, $num_categories) as $index) {
+                    $ev->categories()->save(factory(App\Models\EventVenueCategory::class)->make());
+                }
 
                 // //Make some participants
-                // $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
-                // foreach (range(1, $num_participants) as $index) {
-                //     $u->participants()->save(factory(App\Models\Participant::class)->make());
-                // }
-
-//Maybe make a producer:
-
-                $num_venues = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
-                //echo ($num_shows);
-
-                if ($num_venues) {
-                    foreach (range(1, $num_venues) as $index) {
-
-                        $eventvenue = $u->eventvenues()->save(factory(App\Models\EventVenue::class)->make());
-
-                        // //Make some participants
-                        $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
-                        foreach (range(1, $num_participants) as $index) {
-                            $eventvenue->eventvenueparticipants()->save(factory(App\Models\EventVenueParticipant::class)->make());
-                        }
-
-                        // //Make some categories
-                        $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
-                        foreach (range(1, $num_categories) as $index) {
-                            $eventvenue->categories()->save(factory(App\Models\EventVenueCategory::class)->make());
-                        }
-
-                        //Maybe attach a show:
-                        $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
-                        //echo ($num_shows);
-                        $showjson = null;
-                        if ($num_shows) {
-                            foreach (range(1, $num_shows) as $index) {
-                                $eventvenue->eventvenueshows()->save(factory(App\Models\EventVenueShow::class)->make());
-                            }
-                            $showjson = [];
-                            foreach ($eventvenue->eventvenueshows as $evshow) {
-                                $eventvenueshowpage_page = App\Models\Showpage::find($evshow['showpage_id'])->toArray();
-                                $showjson[]              =
-                                    [
-                                    'id'       => $eventvenueshowpage_page['id'],
-                                    'name'     => $eventvenueshowpage_page['name'],
-                                    'imageurl' => $eventvenueshowpage_page['imageurl'],
-                                ];
-                            }
-                            $eventvenue->showjson = json_encode($showjson);
-                            $eventvenue->save();
-                        }
-
-                    }
+                $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
+                foreach (range(1, $num_participants) as $index) {
+                    $ev->eventvenueparticipants()->save(factory(App\Models\EventVenueParticipant::class)->make());
                 }
+
+                //Maybe attach a show:
+                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+                //echo ($num_shows);
+                $showjson = null;
+                if ($num_shows) {
+                    foreach (range(1, $num_shows) as $index) {
+                        $ev->eventvenueshows()->save(factory(App\Models\EventVenueShow::class)->make());
+                    }
+                    $showjson = [];
+                    foreach ($ev->eventvenueshows as $evshow) {
+                        $eventvenueshowpage_page = App\Models\Showpage::find($evshow['showpage_id'])->toArray();
+                        $showjson[]              =
+                            [
+                            'id'       => $eventvenueshowpage_page['id'],
+                            'name'     => $eventvenueshowpage_page['name'],
+                            'imageurl' => $eventvenueshowpage_page['imageurl'],
+                        ];
+                    }
+                    $ev->showjson = json_encode($showjson);
+                    $ev->save();
+                }
+
             });
     }
 }
@@ -559,6 +540,7 @@ class RolesSeeder extends Seeder
         Bouncer::allow('contributor')->to('create-pages');
         Bouncer::allow('contributor')->to('create-venues');
         Bouncer::allow('contributor')->to('create-events');
+        //contributers will be able to edit and delete their own pages/events/venues once created
 
     }
 

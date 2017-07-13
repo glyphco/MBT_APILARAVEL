@@ -143,9 +143,16 @@ $factory->define('App\Models\EventVenue', function (Faker\Generator $faker) {
         $pricemax = $a;
     }
 
+    $name        = $faker->company;
+    $description = $faker->paragraph($nbSentences = 3, $variableNbSentences = true);
+
     return [
-        'event_name'        => $faker->company,
-        'event_description' => $faker->paragraph($nbSentences = 3, $variableNbSentences = true),
+
+        'name'              => $name,
+        'description'       => $description,
+
+        'event_name'        => $name,
+        'event_description' => $description,
         'venue_id'          => $faker->optional()->randomElement($eventvenues_venues),
         'venue_name'        => $faker->company,
         'street_address'    => $faker->streetAddress,

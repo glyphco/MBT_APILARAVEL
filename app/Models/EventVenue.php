@@ -16,6 +16,9 @@ class EventVenue extends Model
      * @var array
      */
     protected $fillable = [
+        'name',
+        'description',
+
         'event_id',
         'mve_id',
         'venue_id',

@@ -7,7 +7,7 @@ use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventController extends BaseController
+class EventControllerREMOVE extends BaseController
 {
     use HasRolesAndAbilities;
 

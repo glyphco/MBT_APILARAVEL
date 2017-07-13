@@ -18,11 +18,10 @@ class CreateEventVenuesTable extends Migration
 // id for MVE
             $table->integer('mve_id')->unsigned()->nullable()->default(null);
 
-//event stuff
-
-            $table->integer('event_id')->unsigned();
             $table->string('event_name')->nullable()->default(null);
             $table->text('event_description')->nullable();
+            $table->string('name')->nullable()->default(null);
+            $table->text('description')->nullable();
 //show stuff
             $table->text('showjson')->nullable()->default(null);
 //venue stuff
@@ -65,7 +64,6 @@ class CreateEventVenuesTable extends Migration
 
             $table->foreign('venue_id')->references('id')->on('venues')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('mve_id')->references('id')->on('mves')->onDelete('set null');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
         /*Spatial Column*/
         DB::statement('ALTER TABLE event_venues ADD location POINT');

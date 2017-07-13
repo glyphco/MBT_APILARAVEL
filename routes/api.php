@@ -167,30 +167,29 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::delete('/pagecategory/{pagecategory_id}', 'PageCategoryController@destroy');
     });
 
-//events
+//mves
 
-    Route::get('/event', 'eventController@index');
-    Route::get('/event/{id}', 'eventController@show');
-    Route::get('/event/like/{id}', ['as' => 'event.like', 'uses' => 'LikeController@likeEvent']);
+    Route::get('/mve', 'MveController@index');
+    Route::get('/mve/{id}', 'MveController@show');
     Route::group(['middleware' => 'can:create-events'], function () {
-        Route::post('/event', 'eventController@store');
+        Route::post('/mve', 'MveController@store');
     });
     Route::group(['middleware' => 'can:confirm-events'], function () {
-        Route::get('/event/{id}/confirm', 'eventController@confirm');
-        Route::get('/event/{id}/unconfirm', 'eventController@unconfirm');
+        Route::get('/mve/{id}/confirm', 'MveController@confirm');
+        Route::get('/mve/{id}/unconfirm', 'MveController@unconfirm');
     });
 
     Route::group(['middleware' => 'can:edit-events'], function () {
-        Route::put('/event/{id}', 'eventController@update');
-        Route::get('/event/{id}/makepublic', 'eventController@makepublic');
-        Route::get('/event/{id}/makeprivate', 'eventController@makeprivate');
+        Route::put('/mve/{id}', 'MveController@update');
+        Route::get('/mve/{id}/makepublic', 'MveController@makepublic');
+        Route::get('/mve/{id}/makeprivate', 'MveController@makeprivate');
         // checks made in controller:
-        Route::get('/event/{id}/giveedit/{userid}', 'eventController@giveedit');
-        Route::get('/event/{id}/revokeedit/{userid}', 'eventController@revokeedit');
-        Route::get('/event/{id}/giveadmin/{userid}', 'eventController@giveadmin');
-        Route::get('/event/{id}/revokeadmin/{userid}', 'eventController@revokeadmin');
-        Route::get('/event/{id}/editors', 'eventController@geteditors');
-        Route::get('/event/{id}/admins', 'eventController@getadmins');
+        Route::get('/mve/{id}/giveedit/{userid}', 'MveController@giveedit');
+        Route::get('/mve/{id}/revokeedit/{userid}', 'MveController@revokeedit');
+        Route::get('/mve/{id}/giveadmin/{userid}', 'MveController@giveadmin');
+        Route::get('/mve/{id}/revokeadmin/{userid}', 'MveController@revokeadmin');
+        Route::get('/mve/{id}/editors', 'MveController@geteditors');
+        Route::get('/mve/{id}/admins', 'MveController@getadmins');
     });
 
 //eventvenuess
