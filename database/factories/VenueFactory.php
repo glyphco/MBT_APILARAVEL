@@ -21,6 +21,7 @@ $factory->define('App\Models\Venue', function (Faker\Generator $faker) {
 
         'lat'            => $lat,
         'lng'            => $lng,
+        'local_tz'       => 'America/Chicago',
         'phone'          => $faker->phoneNumber,
         'location'       => DB::raw($lat . ', ' . $lng),
         'public'         => 1,
@@ -41,6 +42,7 @@ $factory->state('App\Models\Venue', 'chicago', function ($faker) {
         'postalcode' => $faker->randomElement($array = $postalcodes),
         'lat'        => $lat,
         'lng'        => $lng,
+        'local_tz'   => 'America/Chicago',
         'location'   => DB::raw($lat . ', ' . $lng),
     ];
 });

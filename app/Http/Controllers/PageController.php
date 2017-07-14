@@ -28,12 +28,17 @@ class PageController extends BaseController
     {
         $m    = self::MODEL;
         $data = $m::withCount('events')->withCount('likes');
-        $data = $data->with(['eventroles', 'categories']);
+        $data = $data->with(['categories']);
 
         if ($request->exists('q')) {
-            $data = $data->where('name', 'like', $request['q'] . '%');
+            $data = $data->where('name', 'like', '%' . $request['q'] . '%');
         }
-
+        if ($request->exists('participant')) {
+            $data = $data->where('participant', 1);
+        }
+        if ($request->exists('production')) {
+            $data = $data->where('production', 1);
+        }
         if ($request->exists('Unconfirmed')) {
             $data = $data->Unconfirmed();
         }

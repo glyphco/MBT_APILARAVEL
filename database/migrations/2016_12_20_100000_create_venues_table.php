@@ -28,6 +28,7 @@ class CreateVenuesTable extends Migration
 
             $table->decimal('lat', 10, 8);
             $table->decimal('lng', 11, 8);
+            $table->string('local_tz');
 
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

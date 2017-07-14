@@ -20,10 +20,13 @@ class DatabaseSeeder extends Seeder
         //ini_set('memory_limit', '2048M');
 
         $this->call('UserDataSeeder');
+        $this->call('RolesSeeder');
+        $this->call('CategoriesSeeder');
+
+        //Fake Data Follows:
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
         $this->call('ShowpageDataSeeder');
-        $this->call('CategoriesSeeder');
 
         $this->call('EventDataSeeder');
 
@@ -31,7 +34,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call('UserLikesSeeder');
 
-        $this->call('RolesSeeder');
     }
 
 }
@@ -110,49 +112,21 @@ class PageDataSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('pages')->truncate();
-        DB::table('page_eventroles')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
 //my seeding for the percentages (lots of poerfomers, some producers, few shows, few perfomer/producers)
 
         //make at least one of each page:
-        $pages = factory('App\Models\Page', 1)
-            ->states('chicago')
-            ->create()
-            ->each(function ($u) {
-                $u->eventroles()->syncWithoutDetaching(1);
-            });
-        $pages = factory('App\Models\Page', 1)
-            ->states('chicago')
-            ->create()
-            ->each(function ($u) {
-                $u->eventroles()->syncWithoutDetaching(2);
-            });
-        // $pages = factory('App\Models\Page', 1)
-        //     ->states('chicago')
-        //     ->create()
-        //     ->each(function ($u) {
-        //         $u->eventroles()->syncWithoutDetaching(3);
-        //     });
-
+        $pages = factory('App\Models\Page', 10)
+            ->states('chicago', 'production')
+            ->create();
         $pages = factory('App\Models\Page', 50)
-            ->states('chicago')
-            ->create()
-            ->each(function ($u) {
-                $seed   = [3, 3, 3, 3, 3, 5, 5, 15];
-                $godwin = Faker\Factory::create()->randomElement($array = $seed);
+            ->states('chicago', 'participant')
+            ->create();
+        $pages = factory('App\Models\Page', 7)
+            ->states('chicago', 'productionparticipant')
+            ->create();
 
-                if ($godwin % 3 == 0) {
-                    // participant
-                    $u->eventroles()->syncWithoutDetaching(1);
-                }
-
-                if ($godwin % 5 == 0) {
-                    // producer
-                    $u->eventroles()->syncWithoutDetaching(2);
-                }
-
-            });
     }
 }
 
@@ -189,6 +163,12 @@ class EventDataSeeder extends Seeder
                 $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
                 foreach (range(1, $num_categories) as $index) {
                     $ev->categories()->save(factory(App\Models\EventCategory::class)->make());
+                }
+
+                // //Attach a producer
+                $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 1, 2));
+                foreach (range(1, $num_producers) as $index) {
+                    $ev->eventproducer()->save(factory(App\Models\EventProducer::class)->make());
                 }
 
                 // //Make some participants

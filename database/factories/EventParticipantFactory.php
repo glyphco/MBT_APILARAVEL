@@ -3,9 +3,7 @@
 $factory->define('App\Models\EventParticipant', function (Faker\Generator $faker) {
     static $password;
 
-    $participant_pages = App\Models\Page::wherehas('eventroles', function ($q) {
-        $q->where('eventrole_id', 1);
-    })
+    $participant_pages = App\Models\Page::where('participant', 1)
         ->pluck('id')->toArray();
     //->get()->random()->id;
 

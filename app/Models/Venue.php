@@ -27,6 +27,8 @@ class Venue extends Model
         'postalcode',
         'lat',
         'lng',
+        'local_tz',
+
         'phone',
         'email',
         'location',

@@ -17,8 +17,8 @@ $factory->define('App\Models\Page', function (Faker\Generator $faker) {
         'imageurl'       => $faker->imageUrl(200, 200, 'people'),
         'backgroundurl'  => $faker->imageUrl(1400, 656, 'city'),
 
-        'participant'    => 1,
-        'production'     => 1,
+        'participant'    => 0,
+        'production'     => 0,
         'canhavemembers' => 1,
         'canbeamember'   => 1,
         'public'         => 1,
@@ -41,5 +41,27 @@ $factory->state('App\Models\Page', 'chicago', function ($faker) {
         'state'      => 'IL',
         'postalcode' => $faker->randomElement($array = $postalcodes),
 
+    ];
+});
+
+$factory->state('App\Models\Page', 'participant', function ($faker) {
+
+    return [
+        'participant' => 1,
+    ];
+});
+
+$factory->state('App\Models\Page', 'production', function ($faker) {
+
+    return [
+        'production' => 1,
+    ];
+});
+
+$factory->state('App\Models\Page', 'productionparticipant', function ($faker) {
+
+    return [
+        'production'  => 1,
+        'participant' => 1,
     ];
 });

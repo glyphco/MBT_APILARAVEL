@@ -146,17 +146,19 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     $name        = $faker->company;
     $description = $faker->paragraph($nbSentences = 3, $variableNbSentences = true);
 
+    $randomVenue = App\Models\Venue::get()->random();
+
     return [
 
         'name'           => $name,
         'description'    => $description,
 
-        'venue_id'       => $faker->optional()->randomElement($event_venues),
-        'venue_name'     => $faker->company,
-        'street_address' => $faker->streetAddress,
-        'city'           => $faker->city,
-        'state'          => $faker->state,
-        'postalcode'     => $faker->postcode,
+        'venue_id'       => $faker->optional()->randomElement($array = [$randomVenue->id]),
+        'venue_name'     => $randomVenue->name,
+        'street_address' => $randomVenue->street_address,
+        'city'           => $randomVenue->city,
+        'state'          => $randomVenue->state,
+        'postalcode'     => $randomVenue->postalcode,
 
         'price'          => $price,
         'pricemin'       => $pricemin,
@@ -167,8 +169,8 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
         'imageurl'       => $faker->imageUrl(200, 200, 'nightlife'),
         'backgroundurl'  => $faker->imageUrl(1400, 656, 'nightlife'),
 
-        'lat'            => $lat,
-        'lng'            => $lng,
+        'lat'            => $randomVenue->lat,
+        'lng'            => $randomVenue->lng,
         'venue_tagline'  => $faker->text($maxNbChars = 50),
         'UTC_start'      => $start,
         'UTC_end'        => $end,

@@ -38,6 +38,8 @@ class Event extends Model
 
         'lat',
         'lng',
+        'local_tz',
+
         'venue_tagline',
         'start',
         'end',
@@ -96,6 +98,11 @@ class Event extends Model
     public function eventparticipants()
     {
         return $this->hasMany('App\Models\EventParticipant');
+    }
+
+    public function eventproducer()
+    {
+        return $this->hasMany('App\Models\EventProducer');
     }
 
     public function categories()

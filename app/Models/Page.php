@@ -26,10 +26,12 @@ class Page extends Model
 
         'phone',
         'location',
+
         'participant',
         'production',
         'canhavemembers',
         'canbeamember',
+
         'public',
         'confirmed',
         'imageurl',
@@ -63,11 +65,6 @@ class Page extends Model
             'App\Models\Event', 'App\Models\eventparticipant',
             'page_id', 'id'
         );
-    }
-
-    public function eventroles()
-    {
-        return $this->belongsToMany('App\Models\Eventrole', 'page_eventroles', 'page_id', 'eventrole_id');
     }
 
     public function pagesubcategories()

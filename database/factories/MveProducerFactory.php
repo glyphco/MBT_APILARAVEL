@@ -1,11 +1,8 @@
 <?php
 
 $factory->define('App\Models\MveProducer', function (Faker\Generator $faker) {
-    static $password;
 
-    $producer_pages = App\Models\Page::wherehas('eventroles', function ($q) {
-        $q->where('eventrole_id', 2);
-    })
+    $producer_pages = App\Models\Page::where('production', 1)
         ->pluck('id')->toArray();
 
     return [
