@@ -1,0 +1,24 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /mbt/mbtapi
+permissions:
+  - object: /mbt/mbtapi/storage/
+    mode: 777
+  - object: /mbt/mbtapi/bootstrap/cache/
+    mode: 777
+  - object: /mbt/mbtapi/deployscripts
+    pattern: "**"
+    mode: 777
+    type:
+      - file
+  - object: /deployscripts
+    pattern: "**"
+    mode: 775
+    type:
+      - file
+hooks:
+ AfterInstall:
+    - location: deployscripts/composerupdate.sh
+      timeout: 600
