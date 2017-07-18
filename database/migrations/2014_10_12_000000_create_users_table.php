@@ -36,6 +36,7 @@ class CreateUsersTable extends Migration
             $table->string('sublocationname')->nullable()->default(null);
             $table->decimal('lat', 10, 8)->nullable()->default(null);
             $table->decimal('lng', 11, 8)->nullable()->default(null);
+            $table->string('local_tz')->nullable()->default(null);
 
             $table->boolean('confirmed')->default(0);
             $table->boolean('is_online')->default(false);

@@ -19,8 +19,8 @@ class CreateVenuesTable extends Migration
         Schema::create('venues', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('slug', 60)->nullable();
-            $table->string('category');
+            $table->string('slug', 60)->nullable()->default(null);
+            $table->string('category')->nullable()->default(null);
             $table->string('street_address');
             $table->string('city');
             $table->string('state');
@@ -30,12 +30,12 @@ class CreateVenuesTable extends Migration
             $table->decimal('lng', 11, 8);
             $table->string('local_tz');
 
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('tagline', 50)->nullable();
-            $table->text('description')->nullable();
-            $table->string('imageurl')->nullable();
-            $table->string('backgroundurl')->nullable();
+            $table->string('phone')->nullable()->default(null);
+            $table->string('email')->nullable()->default(null);
+            $table->string('tagline', 50)->nullable()->default(null);
+            $table->text('description')->nullable()->default(null);
+            $table->string('imageurl')->nullable()->default(null);
+            $table->string('backgroundurl')->nullable()->default(null);
 
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);

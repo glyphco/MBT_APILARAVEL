@@ -31,6 +31,7 @@ class CreateEventsTable extends Migration
             $table->string('postalcode');
             $table->decimal('lat', 10, 8);
             $table->decimal('lng', 11, 8);
+            $table->string('local_tz');
             $table->string('venue_tagline', 50)->nullable();
 //pricing
             $table->integer('price')->unsigned()->nullable();
@@ -46,7 +47,6 @@ class CreateEventsTable extends Migration
 
             $table->dateTime('local_start');
             $table->dateTime('local_end')->nullable()->default(null);
-            $table->string('local_tz');
 
             $table->string('info')->nullable();
             $table->string('private_info')->nullable();

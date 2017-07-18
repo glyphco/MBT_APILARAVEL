@@ -42,6 +42,7 @@ class User extends Authenticatable
         'postalcode',
         'lat',
         'lng',
+        'local_tz',
         'location',
         'imageurl',
         'backgroundurl',
