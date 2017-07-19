@@ -2,24 +2,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use Bouncer;
 use Illuminate\Http\Request;
-use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class EventCategoryController extends BaseController
+class EventShowController extends BaseController
 {
-    use HasRolesAndAbilities;
 
-    const MODEL                = 'App\Models\EventCategory';
+    const MODEL                = 'App\Models\EventShow';
     protected $validationRules = [
-        'category_id'    => 'required',
-        'subcategory_id' => 'required',
+        'showpage_id' => 'required',
     ];
 
     public function index(Request $request, $event_id)
     {
 
         $m    = self::MODEL;
-        $data = $m::where('event_id', $event_id)->with(['category', 'subcategory']);
+        $data = $m::where('event_id', $event_id)->with(['showpage']);
         $data = $data->get();
 
         return $this->listResponse($data);
@@ -43,17 +41,17 @@ class EventCategoryController extends BaseController
 
         $m = self::MODEL;
 
-        $category_id    = $request->input('category_id', null);
-        $subcategory_id = $request->input('subcategory_id', null);
-
-        if (!\App\Models\Category::find($category_id)) {
-            return $this->clientErrorResponse('Could not save: [category_id] not found');
+        $showpage_id         = $request->input('showpage_id', null);
+        $request['event_id'] = $event_id;
+        if (!\App\Models\Event::find($event_id)) {
+            return $this->clientErrorResponse('Could not save: [event_id] not found');
+        }
+        if (!$showpage_id) {
+            return $this->clientErrorResponse('Could not save: [showpage_id] not found');
         }
 
-        if ($subcategory_id) {
-            if (!\App\Models\Subcategory::where('category_id', $category_id)->find($subcategory_id)) {
-                return $this->clientErrorResponse('Could not save: [category_id] [subcategory_id] pair not found');
-            }
+        if (!\App\Models\Showpage::find($showpage_id)) {
+            return $this->clientErrorResponse('Could not save: [showpage_id] not found');
         }
 
         try
@@ -63,7 +61,7 @@ class EventCategoryController extends BaseController
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+
             $data = $m::create($request->all());
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
@@ -72,7 +70,7 @@ class EventCategoryController extends BaseController
         }
     }
 
-    public function destroy($id)
+    public function destroy($event_id, $id)
     {
         if (!($event = \App\Models\Event::find($event_id))) {
             return $this->notFoundResponse();

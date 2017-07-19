@@ -27,6 +27,10 @@ class Event extends Model
         'city',
         'state',
         'postalcode',
+        'lat',
+        'lng',
+        'local_tz',
+        'venue_tagline',
 
         'price',
         'pricemin',
@@ -36,16 +40,20 @@ class Event extends Model
 
         'ages',
 
-        'lat',
-        'lng',
-        'local_tz',
+        'UTC_start',
+        'UTC_end',
+        'local_start',
+        'local_end',
 
-        'venue_tagline',
-        'start',
-        'end',
         'info',
         'private_info',
         'order',
+
+        'imageurl',
+        'backgroundurl',
+
+        'showjson',
+
     ];
 
     /**
@@ -120,6 +128,26 @@ class Event extends Model
             //End in date range
                 ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateString());
         });
+    }
+
+    public function scopePrivate($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\EventPublicScope::class)->where('public', '=', 0);
+    }
+
+    public function scopePublicAndPrivate($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\EventPublicScope::class);
+    }
+
+    public function scopeUnconfirmed($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\EventConfirmedScope::class)->where('confirmed', '=', 0);
+    }
+
+    public function scopeConfirmedAndUnconfirmed($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\EventConfirmedScope::class);
     }
 
 //SEARCHES

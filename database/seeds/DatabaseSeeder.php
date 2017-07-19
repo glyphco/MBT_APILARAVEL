@@ -19,8 +19,9 @@ class DatabaseSeeder extends Seeder
         // Temporarily increase memory limit to 2048M
         //ini_set('memory_limit', '2048M');
 
-        $this->call('UserDataSeeder');
         $this->call('RolesSeeder');
+        $this->call('UserDataSeeder');
+
         $this->call('CategoriesSeeder');
 
         //Fake Data Follows:
@@ -248,11 +249,13 @@ class CategoriesSeeder extends Seeder
     {
 
         $categories = [
-            'Comedy'        => ['', 'Stand-up Comedy', 'Comedic Writing', 'Improv Comedy', 'Sketch Comedy'],
-            'Music'         => ['', 'Rock', 'Pop', 'Funk', 'Psychedelic', 'Emo', 'Pop-Punk', 'Acoustic', 'Country', 'Americana', 'Covers', 'Rock Band', 'Drummer', 'Guitarist', 'Singer', 'Bassist', 'Pianist', 'Trumpet Player'],
-            'Fun and Games' => ['', 'Pinball', 'Arcade', 'Video Games', 'Board Games'],
-            'Arts'          => ['', 'Theatre', 'Film and Movies', 'Visual Arts'],
-            'Sports'        => ['', 'Biking', 'Roller Derby', 'Baseball', 'Basketball', 'Softball'],
+            'Comedy'        => ['Comedy', 'Stand-up Comedy', 'Comedic Writing', 'Improv Comedy', 'Sketch Comedy'],
+            'Music'         => ['Music', 'Rock', 'Pop', 'Funk', 'Psychedelic', 'Emo', 'Pop-Punk', 'Acoustic', 'Country', 'Americana', 'Covers', 'Rock Band', 'Drums', 'Guitars', 'Vocals', 'Bass', 'Piano', 'Trumpet'],
+            'Fun and Games' => ['Fun and Games', 'Pinball', 'Arcade', 'Video Games', 'Board Games'],
+            'Arts'          => ['Arts', 'Theatre', 'Film and Movies', 'Visual Arts'],
+            'Sports'        => ['Sports', 'Biking', 'Roller Derby', 'Baseball', 'Basketball', 'Softball'],
+            'Science'       => ['Science', 'Astronomy', 'Biology', 'History'],
+
         ];
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('categories')->truncate();
@@ -384,6 +387,13 @@ class RolesSeeder extends Seeder
     public function run()
     {
 
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        DB::table('abilities')->truncate();
+        DB::table('assigned_roles')->truncate();
+        DB::table('roles')->truncate();
+        DB::table('permissions')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
         //Bouncer::allow(\Auth::user())->to('ban-users');
         //Bouncer::allow('admin')->to('ban-users');
         //Bouncer::assign('admin')->to(\Auth::user());
@@ -391,32 +401,42 @@ class RolesSeeder extends Seeder
         Bouncer::allow('superadmin')->to('view-users'); // sa only
         Bouncer::allow('superadmin')->to('edit-users'); // sa only
         Bouncer::allow('superadmin')->to('ban-users'); // sa only
+
         Bouncer::allow('superadmin')->to('admin-pages'); // sa/a only
         Bouncer::allow('superadmin')->to('confirm-pages');
         Bouncer::allow('superadmin')->to('create-pages');
         Bouncer::allow('superadmin')->to('edit-pages');
         Bouncer::allow('superadmin')->to('delete-pages');
+
         Bouncer::allow('superadmin')->to('admin-venues');
         Bouncer::allow('superadmin')->to('confirm-venues');
         Bouncer::allow('superadmin')->to('create-venues');
         Bouncer::allow('superadmin')->to('edit-venues');
         Bouncer::allow('superadmin')->to('delete-venues');
+
+        Bouncer::allow('superadmin')->to('admin-events');
+        Bouncer::allow('superadmin')->to('confirm-events');
         Bouncer::allow('superadmin')->to('create-events');
         Bouncer::allow('superadmin')->to('edit-events');
         Bouncer::allow('superadmin')->to('delete-events');
 
-        Bouncer::allow('admin')->to('admin-pages'); // sa/a only
-        Bouncer::allow('admin')->to('confirm-pages');
         Bouncer::allow('admin')->to('view-users');
         Bouncer::allow('admin')->to('edit-users');
+
+        Bouncer::allow('admin')->to('admin-pages'); // sa/a only
+        Bouncer::allow('admin')->to('confirm-pages');
         Bouncer::allow('admin')->to('create-pages');
         Bouncer::allow('admin')->to('edit-pages');
         Bouncer::allow('admin')->to('delete-pages');
+
         Bouncer::allow('admin')->to('admin-venues');
         Bouncer::allow('admin')->to('confirm-venues');
         Bouncer::allow('admin')->to('create-venues');
         Bouncer::allow('admin')->to('edit-venues');
         Bouncer::allow('admin')->to('delete-venues');
+
+        Bouncer::allow('admin')->to('admin-events');
+        Bouncer::allow('admin')->to('confirm-events');
         Bouncer::allow('admin')->to('create-events');
         Bouncer::allow('admin')->to('edit-events');
         Bouncer::allow('admin')->to('delete-events');
@@ -425,11 +445,13 @@ class RolesSeeder extends Seeder
         Bouncer::allow('mastereditor')->to('create-pages');
         Bouncer::allow('mastereditor')->to('edit-pages');
         Bouncer::allow('mastereditor')->to('delete-pages');
-        Bouncer::allow('mastereditor')->to('admin-venues');
+
         Bouncer::allow('mastereditor')->to('confirm-venues');
         Bouncer::allow('mastereditor')->to('create-venues');
         Bouncer::allow('mastereditor')->to('edit-venues');
         Bouncer::allow('mastereditor')->to('delete-venues');
+
+        Bouncer::allow('mastereditor')->to('confirm-venues');
         Bouncer::allow('mastereditor')->to('create-events');
         Bouncer::allow('mastereditor')->to('edit-events');
         Bouncer::allow('mastereditor')->to('delete-events');

@@ -18,19 +18,19 @@ class CreateEventsTable extends Migration
 // id for MVE
             $table->integer('mve_id')->unsigned()->nullable()->default(null);
 
-            $table->string('name')->nullable()->default(null);
+            $table->string('name');
             $table->text('description')->nullable();
 //show stuff
             $table->text('showjson')->nullable()->default(null);
 //venue stuff
             $table->integer('venue_id')->unsigned()->nullable();
-            $table->string('venue_name');
-            $table->string('street_address');
-            $table->string('city');
-            $table->string('state');
-            $table->string('postalcode');
-            $table->decimal('lat', 10, 8);
-            $table->decimal('lng', 11, 8);
+            $table->string('venue_name')->nullable()->default(null);
+            $table->string('street_address')->nullable()->default(null);
+            $table->string('city')->nullable()->default(null);
+            $table->string('state')->nullable()->default(null);
+            $table->string('postalcode')->nullable()->default(null);
+            $table->decimal('lat', 10, 8)->nullable()->default(null);
+            $table->decimal('lng', 11, 8)->nullable()->default(null);
             $table->string('local_tz');
             $table->string('venue_tagline', 50)->nullable();
 //pricing

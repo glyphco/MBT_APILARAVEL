@@ -5,16 +5,14 @@ use App\Http\Controllers\Controller as BaseController;
 use App\Models\User;
 use Bouncer;
 use Illuminate\Http\Request;
-use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class EventController extends BaseController
 {
-    use HasRolesAndAbilities;
+    //use HasRolesAndAbilities;
 
     const MODEL                = 'App\Models\Event';
     protected $validationRules = [
         'name'        => 'required',
-        'venue'       => 'required',
         'UTC_start'   => 'required',
         'local_start' => 'required',
         'local_tz'    => 'required',
@@ -123,6 +121,28 @@ class EventController extends BaseController
 
     }
 
+    public function editable(Request $request)
+    {
+
+        $m    = self::MODEL;
+        $data = $m::PublicAndPrivate()
+            ->ConfirmedAndUnconfirmed()
+            ->with(['mve', 'categories']);
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+
+//If you can edit all, get all!
+        if (Bouncer::allows('edit-events')) {
+            $data = $data->paginate($pp);
+            return $this->listResponse($data);
+        }
+//Otherwise only the ones you can get to:
+        $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
+
+        return $this->listResponse($data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -130,6 +150,10 @@ class EventController extends BaseController
      */
     public function store(Request $request)
     {
+        if (!(Bouncer::allows('create-events'))) {
+            return $this->unauthorizedResponse();
+        }
+
         $m = self::MODEL;
 
         try
@@ -141,6 +165,11 @@ class EventController extends BaseController
             }
             $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
             $data = $m::create($request->all());
+
+            Bouncer::allow(\Auth::user())->to('administer', $data);
+            Bouncer::allow(\Auth::user())->to('edit', $data);
+            Bouncer::refreshFor(\Auth::user());
+
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
@@ -165,6 +194,27 @@ class EventController extends BaseController
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
+        }
+
+        return $this->showResponse($data);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -175,8 +225,12 @@ class EventController extends BaseController
     {
         $m = self::MODEL;
 
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
+        }
+
+        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
         }
 
         try

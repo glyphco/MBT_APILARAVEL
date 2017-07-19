@@ -193,55 +193,54 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     });
 
 //events
-
     Route::get('/event', 'EventController@index');
-    Route::get('/event/{id}', 'EventController@show');
-//Attending
-    Route::get('/event/attend/{id}', ['as' => 'event.attending', 'uses' => 'AttendingController@attendEvent']);
+    Route::post('/event', 'EventController@store');
 
-    Route::group(['middleware' => 'can:edit-events'], function () {
-        Route::post('/event', 'EventController@store');
-        Route::get('/event/{id}/confirm', 'EventController@confirm');
-        Route::get('/event/{id}/unconfirm', 'EventController@unconfirm');
-        Route::put('/event/{id}', 'EventController@update');
-        Route::get('/event/{id}/makepublic', 'EventController@makepublic');
-        Route::get('/eventv/{id}/makeprivate', 'EventController@makeprivate');
-    });
+//
+    Route::get('/event/editable', 'EventController@editable');
+
+//Specific Event
+    Route::group(['prefix' => 'event/{event_id}'], function () {
+        Route::get('/', 'EventController@show');
+
+//Access to Edits will be checked when the event is retrieved in controller
+        Route::get('/edit', 'EventController@edit');
+        Route::put('/', 'EventController@update');
+
+        Route::get('/confirm', 'EventController@confirm');
+        Route::get('/unconfirm', 'EventController@unconfirm');
+
+        Route::get('/makepublic', 'EventController@makepublic');
+        Route::get('/makeprivate', 'EventController@makeprivate');
+        Route::get('/giveedit/{userid}', 'EventController@giveedit');
+        Route::get('/revokeedit/{userid}', 'EventController@revokeedit');
+        Route::get('/giveadmin/{userid}', 'EventController@giveadmin');
+        Route::get('/revokeadmin/{userid}', 'EventController@revokeadmin');
+        Route::get('/editors', 'EventController@geteditors');
+        Route::get('/admins', 'EventController@getadmins');
+
+//Event Shows
+        Route::group(['prefix' => 'shows'], function () {
+            Route::get('/', 'EventShowController@index');
+            Route::post('/', 'EventShowController@store');
+            Route::delete('/{eventshow_id}', 'EventShowController@destroy');
+        });
 
 //Event Categories
-    Route::group(['prefix' => 'event/{page_id}'], function () {
-        Route::get('/category', 'EventCategoryController@index');
-    });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-pages'], function () {
-        Route::post('/category', 'EventCategoryController@store');
-    });
-    Route::group(['middleware' => 'can:edit-pages'], function () {
-        Route::delete('/eventcategory/{eventcategory_id}', 'EventCategoryController@destroy');
-    });
+        Route::get('/categories', 'EventCategoryController@index');
+        Route::post('/categories', 'EventCategoryController@store');
+        Route::delete('/categories/{eventcategory_id}', 'EventCategoryController@destroy');
 
 //Event Participants
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
         Route::get('/participants', 'EventParticipantController@index');
         Route::get('/participants/{id}', 'EventParticipantController@show');
-    });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:create-events'], function () {
         Route::post('/participants', 'EventParticipantController@store');
-    });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
         Route::put('/participants/{id}', 'EventParticipantController@update');
-    });
-    Route::group(['prefix' => 'event/{event_id}', 'middleware' => 'can:edit-events'], function () {
         Route::delete('/participants/{id}', 'EventParticipantController@destroy');
     });
 
-//Participants
-    Route::group(['middleware' => 'can:edit-events'], function () {
-        Route::get('/participants', 'ParticipantController@index');
-        Route::get('/participants/{id}', 'ParticipantController@show');
-    });
-    Route::group(['middleware' => 'can:create-events'], function () {
-        Route::post('/participants', 'ParticipantController@store');
-    });
+//Attending
+    Route::get('/event/attend/{id}', ['as' => 'event.attending', 'uses' => 'AttendingController@attendEvent']);
 
 // Users (Mostly Admin stuff)
     Route::group(['middleware' => 'can:view-users'], function () {
