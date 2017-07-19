@@ -1,12 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Scopes\ShowpageConfirmedScope;
-use App\Scopes\ShowpagePublicScope;
+use App\Scopes\ShowConfirmedScope;
+use App\Scopes\ShowPublicScope;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
-class Showpage extends Model
+class Show extends Model
 {
     use Userstamps;
     //use SpacialdataTrait;
@@ -42,33 +42,33 @@ class Showpage extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\ShowpagePublicScope);
-        static::addGlobalScope(new \App\Scopes\ShowpageConfirmedScope);
+        static::addGlobalScope(new \App\Scopes\ShowPublicScope);
+        static::addGlobalScope(new \App\Scopes\ShowConfirmedScope);
     }
 
     public function events()
     {
-        return $this->belongsToMany('App\Models\Events', 'event_shows');
+        return $this->belongsToMany('App\Models\Event', 'event_shows');
     }
 
     public function scopePrivate($query)
     {
-        return $query->withoutGlobalScope(\App\Scopes\ShowpagePublicScope::class)->where('public', '=', 0);
+        return $query->withoutGlobalScope(\App\Scopes\ShowPublicScope::class)->where('public', '=', 0);
     }
 
     public function scopePublicAndPrivate($query)
     {
-        return $query->withoutGlobalScope(\App\Scopes\ShowpagePublicScope::class);
+        return $query->withoutGlobalScope(\App\Scopes\ShowPublicScope::class);
     }
 
     public function scopeUnconfirmed($query)
     {
-        return $query->withoutGlobalScope(\App\Scopes\ShowpageConfirmedScope::class)->where('confirmed', '=', 0);
+        return $query->withoutGlobalScope(\App\Scopes\ShowConfirmedScope::class)->where('confirmed', '=', 0);
     }
 
     public function scopeConfirmedAndUnconfirmed($query)
     {
-        return $query->withoutGlobalScope(\App\Scopes\ShowpageConfirmedScope::class);
+        return $query->withoutGlobalScope(\App\Scopes\ShowConfirmedScope::class);
     }
 
     public function likes()

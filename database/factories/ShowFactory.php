@@ -1,6 +1,6 @@
 <?php
 
-$factory->define('App\Models\Showpage', function (Faker\Generator $faker) {
+$factory->define('App\Models\Show', function (Faker\Generator $faker) {
     static $password;
 
     //    $lat = $faker->latitude($min = -90, $max = 90);

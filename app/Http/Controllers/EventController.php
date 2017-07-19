@@ -255,6 +255,10 @@ class EventController extends BaseController
         if (!$data = $m::find($id)) {
             return $this->notFoundResponse();
         }
+        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
+        }
+
         $data->delete();
         return $this->deletedResponse();
     }

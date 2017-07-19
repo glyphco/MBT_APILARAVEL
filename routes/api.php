@@ -122,31 +122,31 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     });
 
 // Show Pages
-    Route::group(array('prefix' => 'showpage'), function () {
-        Route::get('/', 'ShowpageController@index');
-        Route::get('/{id}', 'ShowpageController@show');
-        Route::get('/{id}/likes', 'ShowpageController@getLikes');
-        Route::get('/like/{id}', ['as' => 'showpage.like', 'uses' => 'LikeController@likeShowpage']);
+    Route::group(array('prefix' => 'show'), function () {
+        Route::get('/', 'ShowController@index');
+        Route::get('/{id}', 'ShowController@show');
+        Route::get('/{id}/likes', 'ShowController@getLikes');
+        Route::get('/like/{id}', ['as' => 'show.like', 'uses' => 'LikeController@likeShow']);
 
         Route::group(['middleware' => 'can:create-pages'], function () {
-            Route::post('/', 'ShowpageController@store');
+            Route::post('/', 'ShowController@store');
         });
         Route::group(['middleware' => 'can:confirm-pages'], function () {
-            Route::get('/{id}/confirm', 'ShowpageController@confirm');
-            Route::get('/{id}/unconfirm', 'ShowpageController@unconfirm');
+            Route::get('/{id}/confirm', 'ShowController@confirm');
+            Route::get('/{id}/unconfirm', 'ShowController@unconfirm');
         });
 
         Route::group(['middleware' => 'can:edit-pages'], function () {
-            Route::put('/{id}', 'ShowpageController@update');
-            Route::get('/{id}/makepublic', 'ShowpageController@makepublic');
-            Route::get('/{id}/makeprivate', 'ShowpageController@makeprivate');
+            Route::put('/{id}', 'ShowController@update');
+            Route::get('/{id}/makepublic', 'ShowController@makepublic');
+            Route::get('/{id}/makeprivate', 'ShowController@makeprivate');
             // checks made in controller:
-            Route::get('/{id}/giveedit/{userid}', 'ShowpageController@giveedit');
-            Route::get('/{id}/revokeedit/{userid}', 'ShowpageController@revokeedit');
-            Route::get('/{id}/giveadmin/{userid}', 'ShowpageController@giveadmin');
-            Route::get('/{id}/revokeadmin/{userid}', 'ShowpageController@revokeadmin');
-            Route::get('/{id}/editors', 'ShowpageController@geteditors');
-            Route::get('/{id}/admins', 'ShowpageController@getadmins');
+            Route::get('/{id}/giveedit/{userid}', 'ShowController@giveedit');
+            Route::get('/{id}/revokeedit/{userid}', 'ShowController@revokeedit');
+            Route::get('/{id}/giveadmin/{userid}', 'ShowController@giveadmin');
+            Route::get('/{id}/revokeadmin/{userid}', 'ShowController@revokeadmin');
+            Route::get('/{id}/editors', 'ShowController@geteditors');
+            Route::get('/{id}/admins', 'ShowController@getadmins');
         });
     });
 
@@ -209,7 +209,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
         Route::get('/confirm', 'EventController@confirm');
         Route::get('/unconfirm', 'EventController@unconfirm');
-
         Route::get('/makepublic', 'EventController@makepublic');
         Route::get('/makeprivate', 'EventController@makeprivate');
         Route::get('/giveedit/{userid}', 'EventController@giveedit');
@@ -218,6 +217,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/revokeadmin/{userid}', 'EventController@revokeadmin');
         Route::get('/editors', 'EventController@geteditors');
         Route::get('/admins', 'EventController@getadmins');
+
+//Attending
+        Route::get('/attend', 'AttendingController@attendEvent');
 
 //Event Shows
         Route::group(['prefix' => 'shows'], function () {
@@ -238,9 +240,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::put('/participants/{id}', 'EventParticipantController@update');
         Route::delete('/participants/{id}', 'EventParticipantController@destroy');
     });
-
-//Attending
-    Route::get('/event/attend/{id}', ['as' => 'event.attending', 'uses' => 'AttendingController@attendEvent']);
 
 // Users (Mostly Admin stuff)
     Route::group(['middleware' => 'can:view-users'], function () {

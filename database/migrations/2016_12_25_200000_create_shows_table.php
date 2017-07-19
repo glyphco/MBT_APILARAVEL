@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShowpagesTable extends Migration
+class CreateshowsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class CreateShowpagesTable extends Migration
     public function up()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('showpages');
+        Schema::dropIfExists('shows');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        Schema::create('showpages', function (Blueprint $table) {
+        Schema::create('shows', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 60);
             $table->string('slug', 60)->nullable()->default(null);
@@ -46,7 +46,7 @@ class CreateShowpagesTable extends Migration
     public function down()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::dropIfExists('showpages');
+        Schema::dropIfExists('shows');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

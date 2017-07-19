@@ -2,11 +2,11 @@
 
 $factory->define('App\Models\EventShow', function (Faker\Generator $faker) {
 
-    $eventshowpage_pages = App\Models\Showpage::pluck('id')->toArray();
+    $eventshows = App\Models\Show::pluck('id')->toArray();
 
     return [
 
-        'showpage_id' => $faker->randomElement($eventshowpage_pages),
+        'show_id' => $faker->randomElement($eventshows),
     ];
 
 });

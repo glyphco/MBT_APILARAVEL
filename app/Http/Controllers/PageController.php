@@ -58,6 +58,49 @@ class PageController extends BaseController
         return $this->listResponse($data);
     }
 
+    public function editable(Request $request)
+    {
+
+        $m    = self::MODEL;
+        $data = $m::PublicAndPrivate()
+            ->ConfirmedAndUnconfirmed()
+            ->with(['categories']);
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+
+//If you can edit all, get all!
+        if (Bouncer::allows('edit-pages')) {
+            $data = $data->paginate($pp);
+            return $this->listResponse($data);
+        }
+//Otherwise only the ones you can get to:
+        $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
+
+        return $this->listResponse($data);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!((Bouncer::allows('edit-pages')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
+        }
+
+        return $this->showResponse($data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -66,6 +109,10 @@ class PageController extends BaseController
      */
     public function store(Request $request)
     {
+        if (!(Bouncer::allows('create-pages'))) {
+            return $this->unauthorizedResponse();
+        }
+
         $m = self::MODEL;
         try
         {
@@ -113,8 +160,12 @@ class PageController extends BaseController
     {
         $m = self::MODEL;
 
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
+        }
+
+        if (!((Bouncer::allows('edit-pages')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
         }
 
         try
@@ -142,8 +193,12 @@ class PageController extends BaseController
     public function destroy($id)
     {
         $m = self::MODEL;
-        if (!$data = $m::find($id)) {
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
+        }
+        if (!((Bouncer::allows('edit-pages')) or (Bouncer::allows('edit', $data)))) {
+            return $this->unauthorizedResponse();
         }
         $data->delete();
         return $this->deletedResponse();

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShowpageProducersTable extends Migration
+class CreateShowProducersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateShowpageProducersTable extends Migration
      */
     public function up()
     {
-        Schema::create('showpage_producers', function (Blueprint $table) {
+        Schema::create('show_producers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('showpage_id')->unsigned();
+            $table->integer('show_id')->unsigned();
             $table->string('name');
             $table->string('info')->nullable();
             $table->string('private_info')->nullable();
@@ -28,7 +28,7 @@ class CreateShowpageProducersTable extends Migration
             $table->unsignedInteger('updated_by')->nullable()->default(null);
 
             $table->foreign('page_id')->references('id')->on('pages')->onUpdate('cascade')->onDelete('set null');
-            $table->foreign('showpage_id')->references('id')->on('showpages')->onDelete('cascade');
+            $table->foreign('show_id')->references('id')->on('shows')->onDelete('cascade');
         });
 
     }
@@ -40,7 +40,7 @@ class CreateShowpageProducersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('showpage_producers');
+        Schema::dropIfExists('show_producers');
     }
 
 }

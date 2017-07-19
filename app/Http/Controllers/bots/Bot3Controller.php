@@ -22,7 +22,7 @@ class Bot3Controller extends BaseController
         $raw = "select s.*, rank, count(user_id) as attending from attending a
 left join events e on (e.id = a.event_id)
 left join event_shows es on (es.event_id = e.id)
-left join showpages s on (es.showpage_id = s.id)
+left join shows s on (es.show_id = s.id)
 
 where (rank =?)
 and s.id is not null

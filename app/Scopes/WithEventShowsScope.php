@@ -17,6 +17,6 @@ class WithEventShowsScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->with('eventshows.showpage');
+        $builder->with('eventshows.show');
     }
 }

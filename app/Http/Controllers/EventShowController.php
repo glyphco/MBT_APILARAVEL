@@ -10,14 +10,14 @@ class EventShowController extends BaseController
 
     const MODEL                = 'App\Models\EventShow';
     protected $validationRules = [
-        'showpage_id' => 'required',
+        'show_id' => 'required',
     ];
 
     public function index(Request $request, $event_id)
     {
 
         $m    = self::MODEL;
-        $data = $m::where('event_id', $event_id)->with(['showpage']);
+        $data = $m::where('event_id', $event_id)->with(['show']);
         $data = $data->get();
 
         return $this->listResponse($data);
@@ -41,17 +41,17 @@ class EventShowController extends BaseController
 
         $m = self::MODEL;
 
-        $showpage_id         = $request->input('showpage_id', null);
+        $show_id             = $request->input('show_id', null);
         $request['event_id'] = $event_id;
         if (!\App\Models\Event::find($event_id)) {
             return $this->clientErrorResponse('Could not save: [event_id] not found');
         }
-        if (!$showpage_id) {
-            return $this->clientErrorResponse('Could not save: [showpage_id] not found');
+        if (!$show_id) {
+            return $this->clientErrorResponse('Could not save: [show_id] not found');
         }
 
-        if (!\App\Models\Showpage::find($showpage_id)) {
-            return $this->clientErrorResponse('Could not save: [showpage_id] not found');
+        if (!\App\Models\Show::find($show_id)) {
+            return $this->clientErrorResponse('Could not save: [show_id] not found');
         }
 
         try

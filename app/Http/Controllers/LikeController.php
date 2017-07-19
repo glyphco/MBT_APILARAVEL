@@ -22,10 +22,10 @@ class LikeController extends BaseController
         return $this->notFoundResponse();
     }
 
-    public function likeShowpage($id)
+    public function likeShow($id)
     {
-        if (\App\Models\Showpage::find($id)) {
-            return $this->showResponse($this->handleLike('App\Models\Showpage', $id));
+        if (\App\Models\Show::find($id)) {
+            return $this->showResponse($this->handleLike('App\Models\Show', $id));
         }
         return $this->notFoundResponse();
     }

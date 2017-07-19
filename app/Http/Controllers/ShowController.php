@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use App\Models\User;
+use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
@@ -10,8 +12,11 @@ class ShowController extends BaseController
     use HasRolesAndAbilities;
     const MODEL                = 'App\Models\Show';
     protected $validationRules = [
-        'name'     => 'required',
-        'event_id' => 'required',
+        'name'       => 'required',
+        'category'   => 'required',
+        'city'       => 'required',
+        'state'      => 'required',
+        'postalcode' => 'required',
     ];
 
     /**
@@ -21,22 +26,29 @@ class ShowController extends BaseController
      */
     public function index(Request $request)
     {
-        $m  = self::MODEL;
+        $m    = self::MODEL;
+        $data = $m::withCount('events')->withCount('likes');
+        if ($request->exists('q')) {
+            $data = $data->where('name', 'like', $request['q'] . '%');
+        }
+
+        if ($request->exists('Unconfirmed')) {
+            $data = $data->Unconfirmed();
+        }
+        if ($request->exists('ConfirmedAndUnconfirmed')) {
+            $data = $data->ConfirmedAndUnconfirmed();
+        }
+        if ($request->exists('Private')) {
+            $data = $data->Private();
+        }
+        if ($request->exists('PublicAndPrivate')) {
+            $data = $data->PublicAndPrivate();
+        }
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
-        $data = $m::paginate($pp);
-//        $data = $data->get();
+        $data = $data->paginate($pp);
 
         return $this->listResponse($data);
-    }
-
-    public function show(Request $request, $id)
-    {
-        $m = self::MODEL;
-        if ($data = $m::find($id)) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
     }
 
     /**
@@ -47,28 +59,7 @@ class ShowController extends BaseController
      */
     public function store(Request $request)
     {
-
         $m = self::MODEL;
-
-// make sure event is there
-        $event_id = $request->input('event_id', null);
-        $event    = \App\Models\Event::find($event_id);
-        if (!($event)) {
-            // Oops.
-            return $this->clientErrorResponse('Could not save: [event_id] not found');
-        }
-
-        $page_id = $request->input('page_id', null);
-
-        if ($page_id) {
-            $page = \App\Models\Page::find($page_id);
-            if (!($page)) {
-                // Oops.
-                return $this->clientErrorResponse('Could not save: [page_id] not found');
-            }
-
-        }
-
         try
         {
             $v = \Illuminate\Support\Facades\Validator::make($request->all(), $this->validationRules);
@@ -85,18 +76,32 @@ class ShowController extends BaseController
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $m = self::MODEL;
+        if ($data = $m::withCount('events')->withCount('likes')->find($id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $event_id, $id)
+    public function update(Request $request, $id)
     {
-        $request['event_id'] = $event_id;
-        $m                   = self::MODEL;
+        $m = self::MODEL;
 
-        if (!$data = $m::where('event_id', $event_id)->find($id)) {
+        if (!$data = $m::find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -122,14 +127,211 @@ class ShowController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $event_id, $id)
+    public function destroy($id)
     {
         $m = self::MODEL;
-        if (!$data = $m::where('event_id', $event_id)->find($id)) {
+        if (!$data = $m::find($id)) {
             return $this->notFoundResponse();
         }
         $data->delete();
         return $this->deletedResponse();
+    }
+
+    public function confirm($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!(Bouncer::allows('confirm-pages'))) {
+            return $this->unauthorizedResponse();
+        }
+
+        try
+        {
+            $data->confirmed = 1;
+            $data->save();
+            return $this->showResponse($data);
+        } catch (\Exception $ex) {
+            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($data);
+        }
+
+    }
+    public function unconfirm($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!(Bouncer::allows('confirm-pages'))) {
+            return $this->unauthorizedResponse();
+        }
+
+        try
+        {
+            $data->confirmed = 0;
+            $data->save();
+            return $this->showResponse($data);
+        } catch (\Exception $ex) {
+            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($data);
+        }
+    }
+
+    public function giveedit(Request $request, $id, $userid)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+        if (!$otheruser = User::find($userid)) {
+            return $this->notFoundResponse();
+        }
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            Bouncer::allow($otheruser)->to('edit', $data);
+            return $this->showResponse('');
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function revokeedit(Request $request, $id, $userid)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+        if (!$otheruser = User::find($userid)) {
+            return $this->notFoundResponse();
+        }
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            Bouncer::disallow($otheruser)->to('edit', $data);
+            return $this->showResponse('');
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function giveadmin(Request $request, $id, $userid)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+        if (!$otheruser = User::find($userid)) {
+            return $this->notFoundResponse();
+        }
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            Bouncer::allow($otheruser)->to('administer', $data);
+            return $this->showResponse('');
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function revokeadmin(Request $request, $id, $userid)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+        if (!$otheruser = User::find($userid)) {
+            return $this->notFoundResponse();
+        }
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            Bouncer::disallow($otheruser)->to('administer', $data);
+            return $this->showResponse('');
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function getEditors(Request $request, $id)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            $users = User::WhereCan('edit', $data)->select('id', 'name', 'avatar')->get();
+            return $this->showResponse($users);
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function getAdmins(Request $request, $id)
+    {
+        $m = self::MODEL;
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('admin-pages')) or (Bouncer::allows('administer', $data))) {
+            $users = User::WhereCan('administer', $data)->select('id', 'name', 'avatar')->get();
+            return $this->showResponse($users);
+        }
+        return $this->unauthorizedResponse();
+    }
+
+    public function makepublic($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-pages'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
+        }
+
+    }
+    public function makeprivate($id)
+    {
+        $m = self::MODEL;
+
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-pages'))) {
+            try
+            {
+                $data->public = 1;
+                $data->save();
+                return $this->showResponse($data);
+            } catch (\Exception $ex) {
+                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+                return $this->clientErrorResponse($data);
+            }
+
+        } else {
+            return $this->unauthorizedResponse();
+        }
+    }
+
+    public function getlikes($id)
+    {
+
+        $m = self::MODEL;
+        if ($data = $m::with('likes')->find($id)->likes) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+
     }
 
 }

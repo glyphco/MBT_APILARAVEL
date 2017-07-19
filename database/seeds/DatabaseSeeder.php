@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         //Fake Data Follows:
         $this->call('VenueDataSeeder');
         $this->call('PageDataSeeder');
-        $this->call('ShowpageDataSeeder');
+        $this->call('ShowDataSeeder');
 
         $this->call('EventDataSeeder');
 
@@ -131,15 +131,15 @@ class PageDataSeeder extends Seeder
     }
 }
 
-class ShowpageDataSeeder extends Seeder
+class ShowDataSeeder extends Seeder
 {
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        DB::table('showpages')->truncate();
+        DB::table('shows')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $showpages = factory('App\Models\Showpage', 15)
+        $shows = factory('App\Models\Show', 15)
             ->create();
     }
 }
@@ -188,12 +188,12 @@ class EventDataSeeder extends Seeder
                     }
                     $showjson = [];
                     foreach ($ev->eventshows as $evshow) {
-                        $eventshowpage_page = App\Models\Showpage::find($evshow['showpage_id'])->toArray();
-                        $showjson[]         =
+                        $eventshow_page = App\Models\Show::find($evshow['show_id'])->toArray();
+                        $showjson[]     =
                             [
-                            'id'       => $eventshowpage_page['id'],
-                            'name'     => $eventshowpage_page['name'],
-                            'imageurl' => $eventshowpage_page['imageurl'],
+                            'id'       => $eventshow_page['id'],
+                            'name'     => $eventshow_page['name'],
+                            'imageurl' => $eventshow_page['imageurl'],
                         ];
                     }
                     $ev->showjson = json_encode($showjson);
@@ -213,7 +213,7 @@ class MveDataSeeder extends Seeder
         DB::table('mve_producers')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $showpages = factory('App\Models\Mve', 5)
+        $shows = factory('App\Models\Mve', 5)
             ->create()
             ->each(function ($mve) {
 

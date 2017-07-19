@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class ShowpageConfirmedScope implements Scope
+class ShowPublicScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -17,6 +17,6 @@ class ShowpageConfirmedScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('showpages.confirmed', '=', 1);
+        $builder->where('shows.public', '=', 1);
     }
 }
