@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
@@ -33,6 +34,8 @@ class EventCategoryController extends BaseController
      */
     public function store(Request $request, $event_id)
     {
+
+        $request['event_id'] = $event_id;
 
         if (!($event = \App\Models\Event::find($event_id))) {
             return $this->notFoundResponse();
@@ -72,7 +75,7 @@ class EventCategoryController extends BaseController
         }
     }
 
-    public function destroy($id)
+    public function destroy($event_id, $id)
     {
         if (!($event = \App\Models\Event::find($event_id))) {
             return $this->notFoundResponse();

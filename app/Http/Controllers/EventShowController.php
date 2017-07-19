@@ -32,6 +32,8 @@ class EventShowController extends BaseController
     public function store(Request $request, $event_id)
     {
 
+        $request['event_id'] = $event_id;
+
         if (!($event = \App\Models\Event::find($event_id))) {
             return $this->notFoundResponse();
         }

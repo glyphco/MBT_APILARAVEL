@@ -25,7 +25,7 @@ Route::get('/', function () {
 });
 
 //Route::options('/venue', 'VenueController@index'); // Preflight
-
+Route::get('/test', 'TestController@index');
 //ONLY Tokened Visitors beyond this point!
 
 //Route::group(['middleware' => ['jwt.auth', 'cors']], function () {
@@ -49,7 +49,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 //debug and general
     Route::get('/userinfo', 'UserinfoController@userinfo');
 
-    Route::get('/test', function () {
+    Route::get('/test2', function () {
         var_dump(\Auth::user());
         $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
         //$attributes = array_pluck(\Auth::user()->get, 'name');
@@ -288,6 +288,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     //         return 'nice try dickwad.';
     //     }
     // });
+
+//Uploads
+    Route::post('/uploadheadimage/{item}/{id}/', 'UploadController@uploadheadimage');
 
 //BOTS!!
     Route::get('/bots/bot1', 'bots\Bot1Controller@index');

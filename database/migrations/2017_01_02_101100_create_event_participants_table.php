@@ -22,8 +22,8 @@ class CreateEventParticipantsTable extends Migration
             $table->integer('page_id')->unsigned()->nullable();
             $table->string('imageurl')->nullable()->default(null);
 
-            $table->dateTime('start')->nullable()->default(null);
-            $table->dateTime('end')->nullable()->default(null);
+            $table->string('start')->nullable()->default(null);
+            $table->string('end')->nullable()->default(null);
             $table->integer('order')->unsigned()->default(0);
 
             $table->boolean('public')->default(0);
