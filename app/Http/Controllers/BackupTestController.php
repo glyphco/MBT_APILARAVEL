@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller as BaseController;
 use Aws\S3\PostObjectV4;
 use Illuminate\Http\Request;
 
-class TestController extends BaseController
+class BackupTestController extends BaseController
 {
 
     /**

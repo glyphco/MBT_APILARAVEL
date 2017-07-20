@@ -16,30 +16,46 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // Temporarily increase memory limit to 2048M
-        //ini_set('memory_limit', '2048M');
-
         $this->call('RolesSeeder');
-        $this->call('UserDataSeeder');
-
         $this->call('CategoriesSeeder');
+        $this->call('SuperAdminDataSeeder');
 
-        //Fake Data Follows:
-        $this->call('VenueDataSeeder');
-        $this->call('PageDataSeeder');
-        $this->call('ShowDataSeeder');
+        if (App::environment('local')) {
+            // run production queries or model factories
 
-        $this->call('EventDataSeeder');
+            //Fake Data Follows:
+            $this->call('UserDataSeeder');
+            $this->call('VenueDataSeeder');
+            $this->call('PageDataSeeder');
+            $this->call('ShowDataSeeder');
 
-        $this->call('MveDataSeeder');
+            $this->call('EventDataSeeder');
 
-        $this->call('UserLikesSeeder');
+            $this->call('MveDataSeeder');
+
+            $this->call('UserLikesSeeder');
+
+        } else {
+            // run local queries or model factories
+
+            //Fake Data Follows:
+            $this->call('UserDataSeeder');
+            $this->call('VenueDataSeeder');
+            $this->call('PageDataSeeder');
+            $this->call('ShowDataSeeder');
+
+            $this->call('EventDataSeeder');
+
+            $this->call('MveDataSeeder');
+
+            $this->call('UserLikesSeeder');
+        }
 
     }
 
 }
 
-class UserDataSeeder extends Seeder
+class SuperAdminDataSeeder extends Seeder
 {
     public function run()
     {
@@ -91,6 +107,15 @@ class UserDataSeeder extends Seeder
         //Logging in glypher so we can do all the seeding
         \Auth::login($user);
         \Auth::user()->assign('superadmin');
+
+    }
+}
+
+class UserDataSeeder extends Seeder
+{
+    public function run()
+    {
+
         $users = factory('App\Models\User', 'user', 20)->create();
 
     }

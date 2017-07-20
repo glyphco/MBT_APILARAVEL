@@ -44,6 +44,7 @@ class SignUploadController extends BaseController
         $options = [
             ['bucket' => config('services.s3.bucket')],
             ['starts-with', '$key', $head],
+            ['starts-with', '$Content-Type', 'image/jpeg'],
         ];
 
         $postObject = new PostObjectV4(
