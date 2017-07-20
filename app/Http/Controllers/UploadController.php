@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class UploadController extends BaseController
 {
+
+    //This is unused, but can be used for direct file upoloads to the server.
+
     protected $validitems = [
         'event' => ['edit-events', 'App\Models\Event'],
         'mve'   => ['edit-events', 'App\Models\Mve'],

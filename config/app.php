@@ -179,6 +179,8 @@ return [
 
         Silber\Bouncer\BouncerServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+
+        App\Providers\S3ServiceProvider::class,
     ],
 
     /*

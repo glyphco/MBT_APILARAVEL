@@ -290,7 +290,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     // });
 
 //Uploads
-    Route::post('/uploadheadimage/{item}/{id}/', 'UploadController@uploadheadimage');
+    Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');
+    //Route::post('/uploadheadimage/{item}/{id}/', 'UploadController@uploadheadimage');
 
 //BOTS!!
     Route::get('/bots/bot1', 'bots\Bot1Controller@index');
