@@ -19,6 +19,7 @@ class MveController extends BaseController
         'name' => 'required',
     ];
 
+    protected $createitems  = 'create-events';
     protected $adminitems   = 'admin-events';
     protected $edititems    = 'edit-events';
     protected $confirmitems = 'confirm-events';
@@ -74,6 +75,28 @@ class MveController extends BaseController
 
     }
 
+    public function editable(Request $request)
+    {
+
+        $m    = self::MODEL;
+        $data = $m::PublicAndPrivate()
+            ->ConfirmedAndUnconfirmed()
+            ->with(['categories']);
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+
+//If you can edit all, get all!
+        if (Bouncer::allows('edit-pages')) {
+            $data = $data->paginate($pp);
+            return $this->listResponse($data);
+        }
+//Otherwise only the ones you can get to:
+        $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
+
+        return $this->listResponse($data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -81,6 +104,14 @@ class MveController extends BaseController
      */
     public function store(Request $request)
     {
+        if (!(Bouncer::allows($this->createitems))) {
+            return $this->unauthorizedResponse();
+        }
+
+        if (!(Bouncer::allows($this->confirmitems))) {
+            $request['confirm'] = null;
+        }
+
         $m = self::MODEL;
 
         try

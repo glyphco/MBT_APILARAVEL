@@ -23,6 +23,7 @@ class PageController extends BaseController
         'postalcode' => 'required',
     ];
 
+    protected $createitems  = 'create-pages';
     protected $adminitems   = 'admin-pages';
     protected $edititems    = 'edit-pages';
     protected $confirmitems = 'confirm-pages';
@@ -71,14 +72,13 @@ class PageController extends BaseController
 
         $m    = self::MODEL;
         $data = $m::PublicAndPrivate()
-            ->ConfirmedAndUnconfirmed()
-            ->with(['categories']);
+            ->ConfirmedAndUnconfirmed();
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
 
-//If you can edit all, get all!
-        if (Bouncer::allows('edit-pages')) {
+//If you can edit or admin all, get all!
+        if ((Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems))) {
             $data = $data->paginate($pp);
             return $this->listResponse($data);
         }
@@ -117,8 +117,12 @@ class PageController extends BaseController
      */
     public function store(Request $request)
     {
-        if (!(Bouncer::allows('create-pages'))) {
+        if (!(Bouncer::allows($this->createitems))) {
             return $this->unauthorizedResponse();
+        }
+
+        if (!(Bouncer::allows($this->confirmitems))) {
+            $request['confirm'] = null;
         }
 
         $m = self::MODEL;

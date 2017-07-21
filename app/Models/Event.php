@@ -49,6 +49,9 @@ class Event extends Model
         'private_info',
         'order',
 
+        'public',
+        'confirmed',
+
         'imageurl',
         'backgroundurl',
 

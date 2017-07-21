@@ -24,6 +24,7 @@ class EventController extends BaseController
     ];
     protected $friends;
 
+    protected $createitems  = 'create-events';
     protected $adminitems   = 'admin-events';
     protected $edititems    = 'edit-events';
     protected $confirmitems = 'confirm-events';
@@ -135,14 +136,13 @@ class EventController extends BaseController
 
         $m    = self::MODEL;
         $data = $m::PublicAndPrivate()
-            ->ConfirmedAndUnconfirmed()
-            ->with(['mve', 'categories']);
+            ->ConfirmedAndUnconfirmed();
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
 
-//If you can edit all, get all!
-        if (Bouncer::allows('edit-events')) {
+//If you can edit or admin all, get all!
+        if ((Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems))) {
             $data = $data->paginate($pp);
             return $this->listResponse($data);
         }
@@ -159,8 +159,12 @@ class EventController extends BaseController
      */
     public function store(Request $request)
     {
-        if (!(Bouncer::allows('create-events'))) {
+        if (!(Bouncer::allows($this->createitems))) {
             return $this->unauthorizedResponse();
+        }
+
+        if (!(Bouncer::allows($this->confirmitems))) {
+            $request['confirm'] = null;
         }
 
         $m = self::MODEL;
@@ -251,12 +255,15 @@ class EventController extends BaseController
 
         try
         {
-            $v = \Illuminate\Support\Facades\Validator::make($request->all(), $this->validationRules);
+
+            $data->fill($request->all());
+
+            $v = \Illuminate\Support\Facades\Validator::make($data->toArray(), $this->validationRules);
 
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $data->fill($request->all());
+
             $data->save();
             return $this->showResponse($data);
         } catch (\Exception $ex) {

@@ -97,4 +97,32 @@ class MeController extends BaseController
         }
     }
 
+    public function makeMe($position)
+    {
+
+        $validpositions = [
+            'admin',
+            'mastereditor',
+            'contributor',
+            'nothing',
+        ];
+
+        if (!(in_array($position, $validpositions))) {
+            return $this->notFoundResponse();
+        }
+        $user = \Auth::User();
+        Bouncer::retract('admin')->from($user);
+        Bouncer::retract('mastereditor')->from($user);
+        Bouncer::retract('contributor')->from($user);
+
+        if ($position == 'nothing') {
+            Bouncer::refreshFor($user);
+            return $this->showResponse('user is now ' . $position);
+        }
+
+        Bouncer::assign($position)->to($user);
+        Bouncer::refreshFor($user);
+        return $this->showResponse('user is now ' . $position);
+    }
+
 }

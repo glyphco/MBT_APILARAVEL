@@ -166,6 +166,9 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
 
         'ages'           => $faker->optional()->randomElement($array = [0, 1, 2, 3, 4]),
 
+        'public'         => 1,
+        'confirmed'      => 1,
+
         'imageurl'       => $faker->imageUrl(200, 200, 'nightlife'),
         'backgroundurl'  => $faker->imageUrl(1400, 656, 'nightlife'),
 

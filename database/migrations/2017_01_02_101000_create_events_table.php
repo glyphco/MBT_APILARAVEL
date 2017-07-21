@@ -53,6 +53,9 @@ class CreateEventsTable extends Migration
 
             $table->integer('order')->unsigned()->default(0);
 
+            $table->boolean('public')->default(0);
+            $table->boolean('confirmed')->default(0);
+
             $table->string('imageurl')->nullable();
             $table->string('backgroundurl')->nullable();
 

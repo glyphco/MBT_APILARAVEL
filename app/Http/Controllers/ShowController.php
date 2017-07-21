@@ -23,9 +23,10 @@ class ShowController extends BaseController
         'postalcode' => 'required',
     ];
 
-    protected $adminitems   = 'admin-shows';
-    protected $edititems    = 'edit-shows';
-    protected $confirmitems = 'confirm-shows';
+    protected $createitems  = 'create-pages';
+    protected $adminitems   = 'admin-pages';
+    protected $edititems    = 'edit-pages';
+    protected $confirmitems = 'confirm-pages';
 
     /**
      * Display a listing of the resource.
@@ -67,6 +68,15 @@ class ShowController extends BaseController
      */
     public function store(Request $request)
     {
+
+        if (!(Bouncer::allows('create-pages'))) {
+            return $this->unauthorizedResponse();
+        }
+
+        if (!(Bouncer::allows($this->confirmitems))) {
+            $request['confirm'] = null;
+        }
+
         $m = self::MODEL;
         try
         {
@@ -83,6 +93,27 @@ class ShowController extends BaseController
         }
     }
 
+    public function editable(Request $request)
+    {
+
+        $m    = self::MODEL;
+        $data = $m::PublicAndPrivate()
+            ->ConfirmedAndUnconfirmed();
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+
+//If you can edit or admin all, get all!
+        if (Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems)) {
+            $data = $data->paginate($pp);
+            return $this->listResponse($data);
+        }
+//Otherwise only the ones you can get to:
+        $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
+
+        return $this->listResponse($data);
+    }
+    
     /**
      * Display the specified resource.
      *
@@ -153,7 +184,7 @@ class ShowController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (!(Bouncer::allows('confirm-pages'))) {
+        if (!(Bouncer::allows($this->confirmitems))) {
             return $this->unauthorizedResponse();
         }
 
