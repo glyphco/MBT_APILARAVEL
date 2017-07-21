@@ -41,16 +41,21 @@ class SignUploadController extends BaseController
 
         $head = $item . '/' . $id . '/main/';
 
+        $bucket = config('services.s3.bucket');
+
+        $formInputs = ['acl' => 'public-read', 'Content-Type' => 'image/jpeg'];
+
         $options = [
-            ['bucket' => config('services.s3.bucket')],
+            ['acl' => 'public-read'],
+            ['bucket' => $bucket],
             ['starts-with', '$key', $head],
-            ['starts-with', '$Content-Type', 'image/jpeg'],
+            ['starts-with', '$Content-Type', ''],
         ];
 
         $postObject = new PostObjectV4(
             $this->client,
-            config('services.s3.bucket'),
-            [],
+            $bucket,
+            $formInputs,
             $options,
             '+10 minutes'
         );
