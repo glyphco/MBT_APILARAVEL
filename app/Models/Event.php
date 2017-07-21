@@ -124,9 +124,9 @@ class Event extends Model
         return $filter->where(function ($query) {
             $query
             //Start in date range
-            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateString())
+            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateTimeString())
             //End in date range
-                ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateString());
+                ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateTimeString());
         });
     }
 

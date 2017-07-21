@@ -95,7 +95,7 @@ class EventController extends BaseController
         //     'enddate' => $enddate,
         //     'request' => $request->except('page'),
         // ];
-
+        //$data['now'] = Carbon::now()->subHours(5)->toDateTimeString();
         return $this->listResponse($data);
 
     }

@@ -3,12 +3,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\User;
+use App\Traits\ItemConfirmableTrait;
+use App\Traits\ItemHasAdminsTrait;
+use App\Traits\ItemHasEditorsTrait;
+use App\Traits\ItemPrivateableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
 
 class EventController extends BaseController
 {
-    //use HasRolesAndAbilities;
+
+    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
 
     const MODEL                = 'App\Models\Event';
     protected $validationRules = [
@@ -18,6 +23,10 @@ class EventController extends BaseController
         'local_tz'    => 'required',
     ];
     protected $friends;
+
+    protected $adminitems   = 'admin-events';
+    protected $edititems    = 'edit-events';
+    protected $confirmitems = 'confirm-events';
 
     public function index(Request $request)
     {
@@ -206,8 +215,11 @@ class EventController extends BaseController
         if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
         }
-
-        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+        if (!(
+            (Bouncer::allows('administer', $data)) or
+            (Bouncer::allows('edit', $data)) or
+            (Bouncer::allows('edit-events'))
+        )) {
             return $this->unauthorizedResponse();
         }
 
@@ -229,7 +241,11 @@ class EventController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+        if (!(
+            (Bouncer::allows('administer', $data)) or
+            (Bouncer::allows('edit', $data)) or
+            (Bouncer::allows('edit-events'))
+        )) {
             return $this->unauthorizedResponse();
         }
 
@@ -252,155 +268,20 @@ class EventController extends BaseController
     public function destroy($id)
     {
         $m = self::MODEL;
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
         }
-        if (!((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data)))) {
+
+        if (!(
+            (Bouncer::allows('administer', $data)) or
+            (Bouncer::allows('edit', $data)) or
+            (Bouncer::allows('edit-events'))
+        )) {
             return $this->unauthorizedResponse();
         }
 
         $data->delete();
         return $this->deletedResponse();
-    }
-
-    public function confirm($id)
-    {
-        $m = self::MODEL;
-
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-
-        if (!(Bouncer::allows('confirm-events'))) {
-            return $this->unauthorizedResponse();
-        }
-
-        try
-        {
-            $data->confirmed = 1;
-            $data->save();
-            return $this->showResponse($data);
-        } catch (\Exception $ex) {
-            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-            return $this->clientErrorResponse($data);
-        }
-
-    }
-    public function unconfirm($id)
-    {
-        $m = self::MODEL;
-
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-
-        if (!(Bouncer::allows('confirm-events'))) {
-            return $this->unauthorizedResponse();
-        }
-
-        try
-        {
-            $data->confirmed = 0;
-            $data->save();
-            return $this->showResponse($data);
-        } catch (\Exception $ex) {
-            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-            return $this->clientErrorResponse($data);
-        }
-    }
-
-    public function giveedit(Request $request, $id, $userid)
-    {
-        $m = self::MODEL;
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-        if (!$otheruser = User::find($userid)) {
-            return $this->notFoundResponse();
-        }
-        if ((Bouncer::allows('admin-events')) or (Bouncer::allows('administer', $data))) {
-            Bouncer::allow($otheruser)->to('edit', $data);
-            return $this->showResponse('');
-        }
-        return $this->unauthorizedResponse();
-    }
-
-    public function revokeedit(Request $request, $id, $userid)
-    {
-        $m = self::MODEL;
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-        if (!$otheruser = User::find($userid)) {
-            return $this->notFoundResponse();
-        }
-        if ((Bouncer::allows('edit-events')) or (Bouncer::allows('edit', $data))) {
-            Bouncer::disallow($otheruser)->to('edit', $data);
-            return $this->showResponse('');
-        }
-        return $this->unauthorizedResponse();
-    }
-
-    public function getEditors(Request $request, $id)
-    {
-        $m = self::MODEL;
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-
-        if ((Bouncer::allows('admin-events')) or (Bouncer::allows('administer', $data))) {
-            $users = User::WhereCan('edit', $data)->select('id', 'name', 'avatar')->get();
-            return $this->showResponse($users);
-        }
-        return $this->unauthorizedResponse();
-    }
-
-    public function makepublic($id)
-    {
-        $m = self::MODEL;
-
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-
-        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-events'))) {
-            try
-            {
-                $data->public = 1;
-                $data->save();
-                return $this->showResponse($data);
-            } catch (\Exception $ex) {
-                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-                return $this->clientErrorResponse($data);
-            }
-
-        } else {
-            return $this->unauthorizedResponse();
-        }
-
-    }
-    public function makeprivate($id)
-    {
-        $m = self::MODEL;
-
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
-            return $this->notFoundResponse();
-        }
-
-        if ((Bouncer::allows('edit', $data)) or (Bouncer::allows('administer', $data)) or (Bouncer::allows('edit-events'))) {
-            try
-            {
-                $data->public = 1;
-                $data->save();
-                return $this->showResponse($data);
-            } catch (\Exception $ex) {
-                $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-                return $this->clientErrorResponse($data);
-            }
-
-        } else {
-            return $this->unauthorizedResponse();
-        }
     }
 
     public function isValidLongitude($longitude)

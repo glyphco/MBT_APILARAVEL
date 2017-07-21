@@ -3,13 +3,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\User;
+use App\Traits\ItemConfirmableTrait;
+use App\Traits\ItemHasAdminsTrait;
+use App\Traits\ItemHasEditorsTrait;
+use App\Traits\ItemPrivateableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
-use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class ShowController extends BaseController
 {
-    use HasRolesAndAbilities;
+    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
+
     const MODEL                = 'App\Models\Show';
     protected $validationRules = [
         'name'       => 'required',
@@ -18,6 +22,10 @@ class ShowController extends BaseController
         'state'      => 'required',
         'postalcode' => 'required',
     ];
+
+    protected $adminitems   = 'admin-shows';
+    protected $edititems    = 'edit-shows';
+    protected $confirmitems = 'confirm-shows';
 
     /**
      * Display a listing of the resource.

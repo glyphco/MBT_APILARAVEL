@@ -37,6 +37,9 @@
 
 Route::get('/', 'pub\GeneralController@getVer');
 
+Route::get('/tests/ver', 'pub\GeneralController@getVer');
+Route::get('/tests/php', 'pub\GeneralController@getVer');
+
 Route::get('/test', 'TestController@index');
 
 Route::group(['middleware' => ['cors']], function () {
@@ -75,9 +78,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/venue', 'VenueController@index');
     Route::get('/venue/{id}', 'VenueController@show');
     Route::get('/venue/like/{id}', ['as' => 'venue.like', 'uses' => 'LikeController@likeVenue']);
-    Route::group(['middleware' => 'can:create-venues'], function () {
-        Route::post('/venue', 'VenueController@store');
-    });
+    Route::post('/venue', 'VenueController@store');
+
     Route::group(['middleware' => 'can:confirm-venues'], function () {
         Route::get('/venue/{id}/confirm', 'VenueController@confirm');
         Route::get('/venue/{id}/unconfirm', 'VenueController@unconfirm');
