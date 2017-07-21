@@ -11,6 +11,11 @@
 |
  */
 
-Route::get('/', function () {
-    return "Laravel version: " . app()->version();
-});
+// NOTE! Since we're optimizing routes, we cant have any CLOSURES in the routes files.
+// Returns are nonos
+
+// Route::get('/', function () {
+//     return "Laravel version: " . app()->version();
+// });
+
+Route::get('/', 'pub\GeneralController@getVer');

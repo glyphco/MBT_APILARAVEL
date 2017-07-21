@@ -104,8 +104,6 @@ class SignUploadController extends BaseController
         $client = $s3->getDriver()->getAdapter()->getClient();
 
         $command = $client->getCommand('GetObject', [
-            // 'Bucket' => env('AWS_BUCKET', 'xxx'),
-            // 'Key'    => env('AWS_KEY', 'xxx'),
             'Bucket' => \Config::get('filesystems.disks.s3.bucket'),
             'Key'    => 'hello.txt',
         ]);

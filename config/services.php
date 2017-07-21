@@ -14,33 +14,40 @@ return [
     |
      */
 
-    'mailgun'   => [
+    'mailgun'     => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
     ],
 
-    'ses'       => [
+    'ses'         => [
         'key'    => env('SES_KEY'),
         'secret' => env('SES_SECRET'),
         'region' => 'us-east-1',
     ],
 
-    'sparkpost' => [
+    'sparkpost'   => [
         'secret' => env('SPARKPOST_SECRET'),
     ],
 
-    'stripe'    => [
+    'stripe'      => [
         'model'  => App\User::class,
         'key'    => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
 
-    's3'        => [
+    's3'          => [
         'key'    => env('AWS_KEY'),
         'secret' => env('AWS_SECRET'),
         'region' => env('AWS_REGION'),
         'bucket' => env('AWS_BUCKET'),
-
     ],
 
+    'mbtcors'     => [
+        'default' => env('CORS_DEFAULT', "https://myboringtown.com"),
+        'allowed' => env('CORS_ALLOWED', ''),
+    ],
+
+    'superadmins' => [
+        'glyph_facebook' => env('glyph_facebook', 0),
+    ],
 ];

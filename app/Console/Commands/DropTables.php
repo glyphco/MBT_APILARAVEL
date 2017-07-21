@@ -37,9 +37,9 @@ class DropTables extends Command
     public function handle()
     {
 
-        if (!$this->confirm('CONFIRM DROP AL TABLES IN THE CURRENT DATABASE? [y|N]')) {
-            exit('Drop Tables command aborted');
-        }
+        // if (!$this->confirm('CONFIRM DROP AL TABLES IN THE CURRENT DATABASE? [y|N]')) {
+        //     exit('Drop Tables command aborted');
+        // }
 
         $colname = 'Tables_in_' . env('DB_DATABASE');
 

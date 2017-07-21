@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,22 +11,33 @@ use Illuminate\Http\Request;
 |
  */
 
-Route::middleware('jwt.auth')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// NOTE! Since we're optimizing routes, we cant have any CLOSURES in the routes files.
+// Returns are nonos
 
-// Route::middleware('jwt.auth')->get('/userinfo', 'UserinfoController@userinfo');
-// Route::middleware('jwt.auth')->get('/me', 'UserinfoController@userinfo');
+// Route::get('/', function () {
+//     return app()->version();
+// });
 
-Route::get('/', function () {
-    return app()->version();
-});
+// Route::get('/giveglypheradmin', function () {
+//     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+//         Bouncer::assign('superadmin')->to(\Auth::user());
+//         return \Auth::user()->getAbilities()->toArray();
+//     } else {
+//         return 'nice try dickwad.';
+//     }
+// });
 
-//Route::options('/venue', 'VenueController@index'); // Preflight
+// Route::get('/test2', function () {
+//     var_dump(\Auth::user());
+//     $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
+//     //$attributes = array_pluck(\Auth::user()->get, 'name');
+//     $attributes = \Auth::user()->getAbilities()->toarray();
+//     var_dump($attributes);
+// });
+
+Route::get('/', 'pub\GeneralController@getVer');
+
 Route::get('/test', 'TestController@index');
-//ONLY Tokened Visitors beyond this point!
-
-//Route::group(['middleware' => ['jwt.auth', 'cors']], function () {
 
 Route::group(['middleware' => ['cors']], function () {
 
@@ -44,18 +53,12 @@ Route::group(['middleware' => ['cors']], function () {
     Route::get('/public/event/{id}', 'pub\EventController@getEvent');
 });
 
+//ONLY Tokened Visitors beyond this point!
+
 Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 //debug and general
     Route::get('/userinfo', 'UserinfoController@userinfo');
-
-    Route::get('/test2', function () {
-        var_dump(\Auth::user());
-        $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
-        //$attributes = array_pluck(\Auth::user()->get, 'name');
-        $attributes = \Auth::user()->getAbilities()->toarray();
-        var_dump($attributes);
-    });
 
 // ME
     Route::get('/me', 'MeController@userinfo');
@@ -279,15 +282,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 //PageCategories
     Route::get('/category', 'CategoryController@index');
-
-    // Route::get('/giveglypheradmin', function () {
-    //     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
-    //         Bouncer::assign('superadmin')->to(\Auth::user());
-    //         return \Auth::user()->getAbilities()->toArray();
-    //     } else {
-    //         return 'nice try dickwad.';
-    //     }
-    // });
 
 //Uploads
     Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');

@@ -18,8 +18,8 @@ class CORS
     public function handle($request, Closure $next)
     {
         $incoming  = 'unknown';
-        $okorigin  = env('CORS_DEFAULT', "https://myboringtown.com");
-        $okorigins = array_map('trim', explode(',', env('CORS_ALLOWED')));
+        $okorigin  = \Config::get('services.mbtcors.default');
+        $okorigins = array_map('trim', explode(',', \Config::get('services.mbtcors.allowed')));
 
         if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
             $incoming = $_SERVER['HTTP_ORIGIN'];

@@ -61,7 +61,7 @@ class UserController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+        if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
             Bouncer::retract('admin')->from($user);
             Bouncer::retract('mastereditor')->from($user);
             Bouncer::retract('contributor')->from($user);
@@ -81,7 +81,7 @@ class UserController extends BaseController
             return $this->notFoundResponse();
         }
         if (Bouncer::is($user)->a('superadmin')) {
-            if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+            if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
                 Bouncer::retract('superadmin')->from($user);
             } else {
                 return $this->reasonedUnauthorizedResponse('you cant unthrone a king');
@@ -101,7 +101,7 @@ class UserController extends BaseController
             return $this->notFoundResponse();
         }
         if (Bouncer::is($user)->a('superadmin')) {
-            if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+            if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
                 Bouncer::retract('superadmin')->from($user);
             } else {
                 return $this->reasonedUnauthorizedResponse('you cant unthrone a king');
@@ -122,7 +122,7 @@ class UserController extends BaseController
             return $this->notFoundResponse();
         }
         if (Bouncer::is($user)->a('superadmin')) {
-            if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+            if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
                 Bouncer::retract('superadmin')->from($user);
             } else {
                 return $this->reasonedUnauthorizedResponse('you cant unthrone a king');
@@ -143,7 +143,7 @@ class UserController extends BaseController
             return $this->notFoundResponse();
         }
         if (Bouncer::is($user)->a('superadmin')) {
-            if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
+            if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
                 Bouncer::retract('superadmin')->from($user);
             } else {
                 return $this->reasonedUnauthorizedResponse('you cant unthrone a king');
