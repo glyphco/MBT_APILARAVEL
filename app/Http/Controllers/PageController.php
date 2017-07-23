@@ -36,7 +36,12 @@ class PageController extends BaseController
     public function index(Request $request)
     {
         $m    = self::MODEL;
-        $data = $m::withCount('events')->withCount('likes');
+        $data = $m::withCount([
+            'eventsAsParticipant',
+            'eventsAsProducer',
+            'likes',
+        ]);
+
         $data = $data->with(['categories']);
 
         if ($request->exists('q')) {
@@ -155,7 +160,13 @@ class PageController extends BaseController
     public function show($id)
     {
         $m = self::MODEL;
-        if ($data = $m::withCount('events')->withCount('likes')->with('groups')->with('members')->with('categories')->find($id)) {
+        if ($data = $m::withCount([
+            'eventsAsParticipant',
+            'eventsAsProducer',
+            'likes',
+        ])
+            ->with('groups')->with('members')->with('categories')
+            ->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

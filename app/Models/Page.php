@@ -58,7 +58,16 @@ class Page extends Model
         static::addGlobalScope(new \App\Scopes\PageConfirmedScope);
     }
 
-    public function events()
+    public function eventsAsParticipant()
+    {
+
+        return $this->hasManyThrough(
+            'App\Models\Event', 'App\Models\EventParticipant',
+            'page_id', 'id'
+        );
+    }
+
+    public function eventsAsProducer()
     {
 
         return $this->hasManyThrough(
@@ -69,7 +78,7 @@ class Page extends Model
 
     public function categories()
     {
-        return $this->hasMany('App\Models\PageCategory', 'page_id')->with(['category', 'subcategory']);
+        return $this->hasMany('App\Models\PageCategory')->with(['category', 'subcategory']);
     }
 
     // public function pagesubcategories()
@@ -116,11 +125,6 @@ class Page extends Model
     {
         $like = $this->likes()->whereUserId(Auth::id())->first();
         return (!is_null($like)) ? true : false;
-    }
-
-    public function categories()
-    {
-        return $this->hasMany('App\Models\PageCategory')->with(['category', 'subcategory']);
     }
 
 }
