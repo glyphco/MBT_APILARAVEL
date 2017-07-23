@@ -18,6 +18,8 @@ echo '---Composer Self-Update Complete---' >> $logfile 2>&1
 
 cd $root >> $logfile 2>&1
 
+sudo chmod -R 777 storage
+
 #---- 3/4 - Start Composer update ----#
 sudo composer install --optimize-autoloader >> $logfile 2>&1
 echo '---Composer Update Complete---' >> $logfile 2>&1
