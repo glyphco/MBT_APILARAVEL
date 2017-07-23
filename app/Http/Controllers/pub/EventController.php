@@ -34,17 +34,14 @@ class EventController extends BaseController
             $enddate = date('Y-m-d' . ' 23:59:59', $enddate);
         }
 
-        $ranks = [2, 3];
+        $m = '\App\Models\pub\Event';
 
-        $m = '\App\Models\Event';
-
-        $data = $m::with(['event.eventshows', 'event.eventproducers', 'categories', 'venue'])
+        $data = $m::with(['categories'])
             ->withCount([
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
             ])
-            ->current()
         ;
 
         if ($date) {

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class WithEventVenuesScope implements Scope
+class WithVenueScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -17,6 +17,6 @@ class WithEventVenuesScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->with('eventvenues.venue');
+        $builder->with('venue');
     }
 }

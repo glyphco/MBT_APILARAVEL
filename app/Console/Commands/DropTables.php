@@ -41,7 +41,7 @@ class DropTables extends Command
         //     exit('Drop Tables command aborted');
         // }
 
-        $colname = 'Tables_in_' . env('DB_DATABASE');
+        $colname = 'Tables_in_' . config('database.connections.mysql.database');
 
         $tables = DB::select('SHOW TABLES');
 

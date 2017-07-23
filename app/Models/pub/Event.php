@@ -1,8 +1,7 @@
 <?php
-namespace App\Models;
+namespace App\Models\pub;
 
 use App\Traits\SpacialdataTrait;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
@@ -16,46 +15,6 @@ class Event extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'description',
-
-        'event_id',
-        'mve_id',
-        'venue_id',
-        'venue_name',
-        'street_address',
-        'city',
-        'state',
-        'postalcode',
-        'lat',
-        'lng',
-        'local_tz',
-        'venue_tagline',
-
-        'price',
-        'pricemin',
-        'pricemax',
-        'pricedescription',
-        'pricelink',
-
-        'ages',
-
-        'UTC_start',
-        'UTC_end',
-        'local_start',
-        'local_end',
-
-        'info',
-        'private_info',
-        'order',
-
-        'public',
-        'confirmed',
-
-        'imageurl',
-        'backgroundurl',
-
-        'showjson',
 
     ];
 
@@ -65,6 +24,7 @@ class Event extends Model
      * @var array
      */
     protected $hidden = [
+
     ];
 
     /**
@@ -75,7 +35,15 @@ class Event extends Model
     protected static function boot()
     {
         parent::boot();
+        static::addGlobalScope(new \App\Scopes\WithVenueScope);
         static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
+        static::addGlobalScope(new \App\Scopes\WithEventproducersPageScope);
+        static::addGlobalScope(new \App\Scopes\WithEventshowsShowScope);
+        static::addGlobalScope(new \App\Scopes\WithEventcategoriesCategoriesScope);
+
+        static::addGlobalScope(new \App\Scopes\EventPublicScope);
+        static::addGlobalScope(new \App\Scopes\EventConfirmedScope);
+        static::addGlobalScope(new \App\Scopes\EventCurrentScope);
     }
 
     protected $friends;
@@ -106,7 +74,7 @@ class Event extends Model
         return $this->hasMany('App\Models\EventParticipant');
     }
 
-    public function eventproducer()
+    public function eventproducers()
     {
         return $this->hasMany('App\Models\EventProducer');
     }
@@ -116,37 +84,17 @@ class Event extends Model
         return $this->hasMany('App\Models\EventCategory', 'event_id')->with(['category', 'subcategory']);
     }
 
-    public function scopeCurrent($filter)
-    {
+    // public function scopeCurrent($filter)
+    // {
 
-        return $filter->where(function ($query) {
-            $query
-            //Start in date range
-            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateTimeString())
-            //End in date range
-                ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateTimeString());
-        });
-    }
-
-    public function scopePrivate($query)
-    {
-        return $query->withoutGlobalScope(\App\Scopes\EventPublicScope::class)->where('public', '=', 0);
-    }
-
-    public function scopePublicAndPrivate($query)
-    {
-        return $query->withoutGlobalScope(\App\Scopes\EventPublicScope::class);
-    }
-
-    public function scopeUnconfirmed($query)
-    {
-        return $query->withoutGlobalScope(\App\Scopes\EventConfirmedScope::class)->where('confirmed', '=', 0);
-    }
-
-    public function scopeConfirmedAndUnconfirmed($query)
-    {
-        return $query->withoutGlobalScope(\App\Scopes\EventConfirmedScope::class);
-    }
+    //     return $filter->where(function ($query) {
+    //         $query
+    //         //Start in date range
+    //         ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateTimeString())
+    //         //End in date range
+    //             ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateTimeString());
+    //     });
+    // }
 
 //SEARCHES
     public function scopeByEventParticipant($filter, $page_id)

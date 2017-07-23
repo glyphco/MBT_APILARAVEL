@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class WithEventParticipantsScope implements Scope
+class WithEventproducersPageScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -17,6 +17,6 @@ class WithEventParticipantsScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->with('eventparticipants.page');
+        $builder->with('eventproducers.page');
     }
 }
