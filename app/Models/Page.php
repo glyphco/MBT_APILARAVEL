@@ -62,15 +62,20 @@ class Page extends Model
     {
 
         return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\eventparticipant',
+            'App\Models\Event', 'App\Models\EventParticipant',
             'page_id', 'id'
         );
     }
 
-    public function pagesubcategories()
+    public function categories()
     {
-        return $this->belongsToMany('App\Models\Pagesubcategories', 'page_pagesubcategories', 'page_id', 'pagesubcategory_id');
+        return $this->hasMany('App\Models\PageCategory', 'page_id')->with(['category', 'subcategory']);
     }
+
+    // public function pagesubcategories()
+    // {
+    //     return $this->belongsToMany('App\Models\Pagesubcategories', 'page_pagesubcategories', 'page_id', 'pagesubcategory_id');
+    // }
 
     public function scopePrivate($query)
     {
