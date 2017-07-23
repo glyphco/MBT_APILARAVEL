@@ -45,6 +45,17 @@ trait APIResponderTrait
         return response()->json($response, $response['code']);
     }
 
+    protected function reasonedNotFoundResponse($reason)
+    {
+        $response = [
+            'code'    => 404,
+            'status'  => 'error',
+            'data'    => $reason,
+            'message' => 'Not Found',
+        ];
+        return response()->json($response, $response['code']);
+    }
+
     protected function deletedResponse()
     {
         $response = [

@@ -54,6 +54,7 @@ Route::group(['middleware' => ['cors']], function () {
 // Guest
     Route::get('/public/events', 'pub\EventController@getEvents');
     Route::get('/public/event/{id}', 'pub\EventController@getEvent');
+    Route::get('/slug/{slugsearch}', 'pub\SlugController@index');
 });
 
 //ONLY Tokened Visitors beyond this point!

@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class ParticipantController extends BaseController
+class XX_ParticipantController extends BaseController
 {
     use HasRolesAndAbilities;
     const MODEL                = 'App\Models\Participant';

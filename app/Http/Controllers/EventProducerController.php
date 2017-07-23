@@ -5,10 +5,10 @@ use App\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class ProducerController extends BaseController
+class EventProducerController extends BaseController
 {
     use HasRolesAndAbilities;
-    const MODEL                = 'App\Models\Producer';
+    const MODEL                = 'App\Models\EventProducer';
     protected $validationRules = [
         'name'     => 'required',
         'event_id' => 'required',
@@ -19,21 +19,19 @@ class ProducerController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $event_id)
     {
-        $m  = self::MODEL;
-        $pp = $request->input('pp', 25);
-        if ($pp > 100) {$pp = 100;}
-        $data = $m::paginate($pp);
-//        $data = $data->get();
+        $m    = self::MODEL;
+        $data = $m::where('event_id', $event_id);
+        $data = $data->get();
 
         return $this->listResponse($data);
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $event_id, $id)
     {
         $m = self::MODEL;
-        if ($data = $m::find($id)) {
+        if ($data = $m::where('event_id', $event_id)->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -45,14 +43,13 @@ class ProducerController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $event_id)
     {
-
-        $m = self::MODEL;
+        $request['event_id'] = $event_id;
+        $m                   = self::MODEL;
 
 // make sure event is there
-        $event_id = $request->input('event_id', null);
-        $event    = \App\Models\Event::find($event_id);
+        $event = \App\Models\Event::find($request['event_id']);
         if (!($event)) {
             // Oops.
             return $this->clientErrorResponse('Could not save: [event_id] not found');
