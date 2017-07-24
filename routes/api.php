@@ -176,9 +176,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
     Route::get('/event/{id}/edit', 'EventController@edit');
-    Route::get('/event/{id}/like', 'EventController@like');
-    Route::get('/event/{id}/likes', 'EventController@getLikes');
-
+    //Events are attended, not liked.
+    Route::get('/event/{id}/attend', 'AttendingController@attendEvent');
     Route::get('/event/{id}/confirm', 'EventController@confirm');
     Route::get('/event/{id}/unconfirm', 'EventController@unconfirm');
     Route::get('/event/{id}/makepublic', 'EventController@makepublic');
@@ -190,7 +189,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/{id}/editors', 'EventController@geteditors');
     Route::get('/event/{id}/admins', 'EventController@getadmins');
 //Attending
-    Route::get('/event/{id}/attend', 'AttendingController@attendEvent');
+
 //Event Shows
     Route::get('/event/{id}/shows/', 'EventShowController@index');
     Route::post('/event/{id}/shows/', 'EventShowController@store');

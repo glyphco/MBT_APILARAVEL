@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Traits\ItemConfirmableTrait;
 use App\Traits\ItemHasAdminsTrait;
 use App\Traits\ItemHasEditorsTrait;
-use App\Traits\ItemLikeableTrait;
 use App\Traits\ItemPrivateableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ use Illuminate\Http\Request;
 class EventController extends BaseController
 {
 
-    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait, ItemLikeableTrait;
+    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
 
     const MODEL                = 'App\Models\Event';
     protected $validationRules = [

@@ -312,23 +312,28 @@ class UserLikesSeeder extends Seeder
 
         $users  = App\Models\User::pluck('id')->toArray();
         $pages  = App\Models\Page::pluck('id')->toArray();
+        $shows  = App\Models\Show::pluck('id')->toArray();
         $venues = App\Models\Venue::pluck('id')->toArray();
         $events = App\Models\Event::pluck('id')->toArray();
 
         foreach ($users as $user_id) {
 
             $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
+            $num_showlikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 4);
             $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
-            $num_evattends  = Faker\Factory::create()->numberBetween($min = 0, $max = 7);
-            $num_friends    = Faker\Factory::create()->numberBetween($min = 0, $max = 5);
+
+            $num_eventattends = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
+            $num_friends      = Faker\Factory::create()->numberBetween($min = 0, $max = 5);
 
 //LIKE SOME PAGES
             $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, $user_id);
+//LIKE SOME SHOWS
+            $this->makelikes($num_showlikes, 'App\Models\Show', $shows, $user_id);
 //LIKE SOME VENUES
             $this->makelikes($num_venuelikes, 'App\Models\Venue', $venues, $user_id);
 
-//Attend SOME Shows
-            $this->makeattends($num_evattends, $events, $user_id, null);
+//Attend SOME Events
+            $this->makeattends($num_eventattends, $events, $user_id, null);
 
 //Friend some users
             $this->makefriendships($num_friends, $users, $user_id);
