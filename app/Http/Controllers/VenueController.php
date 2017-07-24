@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller as BaseController;
 use App\Traits\ItemConfirmableTrait;
 use App\Traits\ItemHasAdminsTrait;
 use App\Traits\ItemHasEditorsTrait;
+use App\Traits\ItemLikeableTrait;
 use App\Traits\ItemPrivateableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 class VenueController extends BaseController
 {
 
-    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
+    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait, ItemLikeableTrait;
 
     const MODEL                = 'App\Models\Venue';
     protected $validationRules = [

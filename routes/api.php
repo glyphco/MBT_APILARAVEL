@@ -61,105 +61,89 @@ Route::group(['middleware' => ['cors']], function () {
 
 Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
-//debug and general
-    Route::get('/userinfo', 'UserinfoController@userinfo');
-
 // ME
     Route::get('/me', 'MeController@userinfo');
-    Route::get('/me/friends', 'MeController@getFriendships');
     Route::put('/me/setlocation', 'MeController@setLocation');
+    Route::get('/me/friends', 'MeController@getFriendships');
     Route::get('/me/friendships', 'MeController@getFriendships');
+
     Route::get('/me/friend/{id}', 'FriendshipController@addFriend');
     Route::get('/me/unfriend/{id}', 'FriendshipController@unFriend');
     Route::get('/me/blockfriend/{id}', 'FriendshipController@blockFriend');
-    Route::get('/me/attend/{id}', 'AttendingController@attendEvent');
+    Route::post('/me/attend/{id}', 'AttendingController@attendEvent');
+
     Route::get('/me/events', 'me\EventController@getEvents');
-
 //FORTESTING REMOVE FOR FINAL PRODUCTION:
-
-    Route::get('/me/makeme/{position)', 'MeController@makeMe');
+    Route::get('/me/makeme/{position}', 'MeController@makeMe');
 
 //Venues
 
     Route::get('/venue', 'VenueController@index');
-    Route::get('/venue/{id}', 'VenueController@show');
-    Route::get('/venue/like/{id}', ['as' => 'venue.like', 'uses' => 'LikeController@likeVenue']);
     Route::post('/venue', 'VenueController@store');
-
-    Route::group(['middleware' => 'can:confirm-venues'], function () {
-        Route::get('/venue/{id}/confirm', 'VenueController@confirm');
-        Route::get('/venue/{id}/unconfirm', 'VenueController@unconfirm');
-    });
-    Route::group(['middleware' => 'can:edit-venues'], function () {
-        Route::put('/venue/{id}', 'VenueController@update');
-        Route::get('/venue/{id}/makepublic', 'VenueController@makepublic');
-        Route::get('/venue/{id}/makeprivate', 'VenueController@makeprivate');
-        // checks made in controller:
-        Route::get('/venue/{id}/giveedit/{userid}', 'VenueController@giveedit');
-        Route::get('/venue/{id}/revokeedit/{userid}', 'VenueController@revokeedit');
-        Route::get('/venue/{id}/giveadmin/{userid}', 'VenueController@giveadmin');
-        Route::get('/venue/{id}/revokeadmin/{userid}', 'VenueController@revokeadmin');
-        Route::get('/venue/{id}/editors', 'VenueController@geteditors');
-        Route::get('/venue/{id}/admins', 'VenueController@getadmins');
-    });
+    Route::get('/venue/editable', 'VenueController@editable');
+    Route::get('/venue/{id}', 'VenueController@show');
+    Route::put('/venue/{id}', 'VenueController@update');
+    Route::delete('/venue/{id}', 'VenueController@destroy');
+    Route::get('/venue/{id}/like', 'VenueController@like');
+    Route::get('/venue/{id}/likes', 'VenueController@getLikes');
+    Route::get('/venue/{id}/confirm', 'VenueController@confirm');
+    Route::get('/venue/{id}/unconfirm', 'VenueController@unconfirm');
+    Route::get('/venue/{id}/makepublic', 'VenueController@makepublic');
+    Route::get('/venue/{id}/makeprivate', 'VenueController@makeprivate');
+    Route::get('/venue/{id}/giveedit/{userid}', 'VenueController@giveedit');
+    Route::get('/venue/{id}/revokeedit/{userid}', 'VenueController@revokeedit');
+    Route::get('/venue/{id}/giveadmin/{userid}', 'VenueController@giveadmin');
+    Route::get('/venue/{id}/revokeadmin/{userid}', 'VenueController@revokeadmin');
+    Route::get('/venue/{id}/editors', 'VenueController@geteditors');
+    Route::get('/venue/{id}/admins', 'VenueController@getadmins');
 
 //Pages
 
     Route::get('/page', 'PageController@index');
+    Route::post('/page', 'PageController@store');
+    Route::get('/page/editable', 'PageController@editable');
     Route::get('/page/{id}', 'PageController@show');
+    Route::put('/page/{id}', 'PageController@update');
+    Route::get('/page/{id}/edit', 'PageController@edit');
+    Route::get('/page/{id}/like', 'PageController@like');
     Route::get('/page/{id}/likes', 'PageController@getLikes');
+    Route::get('/page/{id}/confirm', 'PageController@confirm');
+    Route::get('/page/{id}/unconfirm', 'PageController@unconfirm');
+    Route::get('/page/{id}/makepublic', 'PageController@makepublic');
+    Route::get('/page/{id}/makeprivate', 'PageController@makeprivate');
+    Route::get('/page/{id}/giveedit/{userid}', 'PageController@giveedit');
+    Route::get('/page/{id}/revokeedit/{userid}', 'PageController@revokeedit');
+    Route::get('/page/{id}/giveadmin/{userid}', 'PageController@giveadmin');
+    Route::get('/page/{id}/revokeadmin/{userid}', 'PageController@revokeadmin');
+    Route::get('/page/{id}/editors', 'PageController@geteditors');
+    Route::get('/page/{id}/admins', 'PageController@getadmins');
+
     Route::get('/page/{id}/events', 'PageController@getEvents');
-    Route::get('/page/like/{id}', ['as' => 'page.like', 'uses' => 'LikeController@likePage']);
 
-    Route::group(['middleware' => 'can:create-pages'], function () {
-        Route::post('/page', 'PageController@store');
-    });
-    Route::group(['middleware' => 'can:confirm-pages'], function () {
-        Route::get('/page/{id}/confirm', 'PageController@confirm');
-        Route::get('/page/{id}/unconfirm', 'PageController@unconfirm');
-    });
+// Shows
 
-    Route::group(['middleware' => 'can:edit-pages'], function () {
-        Route::put('/page/{id}', 'PageController@update');
-        Route::get('/page/{id}/makepublic', 'PageController@makepublic');
-        Route::get('/page/{id}/makeprivate', 'PageController@makeprivate');
-        // checks made in controller:
-        Route::get('/page/{id}/giveedit/{userid}', 'PageController@giveedit');
-        Route::get('/page/{id}/revokeedit/{userid}', 'PageController@revokeedit');
-        Route::get('/page/{id}/giveadmin/{userid}', 'PageController@giveadmin');
-        Route::get('/page/{id}/revokeadmin/{userid}', 'PageController@revokeadmin');
-        Route::get('/page/{id}/editors', 'PageController@geteditors');
-        Route::get('/page/{id}/admins', 'PageController@getadmins');
-    });
-
-// Show Pages
-    Route::group(array('prefix' => 'show'), function () {
-        Route::get('/', 'ShowController@index');
-        Route::get('/{id}', 'ShowController@show');
-        Route::get('/{id}/likes', 'ShowController@getLikes');
-        Route::get('/like/{id}', ['as' => 'show.like', 'uses' => 'LikeController@likeShow']);
-
-        Route::group(['middleware' => 'can:create-pages'], function () {
-            Route::post('/', 'ShowController@store');
-        });
-        Route::group(['middleware' => 'can:confirm-pages'], function () {
-            Route::get('/{id}/confirm', 'ShowController@confirm');
-            Route::get('/{id}/unconfirm', 'ShowController@unconfirm');
-        });
-
-        Route::group(['middleware' => 'can:edit-pages'], function () {
-            Route::put('/{id}', 'ShowController@update');
-            Route::get('/{id}/makepublic', 'ShowController@makepublic');
-            Route::get('/{id}/makeprivate', 'ShowController@makeprivate');
-            // checks made in controller:
-            Route::get('/{id}/giveedit/{userid}', 'ShowController@giveedit');
-            Route::get('/{id}/revokeedit/{userid}', 'ShowController@revokeedit');
-            Route::get('/{id}/giveadmin/{userid}', 'ShowController@giveadmin');
-            Route::get('/{id}/revokeadmin/{userid}', 'ShowController@revokeadmin');
-            Route::get('/{id}/editors', 'ShowController@geteditors');
-            Route::get('/{id}/admins', 'ShowController@getadmins');
-        });
-    });
+    Route::get('/show/', 'ShowController@index');
+    Route::post('/show/', 'ShowController@store');
+    Route::get('/show/editable', 'ShowController@editable');
+    Route::get('/show/{id}', 'ShowController@show');
+    Route::put('/show/{id}', 'ShowController@update');
+    Route::get('/show/{id}/edit', 'ShowController@edit');
+    Route::get('/show/{id}/like', 'ShowController@like');
+    Route::get('/show/{id}/likes', 'ShowController@getLikes');
+    Route::get('/show/{id}/confirm', 'ShowController@confirm');
+    Route::get('/show/{id}/unconfirm', 'ShowController@unconfirm');
+    Route::get('/show/{id}/makepublic', 'ShowController@makepublic');
+    Route::get('/show/{id}/makeprivate', 'ShowController@makeprivate');
+    Route::get('/show/{id}/giveedit/{userid}', 'ShowController@giveedit');
+    Route::get('/show/{id}/revokeedit/{userid}', 'ShowController@revokeedit');
+    Route::get('/show/{id}/giveadmin/{userid}', 'ShowController@giveadmin');
+    Route::get('/show/{id}/revokeadmin/{userid}', 'ShowController@revokeadmin');
+    Route::get('/show/{id}/editors', 'ShowController@geteditors');
+    Route::get('/show/{id}/admins', 'ShowController@getadmins');
+//Page Categories
+    Route::get('/page/{id}/categories', 'PageCategoryController@index');
+    Route::post('/page/{id}/categories', 'PageCategoryController@store');
+    Route::delete('/page/{id}/categories/{pagecategory_id}', 'PageCategoryController@destroy');
 
 //Page Participants
     // Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
@@ -167,90 +151,61 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     //     Route::get('/participants/{id}', 'EventParticipantController@show');
     // });
 
-//Page Categories
-    Route::group(['prefix' => 'page/{page_id}'], function () {
-        Route::get('/category', 'PageCategoryController@index');
-    });
-    Route::group(['prefix' => 'page/{page_id}', 'middleware' => 'can:edit-pages'], function () {
-        Route::post('/category', 'PageCategoryController@store');
-    });
-    Route::group(['middleware' => 'can:edit-pages'], function () {
-        Route::delete('/pagecategory/{pagecategory_id}', 'PageCategoryController@destroy');
-    });
-
 //mves
-
     Route::get('/mve', 'MveController@index');
+    Route::post('/mve', 'MveController@store');
+    Route::get('/mve/editable', 'MveController@editable');
     Route::get('/mve/{id}', 'MveController@show');
-    Route::group(['middleware' => 'can:create-events'], function () {
-        Route::post('/mve', 'MveController@store');
-    });
-    Route::group(['middleware' => 'can:confirm-events'], function () {
-        Route::get('/mve/{id}/confirm', 'MveController@confirm');
-        Route::get('/mve/{id}/unconfirm', 'MveController@unconfirm');
-    });
-
-    Route::group(['middleware' => 'can:edit-events'], function () {
-        Route::put('/mve/{id}', 'MveController@update');
-        Route::get('/mve/{id}/makepublic', 'MveController@makepublic');
-        Route::get('/mve/{id}/makeprivate', 'MveController@makeprivate');
-        // checks made in controller:
-        Route::get('/mve/{id}/giveedit/{userid}', 'MveController@giveedit');
-        Route::get('/mve/{id}/revokeedit/{userid}', 'MveController@revokeedit');
-        Route::get('/mve/{id}/giveadmin/{userid}', 'MveController@giveadmin');
-        Route::get('/mve/{id}/revokeadmin/{userid}', 'MveController@revokeadmin');
-        Route::get('/mve/{id}/editors', 'MveController@geteditors');
-        Route::get('/mve/{id}/admins', 'MveController@getadmins');
-    });
+    Route::put('/mve/{id}', 'MveController@update');
+    Route::get('/mve/{id}/edit', 'MveController@edit');
+    Route::get('/mve/{id}/confirm', 'MveController@confirm');
+    Route::get('/mve/{id}/unconfirm', 'MveController@unconfirm');
+    Route::get('/mve/{id}/makepublic', 'MveController@makepublic');
+    Route::get('/mve/{id}/makeprivate', 'MveController@makeprivate');
+    Route::get('/mve/{id}/giveedit/{userid}', 'MveController@giveedit');
+    Route::get('/mve/{id}/revokeedit/{userid}', 'MveController@revokeedit');
+    Route::get('/mve/{id}/giveadmin/{userid}', 'MveController@giveadmin');
+    Route::get('/mve/{id}/revokeadmin/{userid}', 'MveController@revokeadmin');
+    Route::get('/mve/{id}/editors', 'MveController@geteditors');
+    Route::get('/mve/{id}/admins', 'MveController@getadmins');
 
 //events
     Route::get('/event', 'EventController@index');
     Route::post('/event', 'EventController@store');
-
-//
     Route::get('/event/editable', 'EventController@editable');
+    Route::get('/event/{id}/', 'EventController@show');
+    Route::put('/event/{id}/', 'EventController@update');
+    Route::get('/event/{id}/edit', 'EventController@edit');
+    Route::get('/event/{id}/like', 'EventController@like');
+    Route::get('/event/{id}/likes', 'EventController@getLikes');
 
-//Specific Event
-    Route::group(['prefix' => 'event/{event_id}'], function () {
-        Route::get('/', 'EventController@show');
-
-//Access to Edits will be checked when the event is retrieved in controller
-        Route::get('/edit', 'EventController@edit');
-        Route::put('/', 'EventController@update');
-
-        Route::get('/confirm', 'EventController@confirm');
-        Route::get('/unconfirm', 'EventController@unconfirm');
-        Route::get('/makepublic', 'EventController@makepublic');
-        Route::get('/makeprivate', 'EventController@makeprivate');
-        Route::get('/giveedit/{userid}', 'EventController@giveedit');
-        Route::get('/revokeedit/{userid}', 'EventController@revokeedit');
-        Route::get('/giveadmin/{userid}', 'EventController@giveadmin');
-        Route::get('/revokeadmin/{userid}', 'EventController@revokeadmin');
-        Route::get('/editors', 'EventController@geteditors');
-        Route::get('/admins', 'EventController@getadmins');
-
+    Route::get('/event/{id}/confirm', 'EventController@confirm');
+    Route::get('/event/{id}/unconfirm', 'EventController@unconfirm');
+    Route::get('/event/{id}/makepublic', 'EventController@makepublic');
+    Route::get('/event/{id}/makeprivate', 'EventController@makeprivate');
+    Route::get('/event/{id}/giveedit/{userid}', 'EventController@giveedit');
+    Route::get('/event/{id}/revokeedit/{userid}', 'EventController@revokeedit');
+    Route::get('/event/{id}/giveadmin/{userid}', 'EventController@giveadmin');
+    Route::get('/event/{id}/revokeadmin/{userid}', 'EventController@revokeadmin');
+    Route::get('/event/{id}/editors', 'EventController@geteditors');
+    Route::get('/event/{id}/admins', 'EventController@getadmins');
 //Attending
-        Route::get('/attend', 'AttendingController@attendEvent');
-
+    Route::get('/event/{id}/attend', 'AttendingController@attendEvent');
 //Event Shows
-        Route::group(['prefix' => 'shows'], function () {
-            Route::get('/', 'EventShowController@index');
-            Route::post('/', 'EventShowController@store');
-            Route::delete('/{eventshow_id}', 'EventShowController@destroy');
-        });
-
+    Route::get('/event/{id}/shows/', 'EventShowController@index');
+    Route::post('/event/{id}/shows/', 'EventShowController@store');
+    Route::delete('/event/{id}/shows/{eventshow_id}', 'EventShowController@destroy');
 //Event Categories
-        Route::get('/categories', 'EventCategoryController@index');
-        Route::post('/categories', 'EventCategoryController@store');
-        Route::delete('/categories/{eventcategory_id}', 'EventCategoryController@destroy');
+    Route::get('/event/{id}/categories', 'EventCategoryController@index');
+    Route::post('/event/{id}/categories', 'EventCategoryController@store');
+    Route::delete('/event/{id}/categories/{eventcategory_id}', 'EventCategoryController@destroy');
 
 //Event Participants
-        Route::get('/participants', 'EventParticipantController@index');
-        Route::get('/participants/{id}', 'EventParticipantController@show');
-        Route::post('/participants', 'EventParticipantController@store');
-        Route::put('/participants/{id}', 'EventParticipantController@update');
-        Route::delete('/participants/{id}', 'EventParticipantController@destroy');
-    });
+    Route::get('/event/{id}/participants', 'EventParticipantController@index');
+    Route::post('/event/{id}/participants', 'EventParticipantController@store');
+    Route::get('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@show');
+    Route::put('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@update');
+    Route::delete('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@destroy');
 
 // Users (Mostly Admin stuff)
     Route::group(['middleware' => 'can:view-users'], function () {
@@ -288,7 +243,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/maintenance/unlinkedparticipants', 'MaintenanceController@unlinkedparticipants');
     });
 
-//PageCategories
+//Categories
     Route::get('/category', 'CategoryController@index');
 
 //Uploads

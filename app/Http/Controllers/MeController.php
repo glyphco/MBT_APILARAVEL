@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use Bouncer;
 use Illuminate\Http\Request;
 
 class MeController extends BaseController
@@ -101,6 +102,7 @@ class MeController extends BaseController
     {
 
         $validpositions = [
+            'superadmin',
             'admin',
             'mastereditor',
             'contributor',
@@ -118,6 +120,16 @@ class MeController extends BaseController
         if ($position == 'nothing') {
             Bouncer::refreshFor($user);
             return $this->showResponse('user is now ' . $position);
+        }
+
+        if ($position == 'superadmin') {
+            if (\Auth::user()->facebook_id == \Config::get('services.superadmins.glyph_facebook')) {
+                Bouncer::assign('superadmin')->to($user);
+                Bouncer::refreshFor($user);
+                return $this->showResponse('user is now ' . $position);
+            } else {
+                return $this->reasonedUnauthorizedResponse('nice try dickwad');
+            }
         }
 
         Bouncer::assign($position)->to($user);

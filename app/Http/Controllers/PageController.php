@@ -6,13 +6,14 @@ use App\Models\User;
 use App\Traits\ItemConfirmableTrait;
 use App\Traits\ItemHasAdminsTrait;
 use App\Traits\ItemHasEditorsTrait;
+use App\Traits\ItemLikeableTrait;
 use App\Traits\ItemPrivateableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
 
 class PageController extends BaseController
 {
-    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
+    use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait, ItemLikeableTrait;
 
     const MODEL                = 'App\Models\Page';
     protected $validationRules = [
@@ -225,17 +226,6 @@ class PageController extends BaseController
         }
         $data->delete();
         return $this->deletedResponse();
-    }
-
-    public function getlikes($id)
-    {
-
-        $m = self::MODEL;
-        if ($data = $m::with('likes')->find($id)->likes) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
-
     }
 
     public function getevents($id)

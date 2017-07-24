@@ -51,7 +51,7 @@ trait ItemPrivateableTrait
 
         try
         {
-            $data->public = 1;
+            $data->public = 0;
             $data->save();
             return $this->showResponse($data);
         } catch (\Exception $ex) {
