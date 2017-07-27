@@ -86,11 +86,12 @@ class MveController extends BaseController
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
 
-//If you can edit all, get all!
-        if (Bouncer::allows('edit-pages')) {
+//If you can edit or admin all, get all!
+        if (Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems)) {
             $data = $data->paginate($pp);
             return $this->listResponse($data);
         }
+
 //Otherwise only the ones you can get to:
         $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
 

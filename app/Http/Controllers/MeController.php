@@ -16,14 +16,15 @@ class MeController extends BaseController
     {
         $data               = $this->getUser()->toArray();
         $data['attributes'] = $this->getAttributes();
-        $data['token']      = app('request')->header('Authorization');
+        //$data['token']      = app('request')->header('Authorization');
         return $this->showResponse($data);
     }
 
     private function getUser()
     {
         $m    = self::MODEL;
-        $data = $m::with(['friendships'])->find(\Auth::user()->id);
+        $data = $m::with(['friendships'])
+            ->find(\Auth::user()->id);
 
         return $data;
     }
@@ -40,6 +41,8 @@ class MeController extends BaseController
         $models = [
             'App\Models\Venue' => 'venue',
             'App\Models\Page'  => 'page',
+            'App\Models\Event' => 'event',
+            'App\Models\Mve'   => 'mve',
         ];
         $modelattributes  = ['edit', 'administer'];
         $returnattributes = [];

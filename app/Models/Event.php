@@ -189,6 +189,33 @@ class Event extends Model
         });
     }
 
+    public function scopeInDateRange($filter, $datetime, $enddatetime)
+    {
+        return $filter->where(function ($query) use ($datetime, $enddatetime) {
+            $query
+            //Start in date range
+            ->whereBetween('UTC_start', [$datetime, $enddatetime])
+            //End in date range
+                ->orWhereBetween('UTC_end', [$datetime, $enddatetime])
+            //OR...
+                ->orWhere(function ($query) use ($datetime, $enddatetime) {
+                    $query
+                    //Started before this date
+                    ->where('UTC_start', '<', $datetime)
+                    //AND...
+                        ->where(function ($query) use ($datetime, $enddatetime) {
+                            $query
+                            //Never Finished
+                            ->whereNull('UTC_end')
+                            //OR Finished after the date range
+                                ->orWhere('UTC_end', '>', $enddatetime);
+                        });
+
+                });
+
+        });
+    }
+
     public function attending()
     {
 
