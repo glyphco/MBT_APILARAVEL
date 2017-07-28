@@ -6,6 +6,7 @@ use App\Models\EventParticipant;
 use App\Models\Page;
 use App\Models\User;
 use App\Models\Venue;
+use Bouncer;
 use DB;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
@@ -54,4 +55,43 @@ class MaintenanceController extends BaseController
         return $this->listResponse($data);
     }
 
+    public function getNumbers(Request $request)
+    {
+
+        $data = [];
+
+        if ((Bouncer::allows('edit-events')) or (Bouncer::allows('admin-events'))) {
+            $data['events']['all']     = \App\Models\Event::count();
+            $data['events']['current'] = \App\Models\Event::current()->count();
+        }
+
+        if (Bouncer::allows('confirm-events')) {
+            $data['events']['unconfirmedcurrent'] = \App\Models\Event::unconfirmed()->current()->count();
+        }
+
+        if ((Bouncer::allows('edit-pages')) or (Bouncer::allows('admin-pages'))) {
+            $data['pages']['all'] = \App\Models\Page::count();
+            $data['shows']['all'] = \App\Models\show::count();
+        }
+
+        if (Bouncer::allows('confirm-pages')) {
+            $data['pages']['unconfirmed'] = \App\Models\Page::unconfirmed()->count();
+            $data['shows']['unconfirmed'] = \App\Models\Show::unconfirmed()->count();
+        }
+
+        if ((Bouncer::allows('edit-venues')) or (Bouncer::allows('admin-venues'))) {
+            $data['venues']['all'] = \App\Models\Venue::count();
+        }
+
+        if (Bouncer::allows('confirm-venues')) {
+            $data['venues']['unconfirmed'] = \App\Models\Venue::unconfirmed()->count();
+        }
+
+        if ((Bouncer::allows('edit-users')) or (Bouncer::allows('admin-users')) or (Bouncer::allows('ban-users'))) {
+            $data['users']['all'] = \App\Models\User::count();
+        }
+
+        return $this->listResponse($data);
+
+    }
 }

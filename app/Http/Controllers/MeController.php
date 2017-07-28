@@ -10,12 +10,44 @@ class MeController extends BaseController
 
     //use HasRolesAndAbilities;
 
-    const MODEL = 'App\Models\Me';
+    const MODEL               = 'App\Models\Me';
+    protected $accessarray    = [];
+    protected $attributearray = [];
 
     public function userinfo(Request $request)
     {
-        $data               = $this->getUser()->toArray();
-        $data['attributes'] = $this->getAttributes();
+        $data       = $this->getUser()->toArray();
+        $attributes = $this->getAttributes();
+        //dd($attributes);
+        //$data['attributes'] = $this->attributearray;
+        $fake = [
+
+            "view-users"       => 1,
+            "edit-users"       => 1,
+            "ban-users"        => 1,
+            "admin-pages"      => 1,
+            "confirm-pages"    => 1,
+            "create-pages"     => 1,
+            //  "edit-pages"       => 1,
+            "delete-pages"     => 1,
+            "admin-venues"     => 1,
+            "confirm-venues"   => 1,
+            "create-venues"    => 1,
+            "edit-venues"      => 1,
+            "delete-venues"    => 1,
+            "admin-events"     => 1,
+            "confirm-events"   => 1,
+            //"create-events"    => 1,
+            "edit-events"      => 1,
+            "delete-events"    => 1,
+            "administer-event" => 1,
+            "edit-event"       => 1,
+
+        ];
+
+        $data['access'] = $this->accessarray;
+        //$data['access'] = [];
+        //$data['access'] = $fake;
         //$data['token']      = app('request')->header('Authorization');
         return $this->showResponse($data);
     }
@@ -23,9 +55,8 @@ class MeController extends BaseController
     private function getUser()
     {
         $m    = self::MODEL;
-        $data = $m::with(['friendships'])
-            ->find(\Auth::user()->id);
-
+        $data = $m::find(\Auth::user()->id);
+        //with(['friendships'])
         return $data;
     }
 
@@ -35,26 +66,32 @@ class MeController extends BaseController
         //return \Auth::user()->getAbilities()->toArray();
         $attributes = \Auth::user()->getAbilities()->toArray();
         if (empty($attributes)) {
-            return [];
+            return [[], []];
         }
 
         $models = [
             'App\Models\Venue' => 'venue',
             'App\Models\Page'  => 'page',
+            'App\Models\Show'  => 'show',
             'App\Models\Event' => 'event',
             'App\Models\Mve'   => 'mve',
         ];
-        $modelattributes  = ['edit', 'administer'];
-        $returnattributes = [];
+        $modelattributes   = ['edit', 'administer'];
+        $returnattributes  = [];
+        $this->accessarray = [];
         foreach ($attributes as $key => $attribute) {
             if (in_array($attribute['name'], $modelattributes)) {
+                $this->attributearray[$models[$attribute['entity_type']]][$attribute['id']][$attribute['name']] = 1;
+                //$returnattributes[$attribute['name'] . '-' . $models[$attribute['entity_type']]] = 1;
 
-                $returnattributes[$models[$attribute['entity_type']]][$attribute['id']][$attribute['name']] = 1;
+                $this->accessarray[$attribute['name'] . '-' . $models[$attribute['entity_type']]] = 1;
             } else {
-                $returnattributes[$attribute['name']] = 1;
+                $this->attributearray[$attribute['name']] = 1;
+                $this->accessarray[$attribute['name']]    = 1;
+
             }
         }
-        return $returnattributes;
+        return [$returnattributes];
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
@@ -140,4 +177,94 @@ class MeController extends BaseController
         return $this->showResponse('user is now ' . $position);
     }
 
+    public function modelAccess($attributes)
+    {
+        foreach ($variable as $key => $value) {
+
+            switch ($attribute['name']) {
+                case 'view-users':
+                    # code...
+                    break;
+                case 'edit-users':
+                    # code...
+                    break;
+
+                case 'view-users':
+                    # code...
+                    break;
+
+                case 'edit-users':
+                    # code...
+                    break;
+
+                case 'ban-users':
+                    # code...
+                    break;
+
+                case 'admin-pages':
+                    # code...
+                    break;
+
+                case 'confirm-pages':
+                    # code...
+                    break;
+
+                case 'create-pages':
+                    # code...
+                    break;
+
+                case 'edit-pages':
+                    # code...
+                    break;
+
+                case 'delete-pages':
+                    # code...
+                    break;
+
+                case 'admin-venues':
+                    # code...
+                    break;
+
+                case 'confirm-venues':
+                    # code...
+                    break;
+
+                case 'create-venues':
+                    # code...
+                    break;
+
+                case 'edit-venues':
+                    # code...
+                    break;
+
+                case 'delete-venues':
+                    # code...
+                    break;
+
+                case 'admin-events':
+                    # code...
+                    break;
+
+                case 'confirm-events':
+                    # code...
+                    break;
+
+                case 'create-events':
+                    # code...
+                    break;
+
+                case 'edit-events':
+                    # code...
+                    break;
+
+                case 'delete-events':
+                    # code...
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+        }
+    }
 }

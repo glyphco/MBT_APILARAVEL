@@ -122,8 +122,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 // Shows
 
-    Route::get('/show/', 'ShowController@index');
-    Route::post('/show/', 'ShowController@store');
+    Route::get('/show', 'ShowController@index');
+    Route::post('/show', 'ShowController@store');
     Route::get('/show/editable', 'ShowController@editable');
     Route::get('/show/{id}', 'ShowController@show');
     Route::put('/show/{id}', 'ShowController@update');
@@ -241,6 +241,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/maintenance/unlinkedvenues', 'MaintenanceController@unlinkedvenues');
         Route::get('/maintenance/unlinkedparticipants', 'MaintenanceController@unlinkedparticipants');
     });
+
+    Route::get('/maintenance/numbers', 'MaintenanceController@getNumbers');
 
 //Categories
     Route::get('/category', 'CategoryController@index');

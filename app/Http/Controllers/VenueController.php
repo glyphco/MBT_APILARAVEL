@@ -18,7 +18,6 @@ class VenueController extends BaseController
     const MODEL                = 'App\Models\Venue';
     protected $validationRules = [
         'name'           => 'required',
-        'category'       => 'required',
         'street_address' => 'required',
         'city'           => 'required',
         'state'          => 'required',

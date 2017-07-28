@@ -200,7 +200,24 @@ class EventController extends BaseController
     {
         //autorelates venue and participants in model
         $m = self::MODEL;
-        if ($data = $m::find($id)) {
+        if ($data = $m::with(['mve', 'categories'])
+            ->withCount([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
+            ])
+            ->with([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
+            ])
+            ->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

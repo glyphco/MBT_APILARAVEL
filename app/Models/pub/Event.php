@@ -36,8 +36,10 @@ class Event extends Model
     {
         parent::boot();
         static::addGlobalScope(new \App\Scopes\WithVenueScope);
-        static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
-        static::addGlobalScope(new \App\Scopes\WithEventproducersPageScope);
+        //static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
+        static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
+        //static::addGlobalScope(new \App\Scopes\WithEventproducersPageScope);
+        static::addGlobalScope(new \App\Scopes\WithEventproducersScope);
         static::addGlobalScope(new \App\Scopes\WithEventshowsShowScope);
         static::addGlobalScope(new \App\Scopes\WithEventcategoriesCategoriesScope);
 

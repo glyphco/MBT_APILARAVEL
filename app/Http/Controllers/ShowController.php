@@ -87,6 +87,11 @@ class ShowController extends BaseController
                 throw new \Exception("ValidationException");
             }
             $data = $m::create($request->all());
+
+            Bouncer::allow(\Auth::user())->to('administer', $data);
+            Bouncer::allow(\Auth::user())->to('edit', $data);
+            Bouncer::refreshFor(\Auth::user());
+
             return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];

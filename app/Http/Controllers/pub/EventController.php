@@ -106,8 +106,10 @@ class EventController extends BaseController
     public function getEvent($id)
     {
         //autorelates venue and participants in model
-        $m = self::MODEL;
-        if ($data = $m::find($id)) {
+        if ($data = \App\Models\pub\Event::with('eventparticipants.page')
+            ->with('eventproducers.page')
+            ->with('eventshows.show')
+            ->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

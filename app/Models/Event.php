@@ -75,7 +75,8 @@ class Event extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
+        //static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
+        static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
     }
 
     protected $friends;

@@ -179,10 +179,6 @@ class MveController extends BaseController
 
             $this->updateEvents($data);
 
-            Bouncer::allow(\Auth::user())->to('administer', $data);
-            Bouncer::allow(\Auth::user())->to('edit', $data);
-            Bouncer::refreshFor(\Auth::user());
-
             return $this->showResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
