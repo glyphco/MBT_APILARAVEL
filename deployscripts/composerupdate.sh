@@ -19,25 +19,31 @@ echo '---Composer Self-Update Complete---' >> $logfile 2>&1
 cd $root >> $logfile 2>&1
 
 sudo chmod -R 777 storage
+php artisan config:cache
 
-#---- 3/4 - Start Composer update ----#
+#---- 2/4 - Start Composer update ----#
 sudo composer install --optimize-autoloader >> $logfile 2>&1
 echo '---Composer Update Complete---' >> $logfile 2>&1
 
+#---- 3/4 - Start Laravel Optimization ----#
+php artisan route:clear
+php artisan optimize --force
+php artisan route:cache
+php artisan config:cache
 
-#---- 3/4 - Start Database destroy and rebuild ----#
+#---- 4/4 - Start Database destroy and rebuild ----#
 php artisan droptables  >> $logfile 2>&1
 php artisan migrate  >> $logfile 2>&1
 php artisan db:seed >> $logfile 2>&1
 
+#---- 4/4 - Start Database destroy and rebuild
+#--php artisan droptables  >> $logfile 2>&1
+#--php artisan migrate  >> $logfile 2>&1
+#--php artisan db:seed >> $logfile 2>&1
+
 echo '---Database Created and Seeded---' >> $logfile 2>&1
 
-#---- 3/4 - Start Laravel Optimization ----#
-php artisan route:clear
 
-php artisan optimize --force
-php artisan route:cache
-php artisan config:cache
 
 
 echo '---Optimized---' >> $logfile 2>&1

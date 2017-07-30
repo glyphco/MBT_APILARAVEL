@@ -37,8 +37,14 @@ class VenueController extends BaseController
         $m = self::MODEL;
         //$data = $m;
 
-        $data = $m::withCount(['currentevents', 'events']);
-        //$data = $data->with('currentevents');
+        $data = $m::withCount([
+            'currentevents',
+            'events',
+            'likes',
+        ])
+            ->with([
+                'ilike',
+            ]);
 
         if ($request->exists('q')) {
             $data = $data->where('name', 'like', '%' . $request['q'] . '%');

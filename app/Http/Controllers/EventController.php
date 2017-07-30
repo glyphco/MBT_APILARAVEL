@@ -72,6 +72,7 @@ class EventController extends BaseController
                 'friendsattendingwish',
             ])
             ->with([
+                'iattending',
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',

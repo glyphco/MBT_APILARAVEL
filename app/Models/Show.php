@@ -76,6 +76,11 @@ class Show extends Model
         return $this->morphToMany('App\Models\User', 'likeable')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
     }
 
+    public function ilike()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
+    }
+
     public function getIsLikedAttribute()
     {
         $like = $this->likes()->whereUserId(Auth::id())->first();
