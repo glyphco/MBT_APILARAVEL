@@ -19,8 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call('RolesSeeder');
         $this->call('CategoriesSeeder');
         $this->call('SuperAdminDataSeeder');
-
-        if (App::environment('local')) {
+        if (App::Environment() === 'local') {
             // run production queries or model factories
 
             //Fake Data Follows:
@@ -39,16 +38,16 @@ class DatabaseSeeder extends Seeder
             // run local queries or model factories
 
             //Fake Data Follows:
-            $this->call('UserDataSeeder');
-            $this->call('VenueDataSeeder');
-            $this->call('PageDataSeeder');
-            $this->call('ShowDataSeeder');
+            //$this->call('UserDataSeeder');
+            //$this->call('VenueDataSeeder');
+            //$this->call('PageDataSeeder');
+            //$this->call('ShowDataSeeder');
 
-            $this->call('EventDataSeeder');
+            //$this->call('EventDataSeeder');
 
-            $this->call('MveDataSeeder');
+            //$this->call('MveDataSeeder');
 
-            $this->call('UserLikesSeeder');
+            //$this->call('UserLikesSeeder');
         }
 
     }

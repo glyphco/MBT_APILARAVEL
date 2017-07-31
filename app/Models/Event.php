@@ -220,7 +220,12 @@ class Event extends Model
     public function attending()
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->select('user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
+    }
+
+    public function iattending()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar', 'rank');
     }
 
     public function attendingyes()

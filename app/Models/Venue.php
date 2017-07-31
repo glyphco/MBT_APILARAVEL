@@ -89,13 +89,29 @@ class Venue extends Model
 
     public function likes()
     {
-        return $this->morphToMany('App\Models\User', 'likeable')->whereDeletedAt(null);
+        return $this->morphToMany('App\Models\User', 'likeable')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
+    }
+
+    public function ilike()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
     }
 
     public function getIsLikedAttribute()
     {
-        $like = $this->likes()->whereUserId(Auth::id())->first();
+        $like = $this->likes()->whereUserId(\Auth::id())->first();
         return (!is_null($like)) ? true : false;
+    }
+
+    public function scopeWithMyLikes($query)
+    {
+        if (!$this->likes) {
+            return $query;
+        }
+        return $query->with(['likes' => function ($query) {
+            $query->where('user_id', \Auth::id());
+        }]);
+
     }
 
 }
