@@ -81,8 +81,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/venue', 'VenueController@index');
     Route::post('/venue', 'VenueController@store');
     Route::get('/venue/editable', 'VenueController@editable');
+    Route::get('/venue/map', 'VenueController@getMap');
     Route::get('/venue/{id}', 'VenueController@show');
     Route::put('/venue/{id}', 'VenueController@update');
+    Route::get('/venue/{id}/edit', 'VenueController@edit');
     Route::delete('/venue/{id}', 'VenueController@destroy');
     Route::get('/venue/{id}/like', 'VenueController@like');
     Route::get('/venue/{id}/likes', 'VenueController@getLikes');

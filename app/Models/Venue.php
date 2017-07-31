@@ -29,6 +29,10 @@ class Venue extends Model
         'lng',
         'local_tz',
 
+        'neighborhood',
+        'website',
+        'tagline',
+        'description',
         'phone',
         'email',
         'location',

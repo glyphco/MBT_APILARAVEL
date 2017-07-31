@@ -61,7 +61,7 @@ class PageCategoryController extends BaseController
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+
             $data = $m::create($request->all());
             return $this->createdResponse($data);
         } catch (\Exception $ex) {

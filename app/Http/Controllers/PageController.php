@@ -17,11 +17,9 @@ class PageController extends BaseController
 
     const MODEL                = 'App\Models\Page';
     protected $validationRules = [
-        'name'       => 'required',
-        'category'   => 'required',
-        'city'       => 'required',
-        'state'      => 'required',
-        'postalcode' => 'required',
+        'name'  => 'required',
+        'city'  => 'required',
+        'state' => 'required',
     ];
 
     protected $createitems  = 'create-pages';

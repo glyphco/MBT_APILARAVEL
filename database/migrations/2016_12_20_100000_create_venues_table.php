@@ -25,6 +25,7 @@ class CreateVenuesTable extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('postalcode');
+            $table->string('neighborhood')->nullable()->default(null);
 
             $table->decimal('lat', 10, 8);
             $table->decimal('lng', 11, 8);
@@ -34,6 +35,7 @@ class CreateVenuesTable extends Migration
             $table->string('email')->nullable()->default(null);
             $table->string('tagline', 50)->nullable()->default(null);
             $table->text('description')->nullable()->default(null);
+            $table->text('website')->nullable()->default(null);
             $table->string('imageurl')->nullable()->default(null);
             $table->string('backgroundurl')->nullable()->default(null);
 

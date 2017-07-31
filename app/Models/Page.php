@@ -19,6 +19,9 @@ class Page extends Model
         'email',
         'slug',
         'category',
+        'description',
+        'tagline',
+        'summary',
 
         'city',
         'state',

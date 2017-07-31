@@ -65,7 +65,7 @@ class SuperAdminDataSeeder extends Seeder
         $datetime    = Carbon::now();
         $lat         = '41.94';
         $lng         = '-87.67';
-        $latlngval   = $lat . ', ' . $lng;
+        $lnglatval   = $lng . ', ' . $lat;
         $glypherinfo = [
             'name'        => "Shawn 'glypher' Dalton",
             'username'    => "glypher",
@@ -74,7 +74,7 @@ class SuperAdminDataSeeder extends Seeder
             'avatar'      => 'https://graph.facebook.com/v2.8/10109892803653991/picture?type=normal',
             'lat'         => $lat,
             'lng'         => $lng,
-            'location'    => DB::raw("POINT($latlngval)"),
+            'location'    => DB::raw("POINT($lnglatval)"),
             'confirmed'   => '1',
             'slug'        => 'glypher',
             'created_at'  => $datetime,
@@ -89,7 +89,7 @@ class SuperAdminDataSeeder extends Seeder
             'avatar'      => 'https://graph.facebook.com/v2.8/1555815747766321/picture?type=normal',
             'lat'         => $lat,
             'lng'         => $lng,
-            'location'    => DB::raw("POINT($latlngval)"),
+            'location'    => DB::raw("POINT($lnglatval)"),
             'confirmed'   => '1',
             'slug'        => 'cmaybell',
             'created_at'  => $datetime,

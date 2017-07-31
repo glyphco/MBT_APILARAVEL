@@ -126,7 +126,7 @@ class MeController extends BaseController
                 throw new \Exception("ValidationException");
             }
 
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+            $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
 
             $data->fill($request->only('lat', 'lng', 'location', 'locationname', 'sublocationname'));
             $data->save();
@@ -153,6 +153,7 @@ class MeController extends BaseController
             return $this->notFoundResponse();
         }
         $user = \Auth::User();
+        Bouncer::retract('superadmin')->from($user);
         Bouncer::retract('admin')->from($user);
         Bouncer::retract('mastereditor')->from($user);
         Bouncer::retract('contributor')->from($user);

@@ -66,7 +66,7 @@ class EventCategoryController extends BaseController
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+            $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
             $data = $m::create($request->all());
             return $this->createdResponse($data);
         } catch (\Exception $ex) {

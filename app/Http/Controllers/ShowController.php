@@ -17,11 +17,7 @@ class ShowController extends BaseController
 
     const MODEL                = 'App\Models\Show';
     protected $validationRules = [
-        'name'       => 'required',
-        'category'   => 'required',
-        'city'       => 'required',
-        'state'      => 'required',
-        'postalcode' => 'required',
+        'name' => 'required',
     ];
 
     protected $createitems  = 'create-pages';

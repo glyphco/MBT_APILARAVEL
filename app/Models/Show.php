@@ -19,11 +19,14 @@ class Show extends Model
     protected $fillable = [
         'name',
         'description',
+        'summary',
         'category',
         'tagline',
         'slug',
         'imageurl',
         'backgroundurl',
+        'public',
+        'confirmed',
     ];
 
     /**

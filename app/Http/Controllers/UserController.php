@@ -25,10 +25,41 @@ class UserController extends BaseController
     public function show($id)
     {
         $m = self::MODEL;
-        if ($data = $m::find($id)) {
-            return $this->showResponse($data);
+        if (!$data = $m::find($id)) {
+            return $this->notFoundResponse();
+
         }
-        return $this->notFoundResponse();
+
+        $attributes = $this->getAttributes($id);
+        //dd($attributes);
+        //$data['attributes'] = $this->attributearray;
+        $fake = [
+
+            "view-users"       => 1,
+            "edit-users"       => 1,
+            "ban-users"        => 1,
+            "admin-pages"      => 1,
+            "confirm-pages"    => 1,
+            "create-pages"     => 1,
+            //  "edit-pages"       => 1,
+            "delete-pages"     => 1,
+            "admin-venues"     => 1,
+            "confirm-venues"   => 1,
+            "create-venues"    => 1,
+            "edit-venues"      => 1,
+            "delete-venues"    => 1,
+            "admin-events"     => 1,
+            "confirm-events"   => 1,
+            //"create-events"    => 1,
+            "edit-events"      => 1,
+            "delete-events"    => 1,
+            "administer-event" => 1,
+            "edit-event"       => 1,
+
+        ];
+        $data['access'] = $this->accessarray;
+        return $this->showResponse($data);
+
     }
 
     // public function update(Request $request, $id) {
@@ -193,6 +224,42 @@ class UserController extends BaseController
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
+    }
+
+    private function getAttributes($id)
+    {
+        $m = self::MODEL;
+
+        //return \Auth::user()->getAbilities()->toArray();
+        $attributes = $m::find($id)->getAbilities()->toArray();
+        if (empty($attributes)) {
+            return [[], []];
+        }
+
+        $models = [
+            'App\Models\Venue' => 'venue',
+            'App\Models\Page'  => 'page',
+            'App\Models\Show'  => 'show',
+            'App\Models\Event' => 'event',
+            'App\Models\Mve'   => 'mve',
+        ];
+        $modelattributes   = ['edit', 'administer'];
+        $returnattributes  = [];
+        $this->accessarray = [];
+        foreach ($attributes as $key => $attribute) {
+            if (in_array($attribute['name'], $modelattributes)) {
+                $this->attributearray[$models[$attribute['entity_type']]][$attribute['id']][$attribute['name']] = 1;
+                //$returnattributes[$attribute['name'] . '-' . $models[$attribute['entity_type']]] = 1;
+
+                $this->accessarray[$attribute['name'] . '-' . $models[$attribute['entity_type']]] = 1;
+            } else {
+                $this->attributearray[$attribute['name']] = 1;
+                $this->accessarray[$attribute['name']]    = 1;
+
+            }
+        }
+        return [$returnattributes];
+        //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
 }

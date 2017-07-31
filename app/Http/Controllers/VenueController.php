@@ -24,6 +24,7 @@ class VenueController extends BaseController
         'postalcode'     => 'required',
         'lat'            => 'required',
         'lng'            => 'required',
+        'local_tz'       => 'required',
     ];
 
     protected $createitems  = 'create-venues';
@@ -110,7 +111,7 @@ class VenueController extends BaseController
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+            $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
             $data = $m::create($request->all());
 
             Bouncer::allow(\Auth::user())->to('administer', $data);
@@ -229,7 +230,7 @@ class VenueController extends BaseController
             $data->save();
             return $this->showResponse($data);
         } catch (\Exception $ex) {
-            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+            $data = ['exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
 
@@ -254,19 +255,53 @@ class VenueController extends BaseController
         return $this->deletedResponse();
     }
 
-    public function map(Request $request)
+    // public function map(Request $request)
+    // {
+    //     $location          = $request->input('l', '41.291824,-87.763978');
+    //     $distanceinmeters  = $request->input('d', 100000); //(in meters)
+    //     $distanceindegrees = $distanceinmeters / 111195; //(degrees (approx))
+
+    //     $m = self::MODEL;
+    //     //$data = $m::pluck('name', 'location');
+    //     $data = $m::distance($distanceindegrees, $location)->get();
+    //     //$data = $m::distance($distanceindegrees, $location)->pluck('name', 'location');
+
+    //     return $this->listResponse($data);
+
+    // }
+
+    public function getMap(Request $request)
     {
-        $location          = $request->input('l', '41.291824,-87.763978');
-        $distanceinmeters  = $request->input('d', 100000); //(in meters)
-        $distanceindegrees = $distanceinmeters / 111195; //(degrees (approx))
-
         $m = self::MODEL;
-        //$data = $m::pluck('name', 'location');
-        $data = $m::distance($distanceindegrees, $location)->get();
-        //$data = $m::distance($distanceindegrees, $location)->pluck('name', 'location');
 
+        $center = $request->input('center', '41.964072,-87.687302');
+        $count  = $request->input('count', '50');
+
+        $distanceinmeters  = $request->input('limit', 100000); //(in meters)
+        $distanceindegrees = $distanceinmeters / 111195; //(degrees (approx))
+        $limit             = $distanceinmeters;
+
+        //$data = $m::WithDistanceFrom($limit, $center)->get();
+        $data = $m::WithRadiusFrom($limit, $center)->take($count)->get();
         return $this->listResponse($data);
+    }
 
+    public function isValidLongitude($longitude)
+    {
+        if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function isValidLatitude($latitude)
+    {
+
+        if (preg_match("/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/", $latitude)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

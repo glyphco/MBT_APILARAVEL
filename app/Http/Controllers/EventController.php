@@ -176,7 +176,7 @@ class EventController extends BaseController
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $request->request->add(['location' => implode(', ', $request->only('lat', 'lng'))]);
+            $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
             $data = $m::create($request->all());
 
             Bouncer::allow(\Auth::user())->to('administer', $data);
