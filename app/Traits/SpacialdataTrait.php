@@ -77,7 +77,6 @@ trait SpacialDataTrait
         $spherelocation = $lng . ',' . $lat;
 
         if ($max) {
-            $maxclean = "'$max'";
             return $query
                 ->selectRaw('( ' . $MetersToMiles . ' * ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')
 
@@ -96,12 +95,12 @@ trait SpacialDataTrait
         return $query
             ->selectRaw('( ' . $MetersToMiles . ' * ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')
 
-            ->selectRaw('( ' . $vert . ' * acos( cos( radians(' . $lat . ') ) *
-                               cos( radians( lat ) )
-                               * cos( radians( lng ) - radians(' . $lng . ')
-                               ) + sin( radians(' . $lat . ') ) *
-                               sin( radians( lat ) ) )
-                             ) AS distance')
+            // ->selectRaw('( ' . $vert . ' * acos( cos( radians(' . $lat . ') ) *
+            //                    cos( radians( lat ) )
+            //                    * cos( radians( lng ) - radians(' . $lng . ')
+            //                    ) + sin( radians(' . $lat . ') ) *
+            //                    sin( radians( lat ) ) )
+            //                  ) AS distance')
 
             ->orderBy('distance');
 
