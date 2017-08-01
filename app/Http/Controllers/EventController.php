@@ -179,16 +179,37 @@ class EventController extends BaseController
             }
             $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
             $data = $m::create($request->all());
-
-            Bouncer::allow(\Auth::user())->to('administer', $data);
-            Bouncer::allow(\Auth::user())->to('edit', $data);
-            Bouncer::refreshFor(\Auth::user());
-
-            return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
+
+        if ($request['shows']) {
+            if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
+                $data['showsjson'] = $showsjson;
+                $data->save;
+            }
+
+        }
+
+        if ($request['categories']) {
+            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
+                $data['categoriesjson'] = $categoriesjson;
+                $data->save;
+            }
+
+        }
+
+        if ($request['producers']) {
+            $this->saveProducers($request['producers'], $data->id);
+        }
+
+        Bouncer::allow(\Auth::user())->to('administer', $data);
+        Bouncer::allow(\Auth::user())->to('edit', $data);
+        Bouncer::refreshFor(\Auth::user());
+
+        return $this->createdResponse($data);
+
     }
 
     /**
@@ -325,6 +346,116 @@ class EventController extends BaseController
         } else {
             return false;
         }
+    }
+
+    private function saveShows($showsJson, $event_id)
+    {
+
+        if (!$shows = json_decode($showsJson, true)) {
+            return false;
+        }
+        $showarray = [];
+
+        $deletedRows = \App\Models\EventShow::where('event_id', $event_id)->delete();
+
+        foreach ($shows as $key => $value) {
+
+            $show_id = array_key_exists('id', $value) ? $value['id'] : '';
+
+            if (!$show = \App\Models\Show::find($show_id)) {
+                continue;
+            }
+
+            $data = \App\Models\EventShow::create(['event_id' => $event_id, 'show_id' => $show_id]);
+
+            $showarray[] = [
+                'id'      => $show['id'],
+                'name'    => $show['name'],
+                'img_url' => $show['img_url'],
+            ];
+        }
+        return json_encode($showarray);
+    }
+
+    private function saveCategories($categoriesJson, $event_id)
+    {
+
+        if (!$categories = json_decode($categoriesJson, true)) {
+            return false;
+        }
+        $categoriesarray = [];
+
+        $deletedRows = \App\Models\EventCategory::where('event_id', $event_id)->delete();
+
+        foreach ($categories as $key => $value) {
+
+            $category_id    = array_key_exists('category_id', $value) ? $value['category_id'] : '';
+            $subcategory_id = array_key_exists('subcategory_id', $value) ? $value['subcategory_id'] : '';
+
+            if (!\App\Models\Category::find($category_id)) {
+                return false;
+            }
+
+            if ($subcategory_id) {
+                if (!$subcategory = \App\Models\Subcategory::where('category_id', $category_id)->find($subcategory_id)) {
+                    return false;
+                }
+            }
+            $data = \App\Models\EventCategory::create(['event_id' => $event_id, 'category_id' => $category_id, 'subcategory_id' => $subcategory_id]);
+
+            $categoryarray[] = [
+                'category_id'      => $subcategory['category_id'],
+                'subcategory_id'   => $subcategory['id'],
+                'subcategory_name' => $subcategory['name'],
+            ];
+            return json_encode($categoryarray);
+        }
+    }
+
+    private function saveProducers($producersJson, $event_id)
+    {
+
+        if (!$producers = json_decode($producersJson, true)) {
+            return false;
+        }
+        $producerarray = [];
+
+        $deletedRows = \App\Models\EventProducer::where('event_id', $event_id)->delete();
+
+        foreach ($producers as $key => $value) {
+
+            if (!array_key_exists('name', $value)) {
+                continue;
+            }
+
+            $producer_id = '';
+            if (array_key_exists('page_id', $value)) {
+
+                if ($producer = \App\Models\Page::where('production', 1)->find($value['page_id'])) {
+                    $producer_id = $value['page_id'];
+                }
+            }
+
+            $saveproducer = [
+                'page_id'      => $producer_id,
+                'name'         => $value['name'],
+                'info'         => array_key_exists('info', $value) ? $value['info'] : '',
+                'private_info' => array_key_exists('private_info', $value) ? $value['private_info'] : '',
+                'imageurl'     => array_key_exists('imageurl', $value) ? $value['imageurl'] : '',
+            ];
+
+            $extra = [
+                'event_id'  => $event_id,
+                'confirmed' => 1,
+                'public'    => 1,
+            ];
+
+            $data = \App\Models\EventShow::create(array_merge($saveproducer, $extra));
+
+            $showarray[] = $saveproducer;
+
+        }
+        return json_encode($showarray);
     }
 
 }

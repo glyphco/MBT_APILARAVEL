@@ -205,22 +205,24 @@ class EventDataSeeder extends Seeder
                 //Maybe attach a show:
                 $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
                 //echo ($num_shows);
-                $showjson = null;
+                $showsjson = null;
+
                 if ($num_shows) {
                     foreach (range(1, $num_shows) as $index) {
                         $ev->eventshows()->save(factory(App\Models\EventShow::class)->make());
                     }
-                    $showjson = [];
+                    $showsjson = [];
                     foreach ($ev->eventshows as $evshow) {
                         $eventshow_page = App\Models\Show::find($evshow['show_id'])->toArray();
-                        $showjson[]     =
+                        $showsjson[]    =
                             [
                             'id'       => $eventshow_page['id'],
                             'name'     => $eventshow_page['name'],
                             'imageurl' => $eventshow_page['imageurl'],
                         ];
                     }
-                    $ev->showjson = json_encode($showjson);
+
+                    $ev->showsjson = json_encode($showsjson);
                     $ev->save();
                 }
 

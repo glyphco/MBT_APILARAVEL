@@ -20,8 +20,9 @@ class CreateEventsTable extends Migration
 
             $table->string('name');
             $table->text('description')->nullable();
-//show stuff
-            $table->text('showjson')->nullable()->default(null);
+//JSON
+            $table->text('showsjson')->nullable()->default(null);
+            $table->text('categoriesjson')->nullable()->default(null);
 //venue stuff
             $table->integer('venue_id')->unsigned()->nullable();
             $table->string('venue_name')->nullable()->default(null);

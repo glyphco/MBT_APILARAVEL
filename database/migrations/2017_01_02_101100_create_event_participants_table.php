@@ -16,10 +16,10 @@ class CreateEventParticipantsTable extends Migration
         Schema::create('event_participants', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('event_id')->unsigned();
+            $table->integer('page_id')->unsigned()->nullable()->default(null);
             $table->string('name');
-            $table->string('info')->nullable();
-            $table->string('private_info')->nullable();
-            $table->integer('page_id')->unsigned()->nullable();
+            $table->string('info')->nullable()->default(null);
+            $table->string('private_info')->nullable()->default(null);
             $table->string('imageurl')->nullable()->default(null);
 
             $table->string('start')->nullable()->default(null);

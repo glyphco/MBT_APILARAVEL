@@ -17,6 +17,9 @@ class CreateEventShowsTable extends Migration
             $table->increments('id');
             $table->integer('event_id')->unsigned();
             $table->integer('show_id')->unsigned()->nullable();
+            $table->string('name');
+            $table->string('info')->nullable()->default(null);
+            $table->string('imageurl')->nullable()->default(null);
 
             $table->integer('order')->unsigned()->default(0);
 
