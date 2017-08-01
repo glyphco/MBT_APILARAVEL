@@ -189,6 +189,20 @@ class EventDataSeeder extends Seeder
                 foreach (range(1, $num_categories) as $index) {
                     $ev->categories()->save(factory(App\Models\EventCategory::class)->make());
                 }
+                $categoriesjson = [];
+                foreach ($ev->categories as $evcategory) {
+
+                    $subcategory      = App\Models\Subcategory::find($evcategory['subcategory_id']);
+                    $categoriesjson[] =
+                        [
+                        'category_id'      => $subcategory['category_id'],
+                        'subcategory_id'   => $subcategory['id'],
+                        'subcategory_name' => $subcategory['name'],
+                    ];
+                }
+
+                $ev->categoriesjson = json_encode($categoriesjson);
+                $ev->save();
 
                 // //Attach a producer
                 $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 1, 2));
