@@ -147,7 +147,7 @@ class PageController extends BaseController
         if ($request['categories']) {
             if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
                 $data['categoriesjson'] = $categoriesjson;
-                $data->save;
+                $data->save();
             }
         }
 
@@ -217,7 +217,7 @@ class PageController extends BaseController
         if ($request['categories']) {
             if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
                 $data['categoriesjson'] = $categoriesjson;
-                $data->save;
+                $data->save();
             }
 
         }

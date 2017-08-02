@@ -187,7 +187,7 @@ class EventController extends BaseController
         if ($request['shows']) {
             if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
                 $data['showsjson'] = $showsjson;
-                $data->save;
+                $data->save();
             }
 
         }
@@ -195,7 +195,7 @@ class EventController extends BaseController
         if ($request['categories']) {
             if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
                 $data['categoriesjson'] = $categoriesjson;
-                $data->save;
+                $data->save();
             }
 
         }
@@ -312,7 +312,7 @@ class EventController extends BaseController
         if ($request['shows']) {
             if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
                 $data['showsjson'] = $showsjson;
-                $data->save;
+                $data->save();
             }
 
         }
@@ -320,7 +320,7 @@ class EventController extends BaseController
         if ($request['categories']) {
             if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
                 $data['categoriesjson'] = $categoriesjson;
-                $data->save;
+                $data->save();
             }
 
         }
