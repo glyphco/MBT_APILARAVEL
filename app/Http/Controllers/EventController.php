@@ -304,11 +304,34 @@ class EventController extends BaseController
             }
 
             $data->save();
-            return $this->showResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
+
+        if ($request['shows']) {
+            if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
+                $data['showsjson'] = $showsjson;
+                $data->save;
+            }
+
+        }
+
+        if ($request['categories']) {
+            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
+                $data['categoriesjson'] = $categoriesjson;
+                $data->save;
+            }
+
+        }
+
+        if ($request['producers']) {
+            $this->saveProducers($request['producers'], $data->id);
+        }
+
+        $data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id);
+        return $this->showResponse($data);
+
     }
 
     public function destroy($id)
