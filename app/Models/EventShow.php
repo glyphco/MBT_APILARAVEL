@@ -16,6 +16,9 @@ class EventShow extends Model
 
         'event_id',
         'show_id',
+        'name',
+        'info',
+        'imageurl',
         'order',
     ];
 

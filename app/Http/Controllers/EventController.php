@@ -389,15 +389,20 @@ class EventController extends BaseController
                 continue;
             }
 
-            $data = \App\Models\EventShow::create(['event_id' => $event_id, 'show_id' => $show_id]);
-
-            $showarray[] = [
+            $saveshow = [
                 'id'      => $show['id'],
                 'name'    => $show['name'],
                 'img_url' => $show['img_url'],
             ];
+
+            $extra = [
+                'event_id' => $event_id,
+            ];
+
+            $data = \App\Models\EventShow::create(array_merge($saveshow, $extra));
+
         }
-        return json_encode($showarray);
+        return json_encode($saveshow);
     }
 
     private function saveCategories($categoriesJson, $event_id)
@@ -424,14 +429,20 @@ class EventController extends BaseController
                     return false;
                 }
             }
-            $data = \App\Models\EventCategory::create(['event_id' => $event_id, 'category_id' => $category_id, 'subcategory_id' => $subcategory_id]);
 
-            $categoryarray[] = [
+            $savecategory = [
                 'category_id'      => $subcategory['category_id'],
                 'subcategory_id'   => $subcategory['id'],
                 'subcategory_name' => $subcategory['name'],
             ];
-            return json_encode($categoryarray);
+
+            $extra = [
+                'event_id' => $event_id,
+            ];
+
+            $data = \App\Models\EventCategory::create(array_merge($savecategory, $extra));
+
+            return json_encode($savecategory);
         }
     }
 

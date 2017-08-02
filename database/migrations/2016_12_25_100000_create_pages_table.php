@@ -31,6 +31,9 @@ class CreatePagesTable extends Migration
             $table->string('phone')->nullable()->default(null);
             $table->string('email')->nullable()->default(null);
 
+//JSON
+            $table->text('categoriesjson')->nullable()->default(null);
+
             $table->boolean('participant')->default(0);
             $table->boolean('production')->default(0);
             $table->boolean('canhavemembers')->default(0);

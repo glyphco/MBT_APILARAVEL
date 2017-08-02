@@ -25,6 +25,7 @@ class Show extends Model
         'slug',
         'imageurl',
         'backgroundurl',
+        'categoriesjson',
         'public',
         'confirmed',
     ];

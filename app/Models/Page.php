@@ -18,7 +18,7 @@ class Page extends Model
         'name',
         'email',
         'slug',
-        'category',
+        //'category',
         'description',
         'tagline',
         'summary',
@@ -29,6 +29,8 @@ class Page extends Model
 
         'phone',
         'location',
+
+        'categoriesjson',
 
         'participant',
         'production',

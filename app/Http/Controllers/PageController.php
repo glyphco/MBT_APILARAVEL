@@ -139,15 +139,24 @@ class PageController extends BaseController
             }
             $data = $m::create($request->all());
 
-            Bouncer::allow(\Auth::user())->to('administer', $data);
-            Bouncer::allow(\Auth::user())->to('edit', $data);
-            Bouncer::refreshFor(\Auth::user());
-
-            return $this->createdResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
+
+        if ($request['categories']) {
+            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
+                $data['categoriesjson'] = $categoriesjson;
+                $data->save;
+            }
+        }
+
+        Bouncer::allow(\Auth::user())->to('administer', $data);
+        Bouncer::allow(\Auth::user())->to('edit', $data);
+        Bouncer::refreshFor(\Auth::user());
+
+        return $this->createdResponse($data);
+
     }
 
     /**
@@ -235,6 +244,47 @@ class PageController extends BaseController
         }
         return $this->notFoundResponse();
 
+    }
+
+    private function saveCategories($categoriesJson, $page_id)
+    {
+
+        if (!$categories = json_decode($categoriesJson, true)) {
+            return false;
+        }
+        $categoriesarray = [];
+
+        $deletedRows = \App\Models\PageCategory::where('page_id', $page_id)->delete();
+
+        foreach ($categories as $key => $value) {
+
+            $category_id    = array_key_exists('category_id', $value) ? $value['category_id'] : '';
+            $subcategory_id = array_key_exists('subcategory_id', $value) ? $value['subcategory_id'] : '';
+
+            if (!\App\Models\Category::find($category_id)) {
+                return false;
+            }
+
+            if ($subcategory_id) {
+                if (!$subcategory = \App\Models\Subcategory::where('category_id', $category_id)->find($subcategory_id)) {
+                    return false;
+                }
+            }
+
+            $savecategory = [
+                'category_id'      => $subcategory['category_id'],
+                'subcategory_id'   => $subcategory['id'],
+                'subcategory_name' => $subcategory['name'],
+            ];
+
+            $extra = [
+                'page_id' => $page_id,
+            ];
+
+            $data = \App\Models\PageCategory::create(array_merge($savecategory, $extra));
+
+            return json_encode($savecategory);
+        }
     }
 
 }
