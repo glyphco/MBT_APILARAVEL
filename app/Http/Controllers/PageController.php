@@ -144,11 +144,10 @@ class PageController extends BaseController
             return $this->clientErrorResponse($data);
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                $data['categoriesjson'] = $categoriesjson;
-                $data->save();
-            }
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
         }
 
         Bouncer::allow(\Auth::user())->to('administer', $data);
@@ -201,12 +200,13 @@ class PageController extends BaseController
 
         try
         {
-            $v = \Illuminate\Support\Facades\Validator::make($request->all(), $this->validationRules);
+            $data->fill($request->all());
+            $v = \Illuminate\Support\Facades\Validator::make($data->toarray(), $this->validationRules);
 
             if ($v->fails()) {
                 throw new \Exception("ValidationException");
             }
-            $data->fill($request->all());
+
             $data->save();
 
         } catch (\Exception $ex) {
@@ -214,11 +214,10 @@ class PageController extends BaseController
             return $this->clientErrorResponse($data);
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                $data['categoriesjson'] = $categoriesjson;
-                $data->save();
-            }
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
 
         }
 
@@ -261,12 +260,12 @@ class PageController extends BaseController
     private function saveCategories($categoriesJson, $page_id)
     {
 
-        if (!$categories = json_decode($categoriesJson, true)) {
-            return false;
-        }
+        $deletedRows   = \App\Models\PageCategory::where('page_id', $page_id)->delete();
         $categoryarray = [];
 
-        $deletedRows = \App\Models\PageCategory::where('page_id', $page_id)->delete();
+        if (!$categories = json_decode($categoriesJson, true)) {
+            return json_encode($categoryarray);
+        }
 
         foreach ($categories as $key => $value) {
 
@@ -274,12 +273,12 @@ class PageController extends BaseController
             $subcategory_id = array_key_exists('subcategory_id', $value) ? $value['subcategory_id'] : '';
 
             if (!\App\Models\Category::find($category_id)) {
-                return false;
+                continue;
             }
 
             if ($subcategory_id) {
                 if (!$subcategory = \App\Models\Subcategory::where('category_id', $category_id)->find($subcategory_id)) {
-                    return false;
+                    continue;
                 }
             }
 

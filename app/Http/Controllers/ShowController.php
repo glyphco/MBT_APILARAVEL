@@ -89,18 +89,10 @@ class ShowController extends BaseController
             return $this->clientErrorResponse($err);
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                try
-                {
-                    $data['categoriesjson'] = $categoriesjson;
-                    $data->save();
-                } catch (\Exception $ex) {
-                    $err = ['exception' => $ex->getMessage()];
-                    return $this->clientErrorResponse($err);
-                }
-
-            }
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
         }
 
         Bouncer::allow(\Auth::user())->to('administer', $data);
@@ -197,18 +189,10 @@ class ShowController extends BaseController
             return $this->clientErrorResponse($data);
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                try
-                {
-                    $data['categoriesjson'] = $categoriesjson;
-                    $data->save();
-                } catch (\Exception $ex) {
-                    $err = ['exception' => $ex->getMessage()];
-                    return $this->clientErrorResponse($err);
-                }
-
-            }
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
         }
 
         $data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id);

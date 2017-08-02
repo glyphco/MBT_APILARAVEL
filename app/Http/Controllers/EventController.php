@@ -86,6 +86,8 @@ class EventController extends BaseController
             $data = $data->InDateRange($date, $enddate);
         }
 
+//$data = $data->WithRadiusFrom($query, $max, $latlng);
+
         if ($request->exists('current')) {
             $data = $data->Current();
         }
@@ -184,23 +186,19 @@ class EventController extends BaseController
             return $this->clientErrorResponse($data);
         }
 
-        if ($request['shows']) {
-            if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
-                $data['showsjson'] = $showsjson;
-                $data->save();
-            }
-
+        if ($request->exists('shows')) {
+            $showsjson         = $this->saveShows($request['shows'], $data->id);
+            $data['showsjson'] = $showsjson;
+            $data->save();
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                $data['categoriesjson'] = $categoriesjson;
-                $data->save();
-            }
-
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
         }
 
-        if ($request['producers']) {
+        if ($request->exists('producers')) {
             $this->saveProducers($request['producers'], $data->id);
         }
 
@@ -309,23 +307,19 @@ class EventController extends BaseController
             return $this->clientErrorResponse($data);
         }
 
-        if ($request['shows']) {
-            if ($showsjson = $this->saveShows($request['shows'], $data->id)) {
-                $data['showsjson'] = $showsjson;
-                $data->save();
-            }
-
+        if ($request->exists('shows')) {
+            $showsjson         = $this->saveShows($request['shows'], $data->id);
+            $data['showsjson'] = $showsjson;
+            $data->save();
         }
 
-        if ($request['categories']) {
-            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                $data['categoriesjson'] = $categoriesjson;
-                $data->save();
-            }
-
+        if ($request->exists('categories')) {
+            $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
+            $data['categoriesjson'] = $categoriesjson;
+            $data->save();
         }
 
-        if ($request['producers']) {
+        if ($request->exists('producers')) {
             $this->saveProducers($request['producers'], $data->id);
         }
 
@@ -374,12 +368,12 @@ class EventController extends BaseController
     private function saveShows($showsJson, $event_id)
     {
 
-        if (!$shows = json_decode($showsJson, true)) {
-            return false;
-        }
-        $showarray = [];
-
         $deletedRows = \App\Models\EventShow::where('event_id', $event_id)->delete();
+        $showarray   = [];
+
+        if (!$shows = json_decode($showsJson, true)) {
+            return json_encode($showsarray);
+        }
 
         foreach ($shows as $key => $value) {
 
@@ -401,8 +395,10 @@ class EventController extends BaseController
 
             $data = \App\Models\EventShow::create(array_merge($saveshow, $extra));
 
+            $showarray[] = $saveshow;
         }
-        return json_encode($saveshow);
+
+        return json_encode($showarray);
     }
 
     private function saveCategories($categoriesJson, $event_id)
@@ -488,10 +484,10 @@ class EventController extends BaseController
 
             $data = \App\Models\EventShow::create(array_merge($saveproducer, $extra));
 
-            $showarray[] = $saveproducer;
+            $producerarray[] = $saveproducer;
 
         }
-        return json_encode($showarray);
+        return json_encode($producerarray);
     }
 
 }

@@ -200,10 +200,10 @@ class EventDataSeeder extends Seeder
                         'subcategory_name' => $evcategory['subcategory_name'],
                     ];
                 }
-
-                $ev->categoriesjson = json_encode($categoriesjson);
-                $ev->save();
-
+                if (!empty($categoriesjson)) {
+                    $ev->categoriesjson = json_encode($categoriesjson);
+                    $ev->save();
+                }
                 // //Attach a producer
                 $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(0, 0, 1, 1, 2));
 
@@ -235,10 +235,10 @@ class EventDataSeeder extends Seeder
                         'imageurl' => $eventshow_page['imageurl'],
                     ];
                 }
-
-                $ev->showsjson = json_encode($showsjson);
-                $ev->save();
-
+                if (!empty($showsjson)) {
+                    $ev->showsjson = json_encode($showsjson);
+                    $ev->save();
+                }
             });
     }
 }
