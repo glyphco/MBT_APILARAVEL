@@ -85,13 +85,21 @@ class ShowController extends BaseController
             $data = $m::create($request->all());
 
         } catch (\Exception $ex) {
-            $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-            return $this->clientErrorResponse($data);
+            $err = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($err);
         }
+
         if ($request['categories']) {
             if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
-                $data['categoriesjson'] = $categoriesjson;
-                $data->save;
+                try
+                {
+                    $data['categoriesjson'] = $categoriesjson;
+                    $data->save();
+                } catch (\Exception $ex) {
+                    $err = ['exception' => $ex->getMessage()];
+                    return $this->clientErrorResponse($err);
+                }
+
             }
         }
 
@@ -171,7 +179,7 @@ class ShowController extends BaseController
     {
         $m = self::MODEL;
 
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -184,11 +192,28 @@ class ShowController extends BaseController
             }
             $data->fill($request->all());
             $data->save();
-            return $this->showResponse($data);
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
+
+        if ($request['categories']) {
+            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
+                try
+                {
+                    $data['categoriesjson'] = $categoriesjson;
+                    $data->save();
+                } catch (\Exception $ex) {
+                    $err = ['exception' => $ex->getMessage()];
+                    return $this->clientErrorResponse($err);
+                }
+
+            }
+        }
+
+        $data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id);
+        return $this->showResponse($data);
+
     }
 
     /**
@@ -217,7 +242,7 @@ class ShowController extends BaseController
         if (!$categories = json_decode($categoriesJson, true)) {
             return false;
         }
-        $categoriesarray = [];
+        $categoryarray = [];
 
         $deletedRows = \App\Models\ShowCategory::where('show_id', $show_id)->delete();
 
@@ -248,8 +273,11 @@ class ShowController extends BaseController
 
             $data = \App\Models\ShowCategory::create(array_merge($savecategory, $extra));
 
-            return json_encode($savecategory);
+            $categoryarray[] = $savecategory;
         }
+
+        return json_encode($categoryarray);
+
     }
 
 }

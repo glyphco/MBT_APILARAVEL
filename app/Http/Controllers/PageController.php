@@ -208,11 +208,23 @@ class PageController extends BaseController
             }
             $data->fill($request->all());
             $data->save();
-            return $this->showResponse($data);
+
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);
         }
+
+        if ($request['categories']) {
+            if ($categoriesjson = $this->saveCategories($request['categories'], $data->id)) {
+                $data['categoriesjson'] = $categoriesjson;
+                $data->save;
+            }
+
+        }
+
+        $data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id);
+        return $this->showResponse($data);
+
     }
 
     /**
@@ -252,7 +264,7 @@ class PageController extends BaseController
         if (!$categories = json_decode($categoriesJson, true)) {
             return false;
         }
-        $categoriesarray = [];
+        $categoryarray = [];
 
         $deletedRows = \App\Models\PageCategory::where('page_id', $page_id)->delete();
 
@@ -283,8 +295,11 @@ class PageController extends BaseController
 
             $data = \App\Models\PageCategory::create(array_merge($savecategory, $extra));
 
-            return json_encode($savecategory);
+            $categoryarray[] = $savecategory;
         }
+
+        return json_encode($categoryarray);
+
     }
 
 }

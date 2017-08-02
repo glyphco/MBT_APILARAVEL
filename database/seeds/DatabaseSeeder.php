@@ -288,7 +288,7 @@ class CategoriesSeeder extends Seeder
     {
 
         $categories = [
-            'Comedy'        => ['Comedy', 'Stand-up Comedy', 'Comedic Writing', 'Improv Comedy', 'Sketch Comedy'],
+            'Comedy'        => ['Comedy', 'Stand-up Comedy', 'Comedic Writing', 'Improv Comedy', 'Sketch Comedy', 'Comedy Hosting'],
             'Music'         => ['Music', 'Rock', 'Pop', 'Funk', 'Psychedelic', 'Emo', 'Pop-Punk', 'Acoustic', 'Country', 'Americana', 'Covers', 'Rock Band', 'Drums', 'Guitars', 'Vocals', 'Bass', 'Piano', 'Trumpet'],
             'Fun and Games' => ['Fun and Games', 'Pinball', 'Arcade', 'Video Games', 'Board Games'],
             'Arts'          => ['Arts', 'Theatre', 'Film and Movies', 'Visual Arts'],

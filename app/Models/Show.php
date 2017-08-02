@@ -20,7 +20,6 @@ class Show extends Model
         'name',
         'description',
         'summary',
-        'category',
         'tagline',
         'slug',
         'imageurl',

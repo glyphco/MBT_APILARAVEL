@@ -411,7 +411,7 @@ class EventController extends BaseController
         if (!$categories = json_decode($categoriesJson, true)) {
             return false;
         }
-        $categoriesarray = [];
+        $categoryarray = [];
 
         $deletedRows = \App\Models\EventCategory::where('event_id', $event_id)->delete();
 
@@ -442,8 +442,10 @@ class EventController extends BaseController
 
             $data = \App\Models\EventCategory::create(array_merge($savecategory, $extra));
 
-            return json_encode($savecategory);
+            $categoryarray[] = $savecategory;
         }
+
+        return json_encode($categoryarray);
     }
 
     private function saveProducers($producersJson, $event_id)
