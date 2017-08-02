@@ -15,6 +15,7 @@ class EventCategory extends Model
         'event_id',
         'category_id',
         'subcategory_id',
+        'subcategory_name',
     ];
 
     /**

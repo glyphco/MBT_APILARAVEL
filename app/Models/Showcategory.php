@@ -15,6 +15,7 @@ class ShowCategory extends Model
         'show_id',
         'category_id',
         'subcategory_id',
+        'subcategory_name',
     ];
 
     /**

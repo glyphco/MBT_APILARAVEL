@@ -11,7 +11,9 @@ class PageCategoryController extends BaseController
 
     const MODEL                = 'App\Models\PageCategory';
     protected $validationRules = [
-        'category_id' => 'required',
+        'category_id'      => 'required',
+        'subcategory_id'   => 'required',
+        'subcategory_name' => 'required',
     ];
 
     public function index(Request $request, $page_id)

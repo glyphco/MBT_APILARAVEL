@@ -15,6 +15,7 @@ class PageCategory extends Model
         'page_id',
         'category_id',
         'subcategory_id',
+        'subcategory_name',
     ];
 
     /**

@@ -19,8 +19,9 @@ class CreateShowCategoriesTable extends Migration
         Schema::create('show_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('show_id')->unsigned();
-            $table->integer('category_id')->unsigned()->nullable();
-            $table->integer('subcategory_id')->unsigned()->nullable();
+            $table->integer('category_id')->unsigned();
+            $table->integer('subcategory_id')->unsigned();
+            $table->string('subcategory_name');
             $table->timestamps();
 
             $table->foreign('show_id')->references('id')->on('shows')->onUpdate('cascade')->onDelete('cascade');

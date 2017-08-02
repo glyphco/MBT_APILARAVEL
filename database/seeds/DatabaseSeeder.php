@@ -178,26 +178,26 @@ class EventDataSeeder extends Seeder
         DB::table('event_participants')->truncate();
         DB::table('event_producers')->truncate();
         DB::table('event_shows')->truncate();
+        DB::table('event_categories')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         $events = factory('App\Models\Event', 200)
             ->create()
             ->each(function ($ev) {
 
-                // //Make some categories
-                $num_categories = Faker\Factory::create()->randomElement($array = array(1, 1, 1, 1, 2));
-                foreach (range(1, $num_categories) as $index) {
+                // //Attach some categories
+                $num_categories = Faker\Factory::create()->randomElement($array = array(0, 0, 1, 1, 2));
+                while ($num_categories--) {
                     $ev->categories()->save(factory(App\Models\EventCategory::class)->make());
                 }
-                $categoriesjson = [];
+                //dd($ev->categories->pluck('subcategory_id'));
+                $categoriesjson = null;
                 foreach ($ev->categories as $evcategory) {
-
-                    $subcategory      = App\Models\Subcategory::find($evcategory['subcategory_id']);
                     $categoriesjson[] =
                         [
-                        'category_id'      => $subcategory['category_id'],
-                        'subcategory_id'   => $subcategory['id'],
-                        'subcategory_name' => $subcategory['name'],
+                        'category_id'      => $evcategory['category_id'],
+                        'subcategory_id'   => $evcategory['subcategory_id'],
+                        'subcategory_name' => $evcategory['subcategory_name'],
                     ];
                 }
 
@@ -205,8 +205,9 @@ class EventDataSeeder extends Seeder
                 $ev->save();
 
                 // //Attach a producer
-                $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(1, 1, 1, 1, 2));
-                foreach (range(1, $num_producers) as $index) {
+                $num_producers = Faker\Factory::create()->optional($weight = 0.2)->randomElement($array = array(0, 0, 1, 1, 2));
+
+                while ($num_producers--) {
                     $ev->eventproducer()->save(factory(App\Models\EventProducer::class)->make());
                 }
 
@@ -217,28 +218,26 @@ class EventDataSeeder extends Seeder
                 }
 
                 //Maybe attach a show:
-                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(1, 1, 1, 1, 1, 1, 1, 1, 2)); // 50% chance of NULL
+                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(0, 0, 0, 0, 1, 1, 1, 1, 2)); // 50% chance of NULL
                 //echo ($num_shows);
                 $showsjson = null;
 
-                if ($num_shows) {
-                    foreach (range(1, $num_shows) as $index) {
-                        $ev->eventshows()->save(factory(App\Models\EventShow::class)->make());
-                    }
-                    $showsjson = [];
-                    foreach ($ev->eventshows as $evshow) {
-                        $eventshow_page = App\Models\Show::find($evshow['show_id'])->toArray();
-                        $showsjson[]    =
-                            [
-                            'id'       => $eventshow_page['id'],
-                            'name'     => $eventshow_page['name'],
-                            'imageurl' => $eventshow_page['imageurl'],
-                        ];
-                    }
-
-                    $ev->showsjson = json_encode($showsjson);
-                    $ev->save();
+                while ($num_shows--) {
+                    $ev->eventshows()->save(factory(App\Models\EventShow::class)->make());
                 }
+
+                foreach ($ev->eventshows as $evshow) {
+                    $eventshow_page = App\Models\Show::find($evshow['show_id'])->toArray();
+                    $showsjson[]    =
+                        [
+                        'id'       => $eventshow_page['id'],
+                        'name'     => $eventshow_page['name'],
+                        'imageurl' => $eventshow_page['imageurl'],
+                    ];
+                }
+
+                $ev->showsjson = json_encode($showsjson);
+                $ev->save();
 
             });
     }
