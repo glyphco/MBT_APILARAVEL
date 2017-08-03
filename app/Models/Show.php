@@ -29,6 +29,10 @@ class Show extends Model
         'confirmed',
     ];
 
+    protected $attributes = array(
+        'categoriesjson' => '[]',
+    );
+
     /**
      * The attributes that should be hidden for arrays.
      *

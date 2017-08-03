@@ -32,7 +32,7 @@ class CreatePagesTable extends Migration
             $table->string('email')->nullable()->default(null);
 
 //JSON
-            $table->text('categoriesjson')->nullable()->default(null);
+            $table->json('categoriesjson');
 
             $table->boolean('participant')->default(0);
             $table->boolean('production')->default(0);

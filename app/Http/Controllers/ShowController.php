@@ -223,12 +223,12 @@ class ShowController extends BaseController
     private function saveCategories($categoriesJson, $show_id)
     {
 
-        if (!$categories = json_decode($categoriesJson, true)) {
-            return false;
-        }
+        $deletedRows   = \App\Models\ShowCategory::where('show_id', $show_id)->delete();
         $categoryarray = [];
 
-        $deletedRows = \App\Models\ShowCategory::where('show_id', $show_id)->delete();
+        if (!$categories = json_decode($categoriesJson, true)) {
+            return json_encode($categoryarray);
+        }
 
         foreach ($categories as $key => $value) {
 

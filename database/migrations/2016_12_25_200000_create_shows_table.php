@@ -29,7 +29,7 @@ class CreateshowsTable extends Migration
             $table->string('backgroundurl')->nullable()->default(null);
 
 //JSON
-            $table->text('categoriesjson')->nullable()->default(null);
+            $table->json('categoriesjson');
 
             $table->boolean('public')->default(0);
             $table->boolean('confirmed')->default(0);

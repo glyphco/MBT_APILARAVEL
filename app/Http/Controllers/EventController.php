@@ -144,13 +144,36 @@ class EventController extends BaseController
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
 
-//If you can edit or admin all, get all!
-        if ((Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems))) {
-            $data = $data->paginate($pp);
-            return $this->listResponse($data);
+        //If you can edit or admin all, get all!
+        //Otherwise only the ones you can get to:
+        if (!((Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems)))) {
+            $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'));
         }
-//Otherwise only the ones you can get to:
-        $data = $data->wherein('id', \Auth::User()->abilities->where('entity_type', self::MODEL)->pluck('entity_id'))->paginate($pp);
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'date':
+                    $data = $data->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    break;
+                case 'venue':
+                    $data = $data->orderBy('date(UTC_start)', 'DESC')
+                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    break;
+                case 'event':
+                    # code...
+                    break;
+                default:
+                    $data = $data->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    break;
+            }
+        } else {
+            $data = $data->orderByRaw('date(UTC_start) desc')
+                ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+        }
+
+        $data = $data->paginate($pp);
 
         return $this->listResponse($data);
     }
@@ -195,6 +218,12 @@ class EventController extends BaseController
         if ($request->exists('categories')) {
             $categoriesjson         = $this->saveCategories($request['categories'], $data->id);
             $data['categoriesjson'] = $categoriesjson;
+            $data->save();
+        }
+
+        if ($request->exists('participants')) {
+            $participantsjson         = $this->saveParticipants($request['participants'], $data->id);
+            $data['participantsjson'] = $participantsjson;
             $data->save();
         }
 
@@ -253,7 +282,9 @@ class EventController extends BaseController
     {
         //autorelates venue and participants in model
         $m = self::MODEL;
-        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+        if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()
+            ->with('eventparticipants')
+            ->find($id)) {
             return $this->notFoundResponse();
         }
         if (!(
@@ -323,6 +354,12 @@ class EventController extends BaseController
             $this->saveProducers($request['producers'], $data->id);
         }
 
+        if ($request->exists('participants')) {
+            $participantsjson         = $this->saveParticipants($request['participants'], $data->id);
+            $data['participantsjson'] = $participantsjson;
+            $data->save();
+        }
+
         $data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id);
         return $this->showResponse($data);
 
@@ -372,7 +409,7 @@ class EventController extends BaseController
         $showarray   = [];
 
         if (!$shows = json_decode($showsJson, true)) {
-            return json_encode($showsarray);
+            return json_encode($showarray);
         }
 
         foreach ($shows as $key => $value) {
@@ -403,13 +440,12 @@ class EventController extends BaseController
 
     private function saveCategories($categoriesJson, $event_id)
     {
-
-        if (!$categories = json_decode($categoriesJson, true)) {
-            return false;
-        }
-        $categoryarray = [];
-
         $deletedRows = \App\Models\EventCategory::where('event_id', $event_id)->delete();
+
+        $categoryarray = [];
+        if (!$categories = json_decode($categoriesJson, true)) {
+            return json_encode($categoryarray);
+        }
 
         foreach ($categories as $key => $value) {
 
@@ -417,12 +453,12 @@ class EventController extends BaseController
             $subcategory_id = array_key_exists('subcategory_id', $value) ? $value['subcategory_id'] : '';
 
             if (!\App\Models\Category::find($category_id)) {
-                return false;
+                continue;
             }
 
             if ($subcategory_id) {
                 if (!$subcategory = \App\Models\Subcategory::where('category_id', $category_id)->find($subcategory_id)) {
-                    return false;
+                    continue;
                 }
             }
 
@@ -446,13 +482,12 @@ class EventController extends BaseController
 
     private function saveProducers($producersJson, $event_id)
     {
-
-        if (!$producers = json_decode($producersJson, true)) {
-            return false;
-        }
-        $producerarray = [];
-
         $deletedRows = \App\Models\EventProducer::where('event_id', $event_id)->delete();
+
+        $producerarray = [];
+        if (!$producers = json_decode($producersJson, true)) {
+            return json_encode($producerarray);
+        }
 
         foreach ($producers as $key => $value) {
 
@@ -488,6 +523,60 @@ class EventController extends BaseController
 
         }
         return json_encode($producerarray);
+    }
+
+    private function saveParticipants($participantsJson, $event_id)
+    {
+        $deletedRows = \App\Models\EventParticipant::where('event_id', $event_id)->delete();
+
+        $participantarray = [];
+        if (!$participants = json_decode($participantsJson, true)) {
+            return json_encode($participantarray);
+        }
+
+        foreach ($participants as $key => $value) {
+
+            if (!array_key_exists('name', $value)) {
+                continue;
+            }
+
+            $participant_id = '';
+            if ((array_key_exists('page_id', $value)) && (is_int($value['page_id']))) {
+
+                if ($participant = \App\Models\Page::where('participant', 1)->find($value['page_id'])) {
+                    $participant_id = $value['page_id'];
+                }
+            }
+
+            $saveparticipant = [
+                'name'     => $value['name'],
+                'imageurl' => array_key_exists('imageurl', $value) ? $value['imageurl'] : '',
+                'start'    => array_key_exists('start', $value) ? $value['start'] : '',
+            ];
+
+            if ($participant_id) {
+                $saveparticipant['page_id'] = $participant_id;
+            }
+
+            $extra = [
+                'event_id'     => $event_id,
+                'info'         => array_key_exists('info', $value) ? $value['info'] : '',
+                'private_info' => array_key_exists('private_info', $value) ? $value['private_info'] : '',
+                'end'          => array_key_exists('end', $value) ? $value['imageurl'] : '',
+                'order'        => array_key_exists('order', $value) ? $value['order'] : '0',
+                'public'       => array_key_exists('public', $value) ? $value['public'] : '0',
+                'confirmed'    => array_key_exists('confirmed', $value) ? $value['confirmed'] : '0',
+            ];
+
+            $data = \App\Models\EventParticipant::create(array_merge($saveparticipant, $extra));
+
+//only add them to the participants array if they're confirmed and public
+            if (($extra['public'] == 1) and ($extra['confirmed'] == 1)) {
+                $participantarray[] = $saveparticipant;
+            }
+        }
+
+        return json_encode($participantarray);
     }
 
 }

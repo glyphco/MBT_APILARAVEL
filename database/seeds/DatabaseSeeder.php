@@ -187,11 +187,12 @@ class EventDataSeeder extends Seeder
 
                 // //Attach some categories
                 $num_categories = Faker\Factory::create()->randomElement($array = array(0, 0, 1, 1, 2));
+                $num_categories = Faker\Factory::create()->randomElement($array = array(0, 0));
                 while ($num_categories--) {
                     $ev->categories()->save(factory(App\Models\EventCategory::class)->make());
                 }
                 //dd($ev->categories->pluck('subcategory_id'));
-                $categoriesjson = null;
+                $categoriesjson = [];
                 foreach ($ev->categories as $evcategory) {
                     $categoriesjson[] =
                         [
@@ -213,14 +214,31 @@ class EventDataSeeder extends Seeder
 
                 // //Make some participants
                 $num_participants = Faker\Factory::create()->numberBetween($min = 1, $max = 5);
-                foreach (range(1, $num_participants) as $index) {
+                while ($num_participants--) {
                     $ev->eventparticipants()->save(factory(App\Models\EventParticipant::class)->make());
+                }
+                $participantsjson = [];
+
+                foreach ($ev->eventparticipants as $eventparticipant) {
+
+                    $participantsjson[] =
+                        [
+                        'page_id'  => $eventparticipant['page_id'],
+                        'name'     => $eventparticipant['name'],
+                        //'info' => $eventshow_page['info'],
+                        'imageurl' => $eventparticipant['imageurl'],
+                        'start'    => $eventparticipant['start'],
+                    ];
+                }
+                if (!empty($participantsjson)) {
+                    $ev->participantsjson = json_encode($participantsjson);
+                    $ev->save();
                 }
 
                 //Maybe attach a show:
-                $num_shows = Faker\Factory::create()->optional($weight = 0.5)->randomElement($array = array(0, 0, 0, 0, 1, 1, 1, 1, 2)); // 50% chance of NULL
-                //echo ($num_shows);
-                $showsjson = null;
+                $num_shows = Faker\Factory::create()->randomElement($array = array(0, 0, 0, 0, 1, 1, 1, 1, 2));
+                $num_shows = Faker\Factory::create()->randomElement($array = array(0, 0));
+                $showsjson = [];
 
                 while ($num_shows--) {
                     $ev->eventshows()->save(factory(App\Models\EventShow::class)->make());

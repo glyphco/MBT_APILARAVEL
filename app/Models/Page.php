@@ -43,6 +43,10 @@ class Page extends Model
         'backgroundurl',
     ];
 
+    protected $attributes = array(
+        'categoriesjson' => '[]',
+    );
+
     /**
      * The attributes that should be hidden for arrays.
      *

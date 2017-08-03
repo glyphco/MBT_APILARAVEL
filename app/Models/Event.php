@@ -55,9 +55,16 @@ class Event extends Model
         'imageurl',
         'backgroundurl',
 
-        'showjson',
+        'categoriesjson',
+        'showsjson',
 
     ];
+
+    protected $attributes = array(
+        'categoriesjson'   => '[]',
+        'showsjson'        => '[]',
+        'participantsjson' => '[]',
+    );
 
     /**
      * The attributes that should be hidden for arrays.
@@ -76,7 +83,7 @@ class Event extends Model
     {
         parent::boot();
         //static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
-        static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
+        //static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
     }
 
     protected $friends;

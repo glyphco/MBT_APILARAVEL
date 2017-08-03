@@ -21,8 +21,9 @@ class CreateEventsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 //JSON
-            $table->text('showsjson')->nullable()->default(null);
-            $table->text('categoriesjson')->nullable()->default(null);
+            $table->json('showsjson');
+            $table->json('categoriesjson');
+            $table->json('participantsjson');
 //venue stuff
             $table->integer('venue_id')->unsigned()->nullable();
             $table->string('venue_name')->nullable()->default(null);
