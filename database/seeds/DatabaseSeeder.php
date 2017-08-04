@@ -132,7 +132,7 @@ class EventDataSeeder extends Seeder
 
                 // //Attach some categories
                 $num_categories = Faker\Factory::create()->randomElement($array = array(0, 0, 1, 1, 2));
-                $num_categories = Faker\Factory::create()->randomElement($array = array(0, 0));
+                //$num_categories = Faker\Factory::create()->randomElement($array = array(0, 0));
                 while ($num_categories--) {
                     $ev->categories()->save(factory(App\Models\EventCategory::class)->make());
                 }
@@ -182,7 +182,7 @@ class EventDataSeeder extends Seeder
 
                 //Maybe attach a show:
                 $num_shows = Faker\Factory::create()->randomElement($array = array(0, 0, 0, 0, 1, 1, 1, 1, 2));
-                $num_shows = Faker\Factory::create()->randomElement($array = array(0, 0));
+                //$num_shows = Faker\Factory::create()->randomElement($array = array(0, 0));
                 $showsjson = [];
 
                 while ($num_shows--) {
