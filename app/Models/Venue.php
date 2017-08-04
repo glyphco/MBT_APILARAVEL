@@ -36,6 +36,8 @@ class Venue extends Model
         'phone',
         'email',
         'location',
+        'public',
+        'confirmed',
     ];
 
     /**
@@ -43,7 +45,7 @@ class Venue extends Model
      *
      * @var array
      */
-    protected $hidden = [
+    protected $hidden = ['location',
     ];
 
     /**

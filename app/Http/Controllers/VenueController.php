@@ -223,7 +223,7 @@ class VenueController extends BaseController
             $input = $request->all();
             // at this point any of these users can make public
             // BUT if a user cant set confirmed, strip it:
-            if (!(Bouncer::allows('confirm-venues'))) {
+            if (!(Bouncer::allows($this->confirmitems))) {
                 $input = $request->except(['confirmed']);
             }
 

@@ -63,23 +63,23 @@ class EventController extends BaseController
         $this->friends = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         $data = $m::with(['mve', 'categories'])
-            ->withCount([
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
-            ])
-            ->with([
-                'iattending',
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
-            ])
+        // ->withCount([
+        //     'attendingyes',
+        //     'attendingmaybe',
+        //     'attendingwish',
+        //     'friendsattendingyes',
+        //     'friendsattendingmaybe',
+        //     'friendsattendingwish',
+        // ])
+        // ->with([
+        //     'iattending',
+        //     'attendingyes',
+        //     'attendingmaybe',
+        //     'attendingwish',
+        //     'friendsattendingyes',
+        //     'friendsattendingmaybe',
+        //     'friendsattendingwish',
+        // ])
         ;
 
         if ($date) {
@@ -114,7 +114,17 @@ class EventController extends BaseController
             // /^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/
             // /^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/
 
-            $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+            // $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+
+            $data = $data->proximity(
+                $request->input('lat'),
+                $request->input('lng'),
+                $request->input('dist', 50),
+                $request->input('units', 'MILES')
+            )
+                ->addSelect('events.*')
+                ->orderBy('distance', 'asc');
+
         }
 
         $pp = $request->input('pp', 25);
@@ -252,8 +262,8 @@ class EventController extends BaseController
         if ($data = $m::with([
             'mve',
             'venue',
+            'categories',
             'eventshows',
-            'eventcategories',
             'eventparticipants',
             'eventproducer',
 

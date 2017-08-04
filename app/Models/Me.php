@@ -59,7 +59,7 @@ class Me extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'facebook_id', 'google_id',
+        'password', 'remember_token', 'facebook_id', 'google_id', 'location',
     ];
 
     /**
