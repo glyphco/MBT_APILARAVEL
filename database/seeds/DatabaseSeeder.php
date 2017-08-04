@@ -1,6 +1,5 @@
 <?php
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
@@ -16,11 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        $this->call('RolesSeeder');
-        $this->call('CategoriesSeeder');
-        $this->call('SuperAdminDataSeeder');
+        $this->call(RolesSeeder::class);
+        $this->call(CategoriesTableSeeder::class);
+        $this->call(SubcategoriesTableSeeder::class);
+        $this->call(SuperAdminDataSeeder::class);
+
         if (App::Environment() === 'local') {
-            // run production queries or model factories
+            // run local queries or model factories
 
             //Fake Data Follows:
             $this->call('UserDataSeeder');
@@ -35,7 +36,7 @@ class DatabaseSeeder extends Seeder
             $this->call('UserLikesSeeder');
 
         } else {
-            // run local queries or model factories
+            // run production queries or model factories
 
             //Fake Data Follows:
             //$this->call('UserDataSeeder');
@@ -52,62 +53,6 @@ class DatabaseSeeder extends Seeder
 
     }
 
-}
-
-class SuperAdminDataSeeder extends Seeder
-{
-    public function run()
-    {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        DB::table('users')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        $datetime    = Carbon::now();
-        $lat         = '41.94';
-        $lng         = '-87.67';
-        $lnglatval   = $lng . ', ' . $lat;
-        $glypherinfo = [
-            'name'        => "Shawn 'glypher' Dalton",
-            'username'    => "glypher",
-            'email'       => "glypher@gmail.com",
-            'facebook_id' => '10109892803653991',
-            'avatar'      => 'https://graph.facebook.com/v2.8/10109892803653991/picture?type=normal',
-            'lat'         => $lat,
-            'lng'         => $lng,
-            'location'    => DB::raw("POINT($lnglatval)"),
-            'confirmed'   => '1',
-            'slug'        => 'glypher',
-            'created_at'  => $datetime,
-            'updated_at'  => $datetime,
-        ];
-        //NOTE LOCATION is POINT (since we're not using model, but raw DB entry)
-        $careletoninfo = [
-            'name'        => "Carleton Maybell",
-            'username'    => "cmaybell",
-            'email'       => "1555815747766321@facebook.com",
-            'facebook_id' => '1555815747766321',
-            'avatar'      => 'https://graph.facebook.com/v2.8/1555815747766321/picture?type=normal',
-            'lat'         => $lat,
-            'lng'         => $lng,
-            'location'    => DB::raw("POINT($lnglatval)"),
-            'confirmed'   => '1',
-            'slug'        => 'cmaybell',
-            'created_at'  => $datetime,
-            'updated_at'  => $datetime,
-        ];
-
-        $id   = DB::table('users')->insertGetId($careletoninfo);
-        $user = User::find($id);
-        \Auth::login($user);
-        \Auth::user()->assign('superadmin');
-
-        $id   = DB::table('users')->insertGetId($glypherinfo);
-        $user = User::find($id);
-
-        //Logging in glypher so we can do all the seeding
-        \Auth::login($user);
-        \Auth::user()->assign('superadmin');
-
-    }
 }
 
 class UserDataSeeder extends Seeder
@@ -440,89 +385,6 @@ class UserLikesSeeder extends Seeder
             );
 
         }
-    }
-
-}
-
-class RolesSeeder extends Seeder
-{
-    public function run()
-    {
-
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        DB::table('abilities')->truncate();
-        DB::table('assigned_roles')->truncate();
-        DB::table('roles')->truncate();
-        DB::table('permissions')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
-        //Bouncer::allow(\Auth::user())->to('ban-users');
-        //Bouncer::allow('admin')->to('ban-users');
-        //Bouncer::assign('admin')->to(\Auth::user());
-
-        Bouncer::allow('superadmin')->to('view-users'); // sa only
-        Bouncer::allow('superadmin')->to('edit-users'); // sa only
-        Bouncer::allow('superadmin')->to('ban-users'); // sa only
-
-        Bouncer::allow('superadmin')->to('admin-pages'); // sa/a only
-        Bouncer::allow('superadmin')->to('confirm-pages');
-        Bouncer::allow('superadmin')->to('create-pages');
-        Bouncer::allow('superadmin')->to('edit-pages');
-        Bouncer::allow('superadmin')->to('delete-pages');
-
-        Bouncer::allow('superadmin')->to('admin-venues');
-        Bouncer::allow('superadmin')->to('confirm-venues');
-        Bouncer::allow('superadmin')->to('create-venues');
-        Bouncer::allow('superadmin')->to('edit-venues');
-        Bouncer::allow('superadmin')->to('delete-venues');
-
-        Bouncer::allow('superadmin')->to('admin-events');
-        Bouncer::allow('superadmin')->to('confirm-events');
-        Bouncer::allow('superadmin')->to('create-events');
-        Bouncer::allow('superadmin')->to('edit-events');
-        Bouncer::allow('superadmin')->to('delete-events');
-
-        Bouncer::allow('admin')->to('view-users');
-        Bouncer::allow('admin')->to('edit-users');
-
-        Bouncer::allow('admin')->to('admin-pages'); // sa/a only
-        Bouncer::allow('admin')->to('confirm-pages');
-        Bouncer::allow('admin')->to('create-pages');
-        Bouncer::allow('admin')->to('edit-pages');
-        Bouncer::allow('admin')->to('delete-pages');
-
-        Bouncer::allow('admin')->to('admin-venues');
-        Bouncer::allow('admin')->to('confirm-venues');
-        Bouncer::allow('admin')->to('create-venues');
-        Bouncer::allow('admin')->to('edit-venues');
-        Bouncer::allow('admin')->to('delete-venues');
-
-        Bouncer::allow('admin')->to('admin-events');
-        Bouncer::allow('admin')->to('confirm-events');
-        Bouncer::allow('admin')->to('create-events');
-        Bouncer::allow('admin')->to('edit-events');
-        Bouncer::allow('admin')->to('delete-events');
-
-        Bouncer::allow('mastereditor')->to('confirm-pages');
-        Bouncer::allow('mastereditor')->to('create-pages');
-        Bouncer::allow('mastereditor')->to('edit-pages');
-        Bouncer::allow('mastereditor')->to('delete-pages');
-
-        Bouncer::allow('mastereditor')->to('confirm-venues');
-        Bouncer::allow('mastereditor')->to('create-venues');
-        Bouncer::allow('mastereditor')->to('edit-venues');
-        Bouncer::allow('mastereditor')->to('delete-venues');
-
-        Bouncer::allow('mastereditor')->to('confirm-venues');
-        Bouncer::allow('mastereditor')->to('create-events');
-        Bouncer::allow('mastereditor')->to('edit-events');
-        Bouncer::allow('mastereditor')->to('delete-events');
-
-        Bouncer::allow('contributor')->to('create-pages');
-        Bouncer::allow('contributor')->to('create-venues');
-        Bouncer::allow('contributor')->to('create-events');
-        //contributers will be able to edit and delete their own pages/events/venues once created
-
     }
 
 }

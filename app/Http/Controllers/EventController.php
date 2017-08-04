@@ -249,7 +249,15 @@ class EventController extends BaseController
     {
         //autorelates venue and participants in model
         $m = self::MODEL;
-        if ($data = $m::with(['mve', 'categories'])
+        if ($data = $m::with([
+            'mve',
+            'venue',
+            'eventshows',
+            'eventcategories',
+            'eventparticipants',
+            'eventproducer',
+
+        ])
             ->withCount([
                 'attendingyes',
                 'attendingmaybe',
