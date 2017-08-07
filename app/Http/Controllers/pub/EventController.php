@@ -71,10 +71,17 @@ class EventController extends BaseController
         }
 
         if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {
-            // /^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/
-            // /^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/
 
-            $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+//            $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
+
+            $data = $data->near(
+                $request->input('lat'),
+                $request->input('lng'),
+                $request->input('dist', 50),
+                $request->input('units', 'MILES')
+            )
+                ->addSelect('events.*')
+                ->orderBy('distance', 'asc');
 
         }
 

@@ -71,7 +71,8 @@ class Event extends Model
      *
      * @var array
      */
-    protected $hidden = ['location',
+    protected $hidden = [
+        'location',
     ];
 
     /**

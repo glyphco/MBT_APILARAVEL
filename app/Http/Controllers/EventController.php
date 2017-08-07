@@ -116,13 +116,13 @@ class EventController extends BaseController
 
             // $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
 
-            $data = $data->proximity(
+            $data = $data->near(
                 $request->input('lat'),
                 $request->input('lng'),
                 $request->input('dist', 50),
                 $request->input('units', 'MILES')
             )
-                ->addSelect('events.*')
+
                 ->orderBy('distance', 'asc');
 
         }

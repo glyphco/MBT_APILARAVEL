@@ -182,7 +182,7 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
         'local_end'      => $local_end,
         'local_tz'       => $local_tz,
 
-        'location'       => DB::raw($lng . ', ' . $lat),
+        'location'       => DB::raw($randomVenue->lng . ', ' . $randomVenue->lat),
     ];
 
 });
