@@ -175,6 +175,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event', 'EventController@index');
     Route::post('/event', 'EventController@store');
     Route::get('/event/editable', 'EventController@editable');
+    Route::get('/event/today', 'EventController@today');
+    Route::get('/event/current', 'EventController@current');
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
     Route::get('/event/{id}/edit', 'EventController@edit');

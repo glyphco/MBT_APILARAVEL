@@ -34,6 +34,9 @@ class ShowController extends BaseController
     {
         $m    = self::MODEL;
         $data = $m::withCount('events')->withCount('likes');
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
         if ($request->exists('q')) {
             $data = $data->where('name', 'like', $request['q'] . '%');
         }
@@ -107,8 +110,51 @@ class ShowController extends BaseController
     {
 
         $m    = self::MODEL;
-        $data = $m::PublicAndPrivate()
-            ->ConfirmedAndUnconfirmed();
+        $data = $m::withCount(['events', 'likes']);
+
+        if ($request->exists('confirmed')) {
+            $data = $data->where('confirmed', '=', 1);
+        }
+
+        if ($request->exists('unconfirmed')) {
+            $data = $data->where('confirmed', '=', 0);
+        }
+
+        if ($request->exists('public')) {
+            $data = $data->where('public', '=', 1);
+        }
+
+        if ($request->exists('private')) {
+            $data = $data->where('public', '=', 0);
+        }
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'name':
+                    $data = $data
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                case 'likes':
+                    $data = $data
+                        ->orderBy('likes_count', 'desc')
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                case 'eventscount':
+                    $data = $data
+                        ->orderBy('events_count', 'desc')
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                default:
+                    $data = $data
+                        ->orderBy('name', 'ASC');
+                    break;
+            }
+        } else {
+            $data = $data->orderBy('name', 'ASC');
+        }
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}

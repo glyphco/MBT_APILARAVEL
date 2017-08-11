@@ -67,11 +67,14 @@ trait SpacialDataTrait
     public function scopeNear($query, $lat, $lng, $dist = 0, $units = Miles)
     {
 
-        $dist  = $dist ? $dist : 500;
+        $dist  = $dist ? $dist : 5000;
         $table = $this->getTable();
         if ($units == 'KM') {
             $distanceUnit = 111.045;
             $vert         = 0.001;
+        } else if ($units == 'METERS') {
+            $distanceUnit = 111045;
+            $vert         = 1;
         } else {
             $distanceUnit = 69.0;
             $vert         = 0.000621371;
@@ -83,6 +86,8 @@ trait SpacialDataTrait
 
         $query->
             selectRaw($table . '.*,( ' . $vert . ' * ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance');
+
+        //$query->selectRaw(' ST_AsText(location) as locationx');
 
         if ($dist) {
             $query->where(DB::raw('( ' . $vert . ' * ST_Distance_Sphere(location,POINT(' . $spherelocation . ')))'), '<', $dist);

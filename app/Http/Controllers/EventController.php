@@ -82,6 +82,9 @@ class EventController extends BaseController
         // ])
         ;
 
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
         if ($date) {
             $data = $data->InDateRange($date, $enddate);
         }
@@ -148,11 +151,26 @@ class EventController extends BaseController
     {
 
         $m    = self::MODEL;
-        $data = $m::PublicAndPrivate()
-            ->ConfirmedAndUnconfirmed();
+        $data = $m::with('mve');
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
+
+        if ($request->exists('confirmed')) {
+            $data = $data->where('confirmed', '=', 1);
+        }
+
+        if ($request->exists('unconfirmed')) {
+            $data = $data->where('confirmed', '=', 0);
+        }
+
+        if ($request->exists('public')) {
+            $data = $data->where('public', '=', 1);
+        }
+
+        if ($request->exists('private')) {
+            $data = $data->where('public', '=', 0);
+        }
 
         //If you can edit or admin all, get all!
         //Otherwise only the ones you can get to:
@@ -163,19 +181,26 @@ class EventController extends BaseController
         if ($request->has('sortby')) {
             switch ($request->input('sortby')) {
                 case 'date':
-                    $data = $data->orderByRaw('date(UTC_start) desc')
-                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    $data = $data
+                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('venue_name', 'ASC')
+                        ->orderBy('name', 'DESC');
                     break;
                 case 'venue':
-                    $data = $data->orderBy('date(UTC_start)', 'DESC')
-                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    $data = $data
+                        ->orderBy('venue_name', 'ASC')
+                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('name', 'DESC');
                     break;
                 case 'event':
-                    # code...
+                    $data = $data
+                        ->orderBy('name', 'DESC');
                     break;
                 default:
-                    $data = $data->orderByRaw('date(UTC_start) desc')
-                        ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
+                    $data = $data
+                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('venue_name', 'ASC')
+                        ->orderBy('name', 'DESC');
                     break;
             }
         } else {
@@ -595,6 +620,119 @@ class EventController extends BaseController
         }
 
         return json_encode($participantarray);
+    }
+
+    public function today(Request $request)
+    {
+
+        $tz   = 'America/Chicago';
+        $lat  = '41.875792256780315';
+        $lng  = '-87.62811183929443';
+        $dist = '5000';
+
+        if ($request->has('tz') && $this->isValidTimezoneId($request->input('tz'))) {
+            $tz = $request->input('tz');
+        }
+
+        if ($request->has('lat') && $this->isValidLatitude($request->input('lat'))) {
+            $lat = $request->input('lat');
+        }
+
+        if ($request->has('lng') && $this->isValidLongitude($request->input('lng'))) {
+            $lng = $request->input('lng');
+        }
+
+        if ($request->has('dist')) {
+            $dist = $request->input('dist');
+        }
+
+        $m    = self::MODEL;
+        $data = $m::withCount([
+            'attendingyes',
+            'attendingmaybe',
+            //'attendingwish',
+            'friendsattendingyes',
+            'friendsattendingmaybe',
+            //'friendsattendingwish',
+        ])
+            ->with([
+                'iattending',
+                //'attendingyes',
+                //'attendingmaybe',
+                //'attendingwish',
+                'friendsattendingyes',
+                //'friendsattendingmaybe',
+                //'friendsattendingwish',
+            ])
+        ;
+
+        $data = $data->today($tz);
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
+        $data = $data->near($lat, $lng, $dist, 'METERS')->orderBy('distance', 'asc');
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+
+        return $this->listResponse($data);
+
+    }
+
+    public function current(Request $request)
+    {
+
+        $tz   = 'America/Chicago';
+        $lat  = '41.875792256780315';
+        $lng  = '-87.62811183929443';
+        $dist = '5000';
+
+        if ($request->has('tz') && $this->isValidTimezoneId($request->input('tz'))) {
+            $tz = $request->input('tz');
+        }
+
+        if ($request->has('lat') && $this->isValidLatitude($request->input('lat'))) {
+            $lat = $request->input('lat');
+        }
+
+        if ($request->has('lng') && $this->isValidLongitude($request->input('lng'))) {
+            $lng = $request->input('lng');
+        }
+
+        if ($request->has('dist')) {
+            $dist = $request->input('dist');
+        }
+
+        $m    = self::MODEL;
+        $data = $m::with(['mve', 'categories']);
+        $data = $data->current(); //tz unneeded for current
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
+        $data = $data->near($lat, $lng, $dist, 'METERS')->orderBy('distance', 'asc');
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+
+        return $this->listResponse($data);
+
+    }
+
+    private function isValidTimezoneId($tzid)
+    {
+        $valid = array();
+        $tza   = timezone_abbreviations_list();
+        foreach ($tza as $zone) {
+            foreach ($zone as $item) {
+                $valid[$item['timezone_id']] = true;
+            }
+        }
+
+        unset($valid['']);
+        $res = isset($valid[$tzid]);
+        return $res;
     }
 
 }

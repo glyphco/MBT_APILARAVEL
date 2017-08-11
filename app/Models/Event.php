@@ -131,9 +131,27 @@ class Event extends Model
         return $filter->where(function ($query) {
             $query
             //Start in date range
-            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(5)->toDateTimeString())
+            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(3)->toDateTimeString())
             //End in date range
-                ->orWhereDate('UTC_end', '>=', Carbon::now()->subHours(5)->toDateTimeString());
+                ->orWhereDate('UTC_end', '>=', Carbon::now()->toDateTimeString());
+        });
+    }
+
+    public function scopeToday($filter, $tz = 'America/Chicago')
+    {
+
+        $datetime = Carbon::now()->subHours(3)->toDateTimeString();
+        //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
+        $enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
+
+        //dd($datetime, $enddatetime);
+        return $filter->where(function ($query) use ($datetime, $enddatetime) {
+            $query
+            //Start in date range
+            ->whereBetween('UTC_start', [$datetime, $enddatetime])
+            //End in date range
+                ->orWhereBetween('UTC_end', [$datetime, $enddatetime]);
+
         });
     }
 
@@ -198,6 +216,7 @@ class Event extends Model
         });
     }
 
+//This is WRONG (2nd part) and needs to be fixed
     public function scopeInDateRange($filter, $datetime, $enddatetime)
     {
         return $filter->where(function ($query) use ($datetime, $enddatetime) {

@@ -49,8 +49,8 @@ class Show extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\ShowPublicScope);
-        static::addGlobalScope(new \App\Scopes\ShowConfirmedScope);
+        //static::addGlobalScope(new \App\Scopes\ShowPublicScope);
+        //static::addGlobalScope(new \App\Scopes\ShowConfirmedScope);
     }
 
     public function events()

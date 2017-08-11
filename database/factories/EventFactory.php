@@ -148,6 +148,8 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
 
     $randomVenue = App\Models\Venue::get()->random();
 
+    $img_height = $faker->numberBetween(100, 200);
+    $img_width  = $faker->numberBetween(50, 50);
     return [
 
         'name'           => $name,
@@ -169,7 +171,7 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
         'public'         => 1,
         'confirmed'      => 1,
 
-        'imageurl'       => $faker->imageUrl(200, 200, 'nightlife'),
+        'imageurl'       => $faker->imageUrl($img_width, $img_height, 'nightlife'),
         'backgroundurl'  => $faker->imageUrl(1400, 656, 'nightlife'),
 
         'lat'            => $randomVenue->lat,
