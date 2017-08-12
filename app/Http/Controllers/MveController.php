@@ -87,7 +87,7 @@ class MveController extends BaseController
         if ($pp > 100) {$pp = 100;}
 
 //If you can edit or admin all, get all!
-        if (Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems)) {
+        if ((Bouncer::allows($this->edititems)) or (Bouncer::allows($this->adminitems))) {
             $data = $data->paginate($pp);
             return $this->listResponse($data);
         }
