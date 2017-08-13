@@ -96,6 +96,25 @@ trait SpacialDataTrait
         return $query;
     }
 
+    public function scopeDistance($query, $lat, $lng, $units = 'METERS')
+    {
+
+        $table = $this->getTable();
+        if ($units == 'KM') {
+            $vert = 0.001;
+        } else if ($units == 'METERS') {
+            $vert = 1;
+        } else {
+            $vert = 0.000621371;
+        }
+
+        $spherelocation = $lng . ',' . $lat;
+
+        return $query->
+            selectRaw($table . '.*,( ' . $vert . ' * ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance');
+
+    }
+
     public function scopeWithRadiusFromWithSub($query, $lat, $lng, $dist, $units)
     {
 
@@ -148,11 +167,6 @@ trait SpacialDataTrait
         }
 
         return $query;
-    }
-
-    public function scopeDistance($query, $dist, $location)
-    {
-        return $query->whereRaw('st_distance(location,POINT(' . $location . ')) < ' . $dist);
     }
 
     public function scopeProximity($query, $lat, $lng, $radius, $units)

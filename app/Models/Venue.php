@@ -65,6 +65,11 @@ class Venue extends Model
         return $this->hasMany('App\Models\Event');
     }
 
+    public function eventslistcurrent()
+    {
+        return $this->hasMany('App\Models\Event')->current()->where('confirmed', '=', 1)->where('public', '=', 1)->orderby('UTC_start');
+    }
+
     public function currentevents()
     {
         return $this->hasMany('App\Models\Event')->Current();
@@ -97,6 +102,18 @@ class Venue extends Model
     public function ilike()
     {
         return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
+    }
+
+    public function friendslike()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')
+            ->wherenull('likeables.deleted_at')
+            ->wherePivotIn('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from('friendships')
+                    ->where('user_id', \Auth::id());
+            })
+            ->select('user_id', 'name', 'avatar');
     }
 
     public function getIsLikedAttribute()

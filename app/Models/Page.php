@@ -73,16 +73,45 @@ class Page extends Model
         return $this->hasManyThrough(
             'App\Models\Event', 'App\Models\EventParticipant',
             'page_id', 'id'
-        );
+        )
+            ->where('events.confirmed', '=', 1)
+            ->where('events.public', '=', 1)
+            ->orderby('UTC_start');
+    }
+
+    public function eventsAsParticipantCurrent()
+    {
+        return $this->hasManyThrough(
+            'App\Models\Event', 'App\Models\EventParticipant',
+            'page_id', 'id'
+        )
+            ->current()
+            ->where('events.confirmed', '=', 1)
+            ->where('events.public', '=', 1)
+            ->orderby('UTC_start');
     }
 
     public function eventsAsProducer()
     {
-
         return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\EventParticipant',
+            'App\Models\Event', 'App\Models\EventProducer',
             'page_id', 'id'
-        );
+        )
+            ->where('events.confirmed', '=', 1)
+            ->where('events.public', '=', 1)
+            ->orderby('UTC_start');
+    }
+
+    public function eventsAsProducerCurrent()
+    {
+        return $this->hasManyThrough(
+            'App\Models\Event', 'App\Models\EventProducer',
+            'page_id', 'id'
+        )
+            ->current()
+            ->where('events.confirmed', '=', 1)
+            ->where('events.public', '=', 1)
+            ->orderby('UTC_start');
     }
 
     public function categories()
@@ -133,6 +162,18 @@ class Page extends Model
     public function ilike()
     {
         return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
+    }
+
+    public function friendslike()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')
+            ->wherenull('likeables.deleted_at')
+            ->wherePivotIn('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from('friendships')
+                    ->where('user_id', \Auth::id());
+            })
+            ->select('user_id', 'name', 'avatar');
     }
 
     public function getIsLikedAttribute()

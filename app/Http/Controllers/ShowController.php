@@ -310,4 +310,18 @@ class ShowController extends BaseController
 
     }
 
+    public function details($id)
+    {
+        $m = self::MODEL;
+        if ($data = $m::with('eventslistcurrent')
+            ->withCount('events')
+            ->withCount('likes')
+            ->withCount('friendslike')
+            ->with('friendslike')
+            ->find($id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
 }

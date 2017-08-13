@@ -84,6 +84,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/venue/map', 'VenueController@getMap');
     Route::get('/venue/{id}', 'VenueController@show');
     Route::put('/venue/{id}', 'VenueController@update');
+    Route::get('/venue/{id}/details', 'VenueController@details');
     Route::get('/venue/{id}/edit', 'VenueController@edit');
     Route::delete('/venue/{id}', 'VenueController@destroy');
     Route::get('/venue/{id}/like', 'VenueController@like');
@@ -106,6 +107,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/page/editable', 'PageController@editable');
     Route::get('/page/{id}', 'PageController@show');
     Route::put('/page/{id}', 'PageController@update');
+    Route::get('/page/{id}/details', 'PageController@details');
     Route::get('/page/{id}/edit', 'PageController@edit');
     Route::get('/page/{id}/like', 'PageController@like');
     Route::get('/page/{id}/likes', 'PageController@getLikes');
@@ -129,6 +131,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/show/editable', 'ShowController@editable');
     Route::get('/show/{id}', 'ShowController@show');
     Route::put('/show/{id}', 'ShowController@update');
+    Route::get('/show/{id}/details', 'ShowController@details');
     Route::get('/show/{id}/edit', 'ShowController@edit');
     Route::get('/show/{id}/like', 'ShowController@like');
     Route::get('/show/{id}/likes', 'ShowController@getLikes');
@@ -180,6 +183,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
     Route::get('/event/{id}/edit', 'EventController@edit');
+    Route::get('/event/{id}/details', 'EventController@details');
     //Events are attended, not liked.
     Route::get('/event/{id}/attend', 'AttendingController@attendEvent');
     Route::get('/event/{id}/confirm', 'EventController@confirm');
@@ -195,20 +199,20 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 //Attending
 
 //Event Shows
-    Route::get('/event/{id}/shows/', 'EventShowController@index');
-    Route::post('/event/{id}/shows/', 'EventShowController@store');
-    Route::delete('/event/{id}/shows/{eventshow_id}', 'EventShowController@destroy');
-//Event Categories
-    Route::get('/event/{id}/categories', 'EventCategoryController@index');
-    Route::post('/event/{id}/categories', 'EventCategoryController@store');
-    Route::delete('/event/{id}/categories/{eventcategory_id}', 'EventCategoryController@destroy');
+    // Route::get('/event/{id}/shows/', 'EventShowController@index');
+    // Route::post('/event/{id}/shows/', 'EventShowController@store');
+    // Route::delete('/event/{id}/shows/{eventshow_id}', 'EventShowController@destroy');
+    //Event Categories
+    // Route::get('/event/{id}/categories', 'EventCategoryController@index');
+    // Route::post('/event/{id}/categories', 'EventCategoryController@store');
+    // Route::delete('/event/{id}/categories/{eventcategory_id}', 'EventCategoryController@destroy');
 
 //Event Participants
-    Route::get('/event/{id}/participants', 'EventParticipantController@index');
-    Route::post('/event/{id}/participants', 'EventParticipantController@store');
-    Route::get('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@show');
-    Route::put('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@update');
-    Route::delete('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@destroy');
+    // Route::get('/event/{id}/participants', 'EventParticipantController@index');
+    // Route::post('/event/{id}/participants', 'EventParticipantController@store');
+    // Route::get('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@show');
+    // Route::put('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@update');
+    // Route::delete('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@destroy');
 
 // Users (Mostly Admin stuff)
     Route::group(['middleware' => 'can:view-users'], function () {
@@ -252,7 +256,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/category', 'CategoryController@index');
 
 //Uploads
-    Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');
+    //    Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');
     //Route::post('/uploadheadimage/{item}/{id}/', 'UploadController@uploadheadimage');
 
 //BOTS!!

@@ -345,6 +345,20 @@ class VenueController extends BaseController
         return $this->listResponse($data);
     }
 
+    public function details($id)
+    {
+        $m = self::MODEL;
+        if ($data = $m::with('eventslistcurrent')
+            ->withCount('events')
+            ->withCount('likes')
+            ->withCount('friendslike')
+            ->with('friendslike')
+            ->find($id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
     public function isValidLongitude($longitude)
     {
         if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {

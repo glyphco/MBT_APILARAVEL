@@ -58,6 +58,11 @@ class Show extends Model
         return $this->belongsToMany('App\Models\Event', 'event_shows');
     }
 
+    public function eventslistcurrent()
+    {
+        return $this->belongsToMany('App\Models\Event', 'event_shows')->current()->where('confirmed', '=', 1)->where('public', '=', 1)->orderby('UTC_start');
+    }
+
     public function scopePrivate($query)
     {
         return $query->withoutGlobalScope(\App\Scopes\ShowPublicScope::class)->where('public', '=', 0);
@@ -86,6 +91,18 @@ class Show extends Model
     public function ilike()
     {
         return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
+    }
+
+    public function friendslike()
+    {
+        return $this->morphToMany('App\Models\User', 'likeable')
+            ->wherenull('likeables.deleted_at')
+            ->wherePivotIn('user_id', function ($query) {
+                $query->select('friend_id')
+                    ->from('friendships')
+                    ->where('user_id', \Auth::id());
+            })
+            ->select('user_id', 'name', 'avatar');
     }
 
     public function getIsLikedAttribute()

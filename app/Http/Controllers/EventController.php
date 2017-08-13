@@ -720,6 +720,55 @@ class EventController extends BaseController
 
     }
 
+    public function details(Request $request, $id)
+    {
+
+        $lat = '41.875792256780315';
+        $lng = '-87.62811183929443';
+
+        if ($request->has('lat') && $this->isValidLatitude($request->input('lat'))) {
+            $lat = $request->input('lat');
+        }
+
+        if ($request->has('lng') && $this->isValidLongitude($request->input('lng'))) {
+            $lng = $request->input('lng');
+        }
+
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if ($data = $m::with([
+            'mve',
+            'venue',
+            'categories',
+            'eventshows',
+            'eventparticipants',
+            'eventproducer',
+
+        ])
+            ->withCount([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
+            ])
+            ->distance($lat, $lng)
+            ->with([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'friendsattendingyes',
+                'friendsattendingmaybe',
+                'friendsattendingwish',
+            ])
+            ->find($id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+
+    }
+
     private function isValidTimezoneId($tzid)
     {
         $valid = array();
