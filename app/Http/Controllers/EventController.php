@@ -711,7 +711,7 @@ class EventController extends BaseController
         $spherelocation = $lng . ',' . $lat;
 
         $data = $data->
-            selectRaw('id, events.name, events.venue_name, events.local_start,( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')->get();
+            selectRaw('id, events.name, events.venue_name, events.local_start, events.lat, events.lng, ( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')->get();
 
         return $this->listResponse($data);
 
