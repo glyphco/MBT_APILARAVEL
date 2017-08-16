@@ -164,13 +164,13 @@ class Page extends Model
         return $this->morphToMany('App\Models\User', 'likeable')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar');
     }
 
-    public function friendslike()
+    public function pyfslike()
     {
         return $this->morphToMany('App\Models\User', 'likeable')
             ->wherenull('likeables.deleted_at')
             ->wherePivotIn('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from('friendships')
+                $query->select('following_id')
+                    ->from('following')
                     ->where('user_id', \Auth::id());
             })
             ->select('user_id', 'name', 'avatar');

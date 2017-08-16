@@ -126,7 +126,7 @@ class EventDataSeeder extends Seeder
         DB::table('event_categories')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $events = factory('App\Models\Event', 1000)
+        $events = factory('App\Models\Event', 200)
 
         //States:
         //->states('tallimages')
@@ -288,7 +288,7 @@ class UserLikesSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('likeables')->truncate();
         DB::table('attending')->truncate();
-        DB::table('friendships')->truncate();
+        DB::table('following')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         $users  = App\Models\User::pluck('id')->toArray();
@@ -297,14 +297,47 @@ class UserLikesSeeder extends Seeder
         $venues = App\Models\Venue::pluck('id')->toArray();
         $events = App\Models\Event::pluck('id')->toArray();
 
+//make stuff for glypher
+        $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
+        $num_showlikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 4);
+        $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
+
+        $num_eventattends = Faker\Factory::create()->numberBetween($min = 20, $max = 200);
+        $num_followings   = Faker\Factory::create()->numberBetween($min = 10, $max = 15);
+//LIKE SOME PAGES
+        $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, 2);
+//LIKE SOME SHOWS
+        $this->makelikes($num_showlikes, 'App\Models\Show', $shows, 2);
+//LIKE SOME VENUES
+        $this->makelikes($num_venuelikes, 'App\Models\Venue', $venues, 2);
+
+//Attend SOME Events
+        $this->makeattends($num_eventattends, $events, 2, null);
+
+//Friend some users
+        $this->makefollowing($num_followings, $users, 2);
+//make stuff for careleton
+        //LIKE SOME PAGES
+        $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, 1);
+//LIKE SOME SHOWS
+        $this->makelikes($num_showlikes, 'App\Models\Show', $shows, 1);
+//LIKE SOME VENUES
+        $this->makelikes($num_venuelikes, 'App\Models\Venue', $venues, 1);
+
+//Attend SOME Events
+        $this->makeattends($num_eventattends, $events, 1, null);
+
+//Friend some users
+        $this->makefollowing($num_followings, $users, 1);
+
         foreach ($users as $user_id) {
 
             $num_pagelikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
             $num_showlikes  = Faker\Factory::create()->numberBetween($min = 0, $max = 4);
             $num_venuelikes = Faker\Factory::create()->numberBetween($min = 0, $max = 3);
 
-            $num_eventattends = Faker\Factory::create()->numberBetween($min = 0, $max = 10);
-            $num_friends      = Faker\Factory::create()->numberBetween($min = 0, $max = 5);
+            $num_eventattends = Faker\Factory::create()->numberBetween($min = 20, $max = 200);
+            $num_followings   = Faker\Factory::create()->numberBetween($min = 10, $max = 15);
 
 //LIKE SOME PAGES
             $this->makelikes($num_pagelikes, 'App\Models\Page', $pages, $user_id);
@@ -317,7 +350,7 @@ class UserLikesSeeder extends Seeder
             $this->makeattends($num_eventattends, $events, $user_id, null);
 
 //Friend some users
-            $this->makefriendships($num_friends, $users, $user_id);
+            $this->makefollowing($num_followings, $users, $user_id);
         }
 
     }
@@ -374,19 +407,27 @@ class UserLikesSeeder extends Seeder
         }
     }
 
-    public function makefriendships($num_friends, $users, $user_id)
+    public function makefollowing($num_followings, $users, $user_id)
     {
 
-        foreach (range(1, $num_friends) as $index) {
+        foreach (range(1, $num_followings) as $index) {
 
-            $friend_id = Faker\Factory::create()->randomElement($array = $users);
+            $following_id = Faker\Factory::create()->randomElement($array = $users);
+            $valid_status = [
+                'reject'  => 0,
+                'pending' => 1,
+                'accept'  => 2,
+            ];
+            $followstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 2));
+            // $followbackstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 2));
 
-            $friendship = \App\Models\Friendships::firstOrCreate(
-                ['user_id' => $user_id, 'friend_id' => $friend_id]
+            $pyf = \App\Models\Following::firstOrCreate(
+                ['user_id' => $user_id, 'following_id' => $following_id, 'status' => $followstatus]
             );
-            $inversefriendship = \App\Models\Friendships::firstOrCreate(
-                ['user_id' => $friend_id, 'friend_id' => $user_id]
-            );
+
+            // $inversefriendship = \App\Models\Following::firstOrCreate(
+            //     ['user_id' => $following_id, 'following_id' => $user_id, 'status' => $followbackstatus]
+            // );
 
         }
     }

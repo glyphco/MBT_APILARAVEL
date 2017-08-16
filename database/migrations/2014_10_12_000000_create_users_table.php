@@ -38,6 +38,10 @@ class CreateUsersTable extends Migration
             $table->decimal('lng', 11, 8)->nullable()->default(null);
             $table->string('local_tz')->nullable()->default(null);
 
+            $table->integer('privacyevents')->unsigned()->default(2);
+            $table->integer('privacylikes')->unsigned()->default(2);
+            $table->integer('privacypyf')->unsigned()->default(2);
+
             $table->boolean('confirmed')->default(0);
             $table->boolean('is_online')->default(false);
             $table->boolean('is_banned')->default(false);

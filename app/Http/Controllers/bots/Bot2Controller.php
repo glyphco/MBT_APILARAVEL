@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class Bot2Controller extends BaseController
 {
 
-//This bot grabs the event the most of your friends are going to (popular with friends)
+//This bot grabs the event the most of your followings are going to (popular with followings)
 
     public function index(Request $request)
     {
@@ -25,7 +25,7 @@ left join events e on (e.id = a.event_id)
 where (rank =?)
 and e.start > ?
 and user_id in (
-select friend_id from friendships
+select following_id from followers
 where (user_id =?))
 group by event_id, rank
 order by attending desc
@@ -38,7 +38,7 @@ where (rank =?)
 and e.start >= ?
 and e.end >= ?
 and user_id in (
-select friend_id from friendships
+select following_id from followers
 where (user_id =?))
 group by event_id, rank
 order by attending desc

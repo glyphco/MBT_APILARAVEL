@@ -112,30 +112,11 @@ class Me extends Authenticatable
         return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
     }
 
-    // friends
-    public function friendships()
+    // pyfs
+    public function following()
     {
-        return $this->belongsToMany('App\Models\User', 'friendships', 'user_id', 'friend_id')
-            ->select('friend_id as user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+            ->select('following_id as user_id', 'name', 'avatar');
     }
-
-// // accessor allowing you call $user->friends
-    //     public function getFriendsAttribute()
-    //     {
-    //         if (!array_key_exists('friends', $this->relations)) {
-    //             $this->loadFriends();
-    //         }
-
-//         return $this->getRelation('friends');
-    //     }
-
-//     protected function loadFriends()
-    //     {
-    //         if (!array_key_exists('friends', $this->relations)) {
-    //             $friends = $this->friends();
-
-//             $this->setRelation('friends', $friends);
-    //         }
-    //     }
 
 }

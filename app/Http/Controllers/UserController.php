@@ -14,6 +14,60 @@ class UserController extends BaseController
     const MODEL                = 'App\Models\User';
     protected $validationRules = ['email' => 'required', 'name' => 'required', 'password' => 'required'];
 
+//These are public calls
+
+    public function details(Request $request, $id)
+    {
+
+//Check relationship to user:
+        $userseesyou = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first();
+
+        $youseesuser = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first();
+
+        dump($userseesyou);
+        dump($youseesuser);
+
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if ($data = $m::with([
+            'mve',
+            'venue',
+            'categories',
+            'eventshows',
+            'eventparticipants',
+            'eventproducer',
+
+        ])
+            ->withCount([
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
+            ])
+            ->distance($lat, $lng)
+            ->with([
+                'eventparticipants',
+                'attendingyes',
+                'attendingmaybe',
+                'attendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
+            ])
+            ->where('confirmed', '=', 1)
+            ->where('public', '=', 1)
+            ->distance($lat, $lng, 'METERS')
+            ->find($id)) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+
+    }
+
+//These are the rest
+
     public function index(Request $request)
     {
         //$request = Request::all();
@@ -215,12 +269,12 @@ class UserController extends BaseController
         return $this->listResponse($users);
     }
 
-    public function getFriendships($id)
+    public function getFollowing($id)
     {
 
         $m = self::MODEL;
 
-        if ($data = $m::with(['friendships'])->find($id)->friendships) {
+        if ($data = $m::with(['following'])->find($id)->following) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

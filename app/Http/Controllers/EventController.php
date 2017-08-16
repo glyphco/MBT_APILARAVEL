@@ -23,7 +23,7 @@ class EventController extends BaseController
         'local_start' => 'required',
         'local_tz'    => 'required',
     ];
-    protected $friends;
+    protected $pyfs;
 
     protected $createitems  = 'create-events';
     protected $adminitems   = 'admin-events';
@@ -61,25 +61,25 @@ class EventController extends BaseController
 
         $m = self::MODEL;
 
-        $this->friends = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        $this->pyfs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         $data = $m::with(['mve', 'categories'])
         // ->withCount([
         //     'attendingyes',
         //     'attendingmaybe',
         //     'attendingwish',
-        //     'friendsattendingyes',
-        //     'friendsattendingmaybe',
-        //     'friendsattendingwish',
+        //     'pyfsattendingyes',
+        //     'pyfsattendingmaybe',
+        //     'pyfsattendingwish',
         // ])
         // ->with([
         //     'iattending',
         //     'attendingyes',
         //     'attendingmaybe',
         //     'attendingwish',
-        //     'friendsattendingyes',
-        //     'friendsattendingmaybe',
-        //     'friendsattendingwish',
+        //     'pyfsattendingyes',
+        //     'pyfsattendingmaybe',
+        //     'pyfsattendingwish',
         // ])
         ;
 
@@ -298,17 +298,17 @@ class EventController extends BaseController
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
             ])
             ->with([
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
             ])
             ->find($id)) {
             return $this->showResponse($data);
@@ -426,24 +426,6 @@ class EventController extends BaseController
 
         $data->delete();
         return $this->deletedResponse();
-    }
-
-    public function isValidLongitude($longitude)
-    {
-        if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public function isValidLatitude($latitude)
-    {
-
-        if (preg_match("/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/", $latitude)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private function saveShows($showsJson, $event_id)
@@ -652,18 +634,15 @@ class EventController extends BaseController
             'attendingyes',
             'attendingmaybe',
             //'attendingwish',
-            'friendsattendingyes',
-            'friendsattendingmaybe',
-            //'friendsattendingwish',
+            'pyfsattendingyes',
+            'pyfsattendingmaybe',
+            //'pyfsattendingwish',
         ])
             ->with([
                 'iattending',
-                //'attendingyes',
-                //'attendingmaybe',
-                //'attendingwish',
-                'friendsattendingyes',
-                //'friendsattendingmaybe',
-                //'friendsattendingwish',
+                'pyfsattendingyes_list',
+                //'pyfsattendingmaybe_list',
+                //'pyfsattendingwish_list',
             ])
         ;
 
@@ -791,19 +770,19 @@ class EventController extends BaseController
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
             ])
             ->distance($lat, $lng)
             ->with([
                 'eventparticipants',
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'attendingyes_list',
+                'attendingmaybe_list',
+                'attendingwish_list',
+                'pyfsattendingyes_list',
+                'pyfsattendingmaybe_list',
+                'pyfsattendingwish_list',
             ])
             ->where('confirmed', '=', 1)
             ->where('public', '=', 1)
@@ -813,6 +792,24 @@ class EventController extends BaseController
         }
         return $this->notFoundResponse();
 
+    }
+
+    private function isValidLongitude($longitude)
+    {
+        if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private function isValidLatitude($latitude)
+    {
+
+        if (preg_match("/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/", $latitude)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private function isValidTimezoneId($tzid)

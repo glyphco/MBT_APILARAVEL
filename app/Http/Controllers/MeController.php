@@ -56,7 +56,7 @@ class MeController extends BaseController
     {
         $m    = self::MODEL;
         $data = $m::find(\Auth::user()->id);
-        //with(['friendships'])
+        //with(['following'])
         return $data;
     }
 
@@ -95,12 +95,12 @@ class MeController extends BaseController
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
-    public function getFriendships()
+    public function getFollowing()
     {
 
         $m = self::MODEL;
 
-        if ($data = $m::with(['friendships'])->find(\Auth::id())->friendships) {
+        if ($data = $m::with(['following'])->find(\Auth::id())->following) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();

@@ -52,9 +52,9 @@ Route::group(['middleware' => ['cors']], function () {
         ->where(['any' => '.*']);
 
 // Guest
-    Route::get('/public/events', 'pub\EventController@getEvents');
-    Route::get('/public/event/{id}', 'pub\EventController@getEvent');
-    Route::get('/slug/{slugsearch}', 'pub\SlugController@index');
+    Route::get('/public/events/today', 'pub\EventController@today');
+    //Route::get('/public/event/{id}', 'pub\EventController@getEvent');
+    //Route::get('/slug/{slugsearch}', 'pub\SlugController@index');
 });
 
 //ONLY Tokened Visitors beyond this point!
@@ -64,12 +64,14 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 // ME
     Route::get('/me', 'MeController@userinfo');
     Route::put('/me/setlocation', 'MeController@setLocation');
-    Route::get('/me/friends', 'MeController@getFriendships');
-    Route::get('/me/friendships', 'MeController@getFriendships');
+    Route::get('/me/pyfs', 'MeController@getPyf');
+    Route::get('/me/followers', 'MeController@getFollowers');
 
-    Route::get('/me/friend/{id}', 'FriendshipController@addFriend');
-    Route::get('/me/unfriend/{id}', 'FriendshipController@unFriend');
-    Route::get('/me/blockfriend/{id}', 'FriendshipController@blockFriend');
+    Route::get('/me/follow/{id}', 'FriendshipController@follow');
+
+    Route::get('/me/accept/{id}', 'FriendshipController@accept');
+    Route::get('/me/block/{id}', 'FriendshipController@block');
+
     Route::post('/me/attend/{id}', 'AttendingController@attendEvent');
 
     Route::get('/me/events', 'me\EventController@getEvents');
@@ -216,6 +218,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     // Route::delete('/event/{id}/participants/{eventparticipant_id}', 'EventParticipantController@destroy');
 
 // Users (Mostly Admin stuff)
+
+    Route::get('/user/{id}/', 'UserController@details');
+
     Route::group(['middleware' => 'can:view-users'], function () {
         Route::get('/user', 'UserController@index');
         Route::get('/user/getsuperadmins', 'UserController@getSuperadmins');
@@ -223,9 +228,9 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/getmastereditors', 'UserController@getMastereditors');
         Route::get('/user/getcontributors', 'UserController@getContributors');
 
-        // Route::get('/user/friends/', 'UserController@getFriendships');
+        // Route::get('/user/friends/', 'UserController@getFollowing');
 
-        Route::get('/user/{id}', 'UserController@show');
+        //Route::get('/user/{id}', 'UserController@show');
 
     });
 
@@ -237,7 +242,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/{id}/makemastereditor', 'UserController@makemastereditor');
         Route::get('/user/{id}/makecontributor', 'UserController@makecontributor');
         Route::get('/user/{id}/makenothing', 'UserController@makenothing');
-        Route::get('/user/{id}/friends', 'UserController@getFriendships');
+        Route::get('/user/{id}/friends', 'UserController@getFollowing');
     });
 
     Route::group(['middleware' => 'can:ban-users'], function () {

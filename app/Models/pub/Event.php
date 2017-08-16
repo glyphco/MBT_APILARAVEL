@@ -2,6 +2,7 @@
 namespace App\Models\pub;
 
 use App\Traits\SpacialdataTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Wildside\Userstamps\Userstamps;
 
@@ -35,20 +36,10 @@ class Event extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\WithVenueScope);
-        //static::addGlobalScope(new \App\Scopes\WithEventparticipantsPageScope);
-        static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
-        //static::addGlobalScope(new \App\Scopes\WithEventproducersPageScope);
-        static::addGlobalScope(new \App\Scopes\WithEventproducersScope);
-        static::addGlobalScope(new \App\Scopes\WithEventshowsShowScope);
-        static::addGlobalScope(new \App\Scopes\WithEventcategoriesCategoriesScope);
 
-        static::addGlobalScope(new \App\Scopes\EventPublicScope);
-        static::addGlobalScope(new \App\Scopes\EventConfirmedScope);
-        static::addGlobalScope(new \App\Scopes\EventCurrentScope);
     }
 
-    protected $friends;
+    protected $pyfs;
 
     /**
      * Get all the Venues for an Event.
@@ -139,75 +130,22 @@ class Event extends Model
         });
     }
 
-    public function attending()
+    public function scopeToday($filter, $tz = 'America/Chicago')
     {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->select('user_id', 'name', 'avatar');
-    }
+        $datetime = Carbon::now()->subHours(3)->toDateTimeString();
+        //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
+        $enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
 
-    public function attendingyes()
-    {
+        //dd($datetime, $enddatetime);
+        return $filter->where(function ($query) use ($datetime, $enddatetime) {
+            $query
+            //Start in date range
+            ->whereBetween('UTC_start', [$datetime, $enddatetime])
+            //End in date range
+                ->orWhereBetween('UTC_end', [$datetime, $enddatetime]);
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 3)
-            ->select('user_id', 'name', 'avatar');
-    }
-
-    public function attendingwish()
-    {
-
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 2)
-            ->select('user_id', 'name', 'avatar');
-    }
-
-    public function attendingmaybe()
-    {
-
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 1)
-            ->select('user_id', 'name', 'avatar');
-    }
-
-    public function friendsattending()
-    {
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->wherePivotIn('user_id', $this->friends)
-            ->select('user_id', 'name', 'avatar');
-    }
-
-    public function friendsattendingyes()
-    {
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 3)
-            ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
-            })->
-            select('user_id', 'name', 'avatar');
-    }
-
-    public function friendsattendingwish()
-    {
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 2)
-            ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
-            })->
-            select('user_id', 'name', 'avatar');
-    }
-
-    public function friendsattendingmaybe()
-    {
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 1)
-            ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
-            })->
-            select('user_id', 'name', 'avatar');
+        });
     }
 
 }

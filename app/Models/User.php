@@ -54,7 +54,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'location',
     ];
 
     /**
@@ -107,29 +107,29 @@ class User extends Authenticatable
         return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
     }
 
-    // friends
-    public function friendships()
+    // pyfs
+    public function following()
     {
-        return $this->belongsToMany('App\Models\User', 'friendships', 'user_id', 'friend_id')
-            ->select('friend_id as user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+            ->select('following_id as user_id', 'name', 'avatar');
     }
 
-// // accessor allowing you call $user->friends
-    //     public function getFriendsAttribute()
+// // accessor allowing you call $user->pyfs
+    //     public function getPyfsAttribute()
     //     {
-    //         if (!array_key_exists('friends', $this->relations)) {
-    //             $this->loadFriends();
+    //         if (!array_key_exists('pyfs', $this->relations)) {
+    //             $this->loadPyfs();
     //         }
 
-//         return $this->getRelation('friends');
+//         return $this->getRelation('pyfs');
     //     }
 
-//     protected function loadFriends()
+//     protected function loadPyfs()
     //     {
-    //         if (!array_key_exists('friends', $this->relations)) {
-    //             $friends = $this->friends();
+    //         if (!array_key_exists('pyfs', $this->relations)) {
+    //             $pyfs = $this->pyfs();
 
-//             $this->setRelation('friends', $friends);
+//             $this->setRelation('pyfs', $pyfs);
     //         }
     //     }
 

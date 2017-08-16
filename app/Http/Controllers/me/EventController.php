@@ -44,17 +44,17 @@ class EventController extends BaseController
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
             ])
             ->with([
                 'attendingyes',
                 'attendingmaybe',
                 'attendingwish',
-                'friendsattendingyes',
-                'friendsattendingmaybe',
-                'friendsattendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                'pyfsattendingwish',
             ])
             ->current()
         ;

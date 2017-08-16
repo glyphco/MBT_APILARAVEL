@@ -87,7 +87,7 @@ class Event extends Model
         //static::addGlobalScope(new \App\Scopes\WithEventparticipantsScope);
     }
 
-    protected $friends;
+    protected $pyfs;
 
     /**
      * Get all the Venues for an Event.
@@ -244,80 +244,145 @@ class Event extends Model
         });
     }
 
-    public function attending()
-    {
+    // public function attending()
+    // {
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
-    }
+    //     return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->wherenull('likeables.deleted_at')->select('user_id', 'name', 'avatar');
+    // }
 
     public function iattending()
     {
         return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar', 'rank');
     }
 
+    public function attendingyes_list()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->where('privacyevents', 2)
+            ->wherePivot('rank', 3)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function attendingwish_list()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->where('privacyevents', 2)
+            ->wherePivot('rank', 2)
+            ->select('user_id', 'name', 'avatar');
+    }
+
+    public function attendingmaybe_list()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->where('privacyevents', 2)
+            ->wherePivot('rank', 1)
+            ->select('user_id', 'name', 'avatar');
+    }
+
     public function attendingyes()
     {
-
         return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 3)
-            ->select('user_id', 'name', 'avatar');
+            ->wherePivot('rank', 3)
+            ->select('user_id');
     }
 
     public function attendingwish()
     {
-
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 2)
-            ->select('user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->wherePivot('rank', 2)
+            ->select('user_id');
     }
 
     public function attendingmaybe()
     {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->wherePivot('rank', 1)
+            ->select('user_id');
+    }
 
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')->where('rank', 1)
+    public function pyfsattendingyes_list()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+        // wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar', 'rank');
+            ->where('privacyevents', '>', 0)
+            ->wherePivot('rank', 3)
+            ->wherein('user_id', function ($query) {
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
+            })
+        //->where('privacyevents', '>', 0)
             ->select('user_id', 'name', 'avatar');
     }
 
-    public function friendsattending()
+    public function pyfsattendingwish_list()
     {
         return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->wherePivotIn('user_id', $this->friends)
-            ->select('user_id', 'name', 'avatar');
-    }
-
-    public function friendsattendingyes()
-    {
-        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 3)
+            ->where('privacyevents', '>', 0)
+            ->wherePivot('rank', 2)
             ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
             })->
             select('user_id', 'name', 'avatar');
     }
 
-    public function friendsattendingwish()
+    public function pyfsattendingmaybe_list()
     {
         return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 2)
+            ->where('privacyevents', '>', 0)
+            ->wherePivot('rank', 1)
             ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
             })->
             select('user_id', 'name', 'avatar');
     }
 
-    public function friendsattendingmaybe()
+    public function pyfsattendingyes()
     {
         return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
-            ->where('rank', 1)
+        // wherePivot('user_id', \Auth::id())->wherePivot('deleted_at', null)->select('user_id', 'name', 'avatar', 'rank');
+            ->wherePivot('rank', 3)
             ->wherein('user_id', function ($query) {
-                $query->select('friend_id')
-                    ->from(with(new friendships)->getTable())
-                    ->where('user_id', \Auth::user()->id);
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
+            })
+        //->where('privacyevents', '>', 0)
+            ->select('user_id');
+    }
+
+    public function pyfsattendingwish()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->wherePivot('rank', 2)
+            ->wherein('user_id', function ($query) {
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
             })->
-            select('user_id', 'name', 'avatar');
+            select('user_id');
+    }
+
+    public function pyfsattendingmaybe()
+    {
+        return $this->belongsToMany('App\Models\User', 'attending', 'event_id')
+            ->wherePivot('rank', 1)
+            ->wherein('user_id', function ($query) {
+                $query->select('following_id')
+                    ->from(with(new following)->getTable())
+                    ->where('user_id', \Auth::user()->id)
+                    ->where('status', 2);
+            })->
+            select('user_id');
     }
 
 }

@@ -18,7 +18,12 @@ class Attending extends Model
 
     public function event()
     {
-        return $this->belongsTo('App\Models\Event')->where('rank', '>', 0);
+        return $this->belongsTo(Event::class)->where('rank', '>', 0);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User')->where('rank', '>', 0);
     }
 
 }

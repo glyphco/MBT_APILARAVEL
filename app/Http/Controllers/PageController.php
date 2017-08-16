@@ -361,8 +361,8 @@ class PageController extends BaseController
             ->with('eventsAsParticipantCurrent')
             ->with('eventsAsProducerCurrent')
             ->withCount('likes')
-            ->withCount('friendslike')
-            ->with('friendslike')
+            ->withCount('pyfslike')
+            ->with('pyfslike')
             ->find($id)) {
             return $this->showResponse($data);
         }

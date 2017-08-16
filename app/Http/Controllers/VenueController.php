@@ -351,8 +351,8 @@ class VenueController extends BaseController
         if ($data = $m::with('eventslistcurrent')
             ->withCount('events')
             ->withCount('likes')
-            ->withCount('friendslike')
-            ->with('friendslike')
+            ->withCount('pyfslike')
+            ->with('pyfslike')
             ->find($id)) {
             return $this->showResponse($data);
         }
