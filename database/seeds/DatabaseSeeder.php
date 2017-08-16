@@ -72,7 +72,7 @@ class VenueDataSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('venues')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        $venues = factory('App\Models\Venue', 10)->states('chicago')->create();
+        $venues = factory('App\Models\Venue', 300)->states('chicago')->create();
     }
 }
 
@@ -126,7 +126,11 @@ class EventDataSeeder extends Seeder
         DB::table('event_categories')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
-        $events = factory('App\Models\Event', 200)
+        $events = factory('App\Models\Event', 1000)
+
+        //States:
+        //->states('tallimages')
+
             ->create()
             ->each(function ($ev) {
 

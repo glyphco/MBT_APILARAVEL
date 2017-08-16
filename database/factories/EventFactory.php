@@ -148,8 +148,8 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
 
     $randomVenue = App\Models\Venue::get()->random();
 
-    $img_height = $faker->numberBetween(100, 200);
-    $img_width  = $faker->numberBetween(50, 50);
+    $img_height = $faker->numberBetween(200, 300);
+    $img_width  = $faker->numberBetween(200, 300);
     return [
 
         'name'           => $name,
@@ -187,4 +187,13 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
         'location'       => DB::raw($randomVenue->lng . ', ' . $randomVenue->lat),
     ];
 
+});
+$factory->state('App\Models\Event', 'tallimages', function ($faker) {
+
+    $img_height = $faker->numberBetween(100, 200);
+    $img_width  = $faker->numberBetween(50, 50);
+
+    return [
+        'imageurl' => $faker->imageUrl($img_width, $img_height, 'nightlife'),
+    ];
 });

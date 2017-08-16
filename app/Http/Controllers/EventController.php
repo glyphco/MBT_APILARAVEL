@@ -8,6 +8,7 @@ use App\Traits\ItemHasAdminsTrait;
 use App\Traits\ItemHasEditorsTrait;
 use App\Traits\ItemPrivateableTrait;
 use Bouncer;
+use DB;
 use Illuminate\Http\Request;
 
 class EventController extends BaseController
@@ -710,8 +711,12 @@ class EventController extends BaseController
 
         $spherelocation = $lng . ',' . $lat;
 
+        $data = $data->where(DB::raw('( ST_Distance_Sphere(location,POINT(' . $spherelocation . ')))'), '<', $dist);
+
         $data = $data->
-            selectRaw('id, events.name, events.venue_name, events.local_start, events.lat, events.lng, ( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')->get();
+            selectRaw('id, events.name, events.venue_name, events.local_start, events.lat, events.lng, ( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')
+
+            ->get();
 
         return $this->listResponse($data);
 
