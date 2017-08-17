@@ -13,6 +13,9 @@ class UserController extends BaseController
 
     const MODEL                = 'App\Models\User';
     protected $validationRules = ['email' => 'required', 'name' => 'required', 'password' => 'required'];
+    protected $viewitems       = 'view-users';
+    protected $edititems       = 'edit-users';
+    protected $banitems        = 'ban-users';
 
 //These are public calls
 
@@ -78,6 +81,9 @@ class UserController extends BaseController
 
     public function show($id)
     {
+        if (!((Bouncer::allows($this->viewitems)) or (Bouncer::allows($this->edititems)))) {
+            return $this->unauthorizedResponse();
+        }
         $m = self::MODEL;
         if (!$data = $m::find($id)) {
             return $this->notFoundResponse();
@@ -116,28 +122,24 @@ class UserController extends BaseController
 
     }
 
-    // public function update(Request $request, $id) {
-    //     $m = self::MODEL;
+    public function editable(Request $request)
+    {
+        if (!((Bouncer::allows($this->viewitems)) or (Bouncer::allows($this->edititems)))) {
+            return $this->unauthorizedResponse();
+        }
+        $m    = self::MODEL;
+        $data = $m::orderBy('name', 'ASC');
 
-    //     if (!$data = $m::find($id)) {
-    //         return $this->notFoundResponse();
-    //     }
+        if ($request->exists('q')) {
+            $data = $data->where('name', 'like', '%' . $request['q'] . '%');
+        }
 
-    //     try
-    //     {
-    //         $v = \Illuminate\Support\Facades\Validator::make($request->all(), $this->validationRules);
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
 
-    //         if ($v->fails()) {
-    //             throw new \Exception("ValidationException");
-    //         }
-    //         $data->fill($request->all());
-    //         $data->save();
-    //         return $this->showResponse($data);
-    //     } catch (\Exception $ex) {
-    //         $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
-    //         return $this->clientErrorResponse($data);
-    //     }
-    // }
+        return $this->listResponse($data);
+    }
 
     public function makesuperadmin($id)
     {
