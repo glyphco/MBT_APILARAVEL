@@ -15,7 +15,7 @@ class CreateFollowingTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('following_id')->unsigned();
-            $table->integer('status')->unsigned()->nullable()->default(null);
+            $table->integer('status')->default(1);
             $table->softDeletes();
             $table->timestamps();
 

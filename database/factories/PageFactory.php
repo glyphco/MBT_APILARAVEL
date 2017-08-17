@@ -4,7 +4,7 @@ $factory->define('App\Models\Page', function (Faker\Generator $faker) {
     static $password;
 
     return [
-        'name'           => $faker->catchPhrase,
+        'name'           => $faker->name,
         'email'          => $faker->safeEmail,
         'slug'           => substr($faker->optional()->slug, 0, 60),
         //'category'       => $faker->jobTitle,

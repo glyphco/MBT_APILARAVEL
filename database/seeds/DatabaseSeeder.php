@@ -415,10 +415,11 @@ class UserLikesSeeder extends Seeder
             $following_id = Faker\Factory::create()->randomElement($array = $users);
             $valid_status = [
                 'reject'  => 0,
-                'pending' => 1,
-                'accept'  => 2,
+                'nothing' => 1,
+                'pending' => 2,
+                'accept'  => 3,
             ];
-            $followstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 2));
+            $followstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 3, 3, 3, 3));
             // $followbackstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 2));
 
             $pyf = \App\Models\Following::firstOrCreate(

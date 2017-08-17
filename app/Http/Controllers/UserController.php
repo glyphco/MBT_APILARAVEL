@@ -22,47 +22,33 @@ class UserController extends BaseController
     public function details(Request $request, $id)
     {
 
-//Check relationship to user:
-        $userseesyou = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first();
+        $privacy = $this->getPrivacySettings($id);
 
-        $youseesuser = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first();
-
-        dump($userseesyou);
-        dump($youseesuser);
-
-        //autorelates venue and participants in model
         $m = self::MODEL;
-        if ($data = $m::with([
-            'mve',
-            'venue',
-            'categories',
-            'eventshows',
-            'eventparticipants',
-            'eventproducer',
 
-        ])
-            ->withCount([
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-                'pyfsattendingyes',
-                'pyfsattendingmaybe',
-                'pyfsattendingwish',
-            ])
-            ->distance($lat, $lng)
-            ->with([
-                'eventparticipants',
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-                'pyfsattendingyes',
-                'pyfsattendingmaybe',
-                'pyfsattendingwish',
-            ])
-            ->where('confirmed', '=', 1)
-            ->where('public', '=', 1)
-            ->distance($lat, $lng, 'METERS')
-            ->find($id)) {
+        $data = $m::query();
+
+        if ($privacy['events'] == 1) {
+            $data = $data->with('eventsImAttending');
+        }
+        if ($privacy['likes'] == 1) {
+            $data = $data
+                ->with([
+                    'likedVenues',
+                    'likedPages',
+                    'likedShows',
+                ])
+                ->withCount([
+                    'likedVenues',
+                    'likedPages',
+                    'likedShows',
+                ]);
+        }
+        if ($privacy['pyf'] == 1) {
+            $data = $data->with('following');
+        }
+
+        if ($data = $data->find($id)) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -318,4 +304,59 @@ class UserController extends BaseController
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
+    private function getPrivacySettings($id)
+    {
+        if ($id == \Auth::user()->id) {
+            return [
+                'events' => 1,
+                'likes'  => 1,
+                'pyf'    => 1,
+            ];
+        }
+
+        $userseesyou = 1;
+        $youseesuser = 1;
+//Check relationship to user:
+        if ($checkuserseesyou = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first()) {
+            $userseesyou = $checkuserseesyou->status;
+
+        }
+        if ($checkyouseesuser = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first()) {
+            $youseesuser = $checkyouseesuser->status;
+        }
+
+//Logic:
+        $showevents = 0;
+        $showlikes  = 0;
+        $showpyf    = 0;
+
+        $showevents = $this->checkPrivacy(\Auth::user()->privacyevents, $userseesyou);
+        $showlikes  = $this->checkPrivacy(\Auth::user()->privacylikes, $userseesyou);
+        $showpyf    = $this->checkPrivacy(\Auth::user()->privacypyf, $userseesyou);
+
+        $privacy = [
+            'eventslogic' => \Auth::user()->privacyevents . '+' . $userseesyou . '=' . $showevents,
+            'events'      => $showevents,
+            'likeslogic'  => \Auth::user()->privacylikes . '+' . $userseesyou . '=' . $showlikes,
+            'likes'       => $showlikes,
+            'pyflogic'    => \Auth::user()->privacypyf . '+' . $userseesyou . '=' . $showpyf,
+            'pyf'         => $showpyf,
+        ];
+        //dump($privacy);
+
+        return $privacy;
+    }
+
+    private function checkPrivacy($privacy, $status)
+    {
+        if ($privacy == 1) {
+            //followers only
+            if ($status == 3) {return 1;}
+        }
+        if ($privacy == 2) {
+            //public
+            if (!($status == 0)) {return 1;}
+        }
+        return 0;
+    }
 }

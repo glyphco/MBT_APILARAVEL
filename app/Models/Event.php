@@ -29,6 +29,7 @@ class Event extends Model
         'postalcode',
         'lat',
         'lng',
+        'location',
         'local_tz',
         'venue_tagline',
 

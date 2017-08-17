@@ -32,6 +32,12 @@ class EventController extends BaseController
 
     public function index(Request $request)
     {
+        $m = self::MODEL;
+        return $this->listResponse($m::selectRaw(' *, ST_AsText(location) as locationx')->get());
+    }
+
+    public function oldindex(Request $request)
+    {
         $date    = null;
         $enddate = null;
 
@@ -240,6 +246,7 @@ class EventController extends BaseController
             }
             $request->request->add(['location' => implode(', ', $request->only('lng', 'lat'))]);
             $data = $m::create($request->all());
+
         } catch (\Exception $ex) {
             $data = ['form_validations' => $v->errors(), 'exception' => $ex->getMessage()];
             return $this->clientErrorResponse($data);

@@ -104,7 +104,17 @@ class User extends Authenticatable
 
     public function likedVenues()
     {
-        return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
+        return $this->morphedByMany('App\Models\Venue', 'likeable')->whereDeletedAt(null);
+    }
+
+    public function likedShows()
+    {
+        return $this->morphedByMany('App\Models\Show', 'likeable')->whereDeletedAt(null);
+    }
+
+    public function eventsImAttending()
+    {
+        return $this->belongsToMany('App\Models\Event', 'attending', 'user_id');
     }
 
     // pyfs
