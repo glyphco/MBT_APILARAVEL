@@ -219,6 +219,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 
 // Users (Mostly Admin stuff)
 
+    Route::get('/user/editable/', 'UserController@editable');
     Route::get('/user/{id}/', 'UserController@details');
 
     Route::group(['middleware' => 'can:view-users'], function () {
