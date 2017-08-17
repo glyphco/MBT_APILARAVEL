@@ -35,109 +35,28 @@ class EventController extends BaseController
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
 
-        $data = $data->near($lat, $lng, $dist, 'METERS')->orderBy('distance', 'asc');
+        $data = $data->near($lat, $lng, $dist, 'METERS');
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'date':
+                    $data = $data->orderBy('UTC_start', 'asc');
+                    break;
+                case 'distance':
+                    $data = $data->orderBy('distance', 'asc');
+                    break;
+                default:
+                    $data = $data->orderBy('distance', 'asc');
+                    break;
+            }
+        } else {
+            $data = $data->orderBy('distance', 'asc');
+        }
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
         $data = $data->paginate($pp);
 
-        return $this->listResponse($data);
-
-    }
-
-    public function getEvents(Request $request)
-    {
-        $date    = null;
-        $enddate = null;
-
-        if ($request->has('date')) {
-            //Date was given, check if ok and add it to the enddate as well
-            //see if date is a unix timestamp
-            $date = $request->input('date');
-            if (!((string) (int) $date === $date) && ($date <= PHP_INT_MAX) && ($date >= ~PHP_INT_MAX)) {
-                if (!$date = strtotime($request->input('date'))) {
-                    return $this->clientErrorResponse('Invalid Date: date cannot be converted properly');
-                }
-            }
-            //Set Enddate while youre at it
-            $startdate = date('Y-m-d' . ' 00:00:00', $date);
-            $enddate   = date('Y-m-d' . ' 23:59:59', $date);
-            $date      = $startdate;
-        }
-
-        if ($request->has('enddate')) {
-            if (!$enddate = strtotime($request->input('enddate'))) {
-                return $this->clientErrorResponse('Invalid Date: end date cannot be converted properly');
-            }
-            $enddate = date('Y-m-d' . ' 23:59:59', $enddate);
-        }
-
-        $m = '\App\Models\pub\Event';
-
-        $data = $m::with(['categories'])
-            ->withCount([
-                'attendingyes',
-                'attendingmaybe',
-                'attendingwish',
-            ])
-        ;
-
-        if ($date) {
-            $data = $data->InDateRange($date, $enddate);
-        }
-
-        if ($request->exists('current')) {
-            $data = $data->Current();
-        }
-        if ($request->has('v')) {
-            $data = $data->AtEvent($request->input('v'));
-        }
-        if ($request->has('vn')) {
-            $data = $data->AtEventName($request->input('vn'));
-        }
-        if ($request->has('p')) {
-            $data = $data->ByEventParticipant($request->input('p'));
-        }
-        if ($request->has('pn')) {
-            $data = $data->ByEventParticipantname($request->input('pn'));
-        }
-        if ($request->has('sc')) {
-            $data = $data->ByEventSubcategory($request->input('sc'));
-        }
-        if ($request->has('c')) {
-            $data = $data->ByEventCategory($request->input('c'));
-        }
-
-        if ($request->has('lat') && $request->has('dist') && $request->has('lng') && $this->isValidLatitude($request->input('lat')) && $this->isValidLongitude($request->input('lng'))) {
-
-//            $data = $data->distance($request->input('dist'), $request->input('lat') . ',' . $request->input('lng'));
-
-            $data = $data->near(
-                $request->input('lat'),
-                $request->input('lng'),
-                $request->input('dist', 50),
-                $request->input('units', 'MILES')
-            )
-                ->addSelect('events.*')
-                ->orderBy('distance', 'asc');
-
-        }
-
-        $data = $data->orderBy('UTC_start');
-
-        $pp = $request->input('pp', 25);
-        if ($pp > 100) {$pp = 100;}
-        $data = $data->paginate($pp);
-
-        //dd($data->toArray());
-
-        //dd($data->appends(['category' => 'category_name']));
-        // $data['debug'] = [
-        //     'date'    => $date,
-        //     'enddate' => $enddate,
-        //     'request' => $request->except('page'),
-        // ];
-        //$data['now'] = Carbon::now()->subHours(5)->toDateTimeString();
         return $this->listResponse($data);
 
     }

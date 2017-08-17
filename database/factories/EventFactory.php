@@ -76,7 +76,7 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     //39 2,az
     //51 2,za
 
-    $PRICE_PAID = 3; // 5
+    $PRICE_SLIDING = 3; // 5
     //5  3,00
     //35 3,0z
     //55 3,a0
@@ -125,7 +125,7 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     }
 
     if ($godwin % 5 == 0) {
-        $price = $PRICE_PAID;
+        $price = $PRICE_SLIDING;
     }
 
 //minmax
@@ -143,13 +143,31 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
         $pricemax = $a;
     }
 
-    $name        = $faker->company;
-    $description = $faker->paragraph($nbSentences = 3, $variableNbSentences = true);
+    $name = $faker->company;
+
+    $dparagraphs = $faker->numberBetween(1, 7);
+    $description = '';
+
+    for ($i = 0; $i < $dparagraphs; $i++) {
+        $dsentances  = $faker->numberBetween(1, 7);
+        $description = $description . $faker->paragraph($nbSentences = $dsentances, $variableNbSentences = true) . '[ I cant seed a line break ]';
+    }
+
+    //$description = $faker->paragraph($nbSentences = 3, $variableNbSentences = true);
 
     $randomVenue = App\Models\Venue::get()->random();
 
     $img_height = $faker->numberBetween(200, 300);
     $img_width  = $faker->numberBetween(200, 300);
+
+    $valid_ages = [
+        0 => '',
+        1 => 'family',
+        2 => 'all',
+        3 => '18+',
+        4 => '21+',
+    ];
+
     return [
 
         'name'           => $name,

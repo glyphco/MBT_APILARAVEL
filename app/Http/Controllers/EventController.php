@@ -650,7 +650,23 @@ class EventController extends BaseController
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
 
-        $data = $data->near($lat, $lng, $dist, 'METERS')->orderBy('distance', 'asc');
+        $data = $data->near($lat, $lng, $dist, 'METERS');
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'date':
+                    $data = $data->orderBy('UTC_start', 'asc');
+                    break;
+                case 'distance':
+                    $data = $data->orderBy('distance', 'asc');
+                    break;
+                default:
+                    $data = $data->orderBy('distance', 'asc');
+                    break;
+            }
+        } else {
+            $data = $data->orderBy('distance', 'asc');
+        }
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -726,12 +742,27 @@ class EventController extends BaseController
         }
 
         $m    = self::MODEL;
-        $data = $m::with(['mve', 'categories']);
-        $data = $data->current(); //tz unneeded for current
+        $data = $m::current(); //tz unneeded for current
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
 
-        $data = $data->near($lat, $lng, $dist, 'METERS')->orderBy('distance', 'asc');
+        $data = $data->near($lat, $lng, $dist, 'METERS');
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'date':
+                    $data = $data->orderBy('UTC_start', 'asc');
+                    break;
+                case 'distance':
+                    $data = $data->orderBy('distance', 'asc');
+                    break;
+                default:
+                    $data = $data->orderBy('UTC_start', 'asc');
+                    break;
+            }
+        } else {
+            $data = $data->orderBy('UTC_start', 'asc');
+        }
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}

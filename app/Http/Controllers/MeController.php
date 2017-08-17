@@ -95,7 +95,22 @@ class MeController extends BaseController
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
-    public function getFollowing()
+//FOLLOWING
+
+//peopleyoufollow
+    public function getPyfs()
+    {
+
+        $m = self::MODEL;
+
+        if ($data = $m::with(['following'])->find(\Auth::id())->following) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
+//followers
+    public function getFollowers()
     {
 
         $m = self::MODEL;
