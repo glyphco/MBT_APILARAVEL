@@ -726,7 +726,21 @@ class EventController extends BaseController
         }
 
         $m    = self::MODEL;
-        $data = $m::with(['mve', 'categories']);
+        $data = $m::withCount([
+            'attendingyes',
+            'attendingmaybe',
+            //'attendingwish',
+            'pyfsattendingyes',
+            'pyfsattendingmaybe',
+            //'pyfsattendingwish',
+        ])
+            ->with([
+                'iattending',
+                'pyfsattendingyes_list',
+                //'pyfsattendingmaybe_list',
+                //'pyfsattendingwish_list',
+            ])
+        ;
         $data = $data->current(); //tz unneeded for current
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
