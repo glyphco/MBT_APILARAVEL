@@ -220,7 +220,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 // Users (Mostly Admin stuff)
 
     Route::get('/user/editable/', 'UserController@editable');
-    Route::get('/user/{id}/', 'UserController@details');
+    Route::get('/user/{id}/details', 'UserController@details');
 
     Route::group(['middleware' => 'can:view-users'], function () {
         Route::get('/user', 'UserController@index');
@@ -228,11 +228,6 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
         Route::get('/user/getadmins', 'UserController@getAdmins');
         Route::get('/user/getmastereditors', 'UserController@getMastereditors');
         Route::get('/user/getcontributors', 'UserController@getContributors');
-
-        // Route::get('/user/friends/', 'UserController@getFollowing');
-
-        //Route::get('/user/{id}', 'UserController@show');
-
     });
 
     Route::group(['middleware' => 'can:edit-users'], function () {

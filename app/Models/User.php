@@ -35,7 +35,16 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'avatar', 'slug', 'confirmed', 'is_banned', 'banned_until', 'last_active_desc', 'last_active', 'is_online', 'remember_token',
+        'name',
+        'avatar',
+        'slug',
+        'confirmed',
+        'is_banned',
+        'banned_until',
+        'last_active_desc',
+        'last_active',
+        'is_online',
+        'remember_token',
         'street_address',
         'city',
         'state',
@@ -114,11 +123,18 @@ class User extends Authenticatable
 
     public function eventsImAttending()
     {
-        return $this->belongsToMany('App\Models\Event', 'attending', 'user_id');
+        return $this->belongsToMany('App\Models\Event', 'attending', 'user_id')->current()->wherePivot('user_id', \Auth::id());
     }
 
     // pyfs
-    public function following()
+    public function pyf()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+            ->select('following_id as user_id', 'name', 'avatar');
+    }
+
+    // pyfs
+    public function followers()
     {
         return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
             ->select('following_id as user_id', 'name', 'avatar');

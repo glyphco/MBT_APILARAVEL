@@ -26,7 +26,7 @@ class UserController extends BaseController
 
         $m = self::MODEL;
 
-        $data = $m::query();
+        $data = $m::withCount('followers');
 
         if ($privacy['events'] == 1) {
             $data = $data->with('eventsImAttending');
@@ -45,10 +45,32 @@ class UserController extends BaseController
                 ]);
         }
         if ($privacy['pyf'] == 1) {
-            $data = $data->with('following');
+            $data = $data->with('pyf')->withCount('pyf');
+            $data = $data->with('followers');
         }
 
         if ($data = $data->find($id)) {
+            $data['userseesyou'] = $privacy['userseesyou'];
+            $data['youseeuser']  = $privacy['youseeuser'];
+
+            $data->makeHidden([
+                'facebook_id',
+                'google_id',
+                'email',
+                'street_address',
+                'postalcode',
+                'locationname',
+                'sublocationname',
+                'lat',
+                'lng',
+                'local_tz',
+                'is_onbline',
+                'is_banned',
+                'banned_until',
+                'updated_at',
+                'deleted_at',
+            ]);
+
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
@@ -308,21 +330,23 @@ class UserController extends BaseController
     {
         if ($id == \Auth::user()->id) {
             return [
-                'events' => 1,
-                'likes'  => 1,
-                'pyf'    => 1,
+                'events'      => 1,
+                'likes'       => 1,
+                'pyf'         => 1,
+                'userseesyou' => 9,
+                'youseeuser'  => 9,
             ];
         }
 
         $userseesyou = 1;
-        $youseesuser = 1;
+        $youseeuser  = 1;
 //Check relationship to user:
-        if ($checkuserseesyou = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first()) {
+        if ($checkuserseesyou = \App\Models\Following::where('user_id', \Auth::user()->id)->where('following_id', $id)->first()) {
             $userseesyou = $checkuserseesyou->status;
 
         }
-        if ($checkyouseesuser = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first()) {
-            $youseesuser = $checkyouseesuser->status;
+        if ($checkyouseeuser = \App\Models\Following::where('user_id', $id)->where('following_id', \Auth::user()->id)->first()) {
+            $youseeuser = $checkyouseeuser->status;
         }
 
 //Logic:
@@ -341,6 +365,9 @@ class UserController extends BaseController
             'likes'       => $showlikes,
             'pyflogic'    => \Auth::user()->privacypyf . '+' . $userseesyou . '=' . $showpyf,
             'pyf'         => $showpyf,
+            'userseesyou' => $userseesyou,
+            'youseeuser'  => $youseeuser,
+
         ];
         //dump($privacy);
 
