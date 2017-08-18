@@ -148,9 +148,9 @@ class MeController extends BaseController
 
     public function getFollowers()
     {
-        if ($data = \App\Models\Me::with('requested')
+        if ($data = \App\Models\Me::with('followers')
             ->find(\Auth::user()->id)
-            ->requested) {
+            ->followers) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
