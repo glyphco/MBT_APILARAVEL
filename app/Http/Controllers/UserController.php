@@ -24,6 +24,10 @@ class UserController extends BaseController
 
         $privacy = $this->getPrivacySettings($id);
 
+        if ($privacy['userseesyou'] == 0) {
+            return $this->clientErrorResponse('blocked');
+        }
+
         $m = self::MODEL;
 
         $data = $m::withCount('followers');

@@ -150,10 +150,39 @@ class MeController extends BaseController
 //followers
     public function getFollowers()
     {
+        if ($data = \App\Models\Following::where('following_id', \Auth::user()->id)
+            ->where('status', 3)
+            ->get()) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
 
-        $m = self::MODEL;
+    public function getPyf()
+    {
+        if ($data = \App\Models\Following::where('user_id', \Auth::user()->id)
+            ->where('status', 3)
+            ->get()) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
 
-        if ($data = $m::with(['following'])->find(\Auth::id())->following) {
+    public function getfollowersRequests()
+    {
+        if ($data = \App\Models\Following::where('follower_id', \Auth::user()->id)
+            ->where('status', 2)
+            ->get()) {
+            return $this->showResponse($data);
+        }
+        return $this->notFoundResponse();
+    }
+
+    public function getfollowersBlocked()
+    {
+        if ($data = \App\Models\Following::where('follower_id', \Auth::user()->id)
+            ->where('status', 0)
+            ->get()) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
