@@ -132,14 +132,16 @@ class User extends Authenticatable
     public function pyf()
     {
         return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+            ->wherePivot('status', 3)
             ->select('following_id as user_id', 'name', 'avatar');
     }
 
     // pyfs
     public function followers()
     {
-        return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
-            ->select('following_id as user_id', 'name', 'avatar');
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id')
+            ->wherePivot('status', 3)
+            ->select('user_id as user_id', 'name', 'avatar');
     }
 
 // // accessor allowing you call $user->pyfs
