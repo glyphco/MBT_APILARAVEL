@@ -175,6 +175,7 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
 
         'venue_id'       => $faker->optional()->randomElement($array = [$randomVenue->id]),
         'venue_name'     => $randomVenue->name,
+        'venue_imageurl' => $randomVenue->imageurl,
         'street_address' => $randomVenue->street_address,
         'city'           => $randomVenue->city,
         'state'          => $randomVenue->state,

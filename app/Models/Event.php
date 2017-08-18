@@ -23,6 +23,7 @@ class Event extends Model
         'mve_id',
         'venue_id',
         'venue_name',
+        'venue_imageurl',
         'street_address',
         'city',
         'state',
