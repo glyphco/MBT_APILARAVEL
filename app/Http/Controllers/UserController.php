@@ -69,6 +69,7 @@ class UserController extends BaseController
                 'banned_until',
                 'updated_at',
                 'deleted_at',
+                'autoconfirmfollows',
             ]);
 
             return $this->showResponse($data);
@@ -84,6 +85,39 @@ class UserController extends BaseController
         //$request = Request::all();
         $m = self::MODEL;
         return $this->listResponse($m::all());
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $m = self::MODEL;
+
+        if (!$data = $m::find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!Bouncer::allows($this->edititems)) {
+            return $this->unauthorizedResponse();
+        }
+
+        try
+        {
+            $input = $request->all();
+            $data->fill($input);
+            $data->save();
+            return $this->showResponse($data);
+        } catch (\Exception $ex) {
+            $data = ['exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($data);
+        }
 
     }
 
@@ -128,6 +162,23 @@ class UserController extends BaseController
         $data['access'] = $this->accessarray;
         return $this->showResponse($data);
 
+    }
+
+    public function edit($id)
+    {
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if (!$data = $m::find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!(
+            (Bouncer::allows($this->edititems))
+        )) {
+            return $this->unauthorizedResponse();
+        }
+
+        return $this->showResponse($data);
     }
 
     public function editable(Request $request)

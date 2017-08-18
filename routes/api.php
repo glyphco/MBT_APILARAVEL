@@ -220,7 +220,11 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 // Users (Mostly Admin stuff)
 
     Route::get('/user/editable/', 'UserController@editable');
+    Route::put('/user/{id}', 'UserController@update');
     Route::get('/user/{id}/details', 'UserController@details');
+    Route::get('/user/{id}/edit', 'UserController@edit');
+    Route::get('/user/{id}/follow', 'FollowController@follow');
+    Route::post('/user/{id}/followrespond', 'FollowController@respond');
 
     Route::group(['middleware' => 'can:view-users'], function () {
         Route::get('/user', 'UserController@index');
@@ -258,7 +262,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/category', 'CategoryController@index');
 
 //Uploads
-    //    Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');
+    Route::get('/signupload/{item}/{id}/{for}', 'SignUploadController@sign');
     //Route::post('/uploadheadimage/{item}/{id}/', 'UploadController@uploadheadimage');
 
 //BOTS!!

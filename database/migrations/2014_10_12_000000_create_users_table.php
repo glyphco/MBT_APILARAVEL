@@ -44,6 +44,8 @@ class CreateUsersTable extends Migration
             $table->integer('privacylikes')->unsigned()->default(2);
             $table->integer('privacypyf')->unsigned()->default(2);
 
+            $table->boolean('autoacceptfollows')->default(1);
+
             $table->boolean('confirmed')->default(0);
             $table->boolean('is_online')->default(false);
             $table->boolean('is_banned')->default(false);

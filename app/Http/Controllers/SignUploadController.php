@@ -66,9 +66,9 @@ class SignUploadController extends BaseController
         // }
 
         return response()->json([
-            'I_WILL_REMOVE_THIS' => $head,
-            'attributes'         => $postObject->getFormAttributes(),
-            'additionalData'     => $postObject->getFormInputs(),
+            //'I_WILL_REMOVE_THIS' => $head,
+            'attributes'     => $postObject->getFormAttributes(),
+            'additionalData' => $postObject->getFormInputs(),
         ]);
     }
 

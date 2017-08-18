@@ -41,6 +41,7 @@ class User extends Authenticatable
         'backgroundurl',
         'slug',
         'confirmed',
+        'autoacceptfollows',
         'is_banned',
         'banned_until',
         'last_active_desc',
