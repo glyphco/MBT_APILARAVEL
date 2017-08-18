@@ -37,6 +37,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'avatar',
+        'imageurl',
+        'backgroundurl',
         'slug',
         'confirmed',
         'is_banned',

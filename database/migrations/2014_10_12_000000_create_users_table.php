@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->bigInteger('facebook_id')->unique()->nullable();
             $table->string('google_id', 30)->unique()->nullable();
             $table->string('avatar')->nullable();
+            $table->string('imageurl')->nullable()->default(null);
+            $table->string('backgroundurl')->nullable()->default(null);
             $table->string('slug', 60)->nullable();
 
             $table->string('street_address')->nullable()->default(null);
