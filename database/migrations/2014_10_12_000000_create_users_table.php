@@ -29,16 +29,12 @@ class CreateUsersTable extends Migration
             $table->string('backgroundurl')->nullable()->default(null);
             $table->string('slug', 60)->nullable();
 
-            $table->string('street_address')->nullable()->default(null);
+            $table->string('neighborhood')->nullable()->default(null);
             $table->string('city')->nullable()->default(null);
             $table->string('state')->nullable()->default(null);
             $table->string('postalcode')->nullable()->default(null);
 
-            $table->string('locationname')->nullable()->default(null);
-            $table->string('sublocationname')->nullable()->default(null);
-            $table->decimal('lat', 10, 8)->nullable()->default(null);
-            $table->decimal('lng', 11, 8)->nullable()->default(null);
-            $table->string('local_tz')->nullable()->default(null);
+            $table->text('bio')->nullable()->default(null);
 
             $table->integer('privacyevents')->unsigned()->default(2);
             $table->integer('privacylikes')->unsigned()->default(2);
@@ -55,8 +51,7 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        /*Spatial Column*/
-        DB::statement('ALTER TABLE users ADD location POINT');
+
     }
 
     /**

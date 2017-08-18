@@ -52,6 +52,44 @@ class MeController extends BaseController
         return $this->showResponse($data);
     }
 
+    public function edit()
+    {
+        $id = \Auth::user()->id;
+        //autorelates venue and participants in model
+        $m = self::MODEL;
+        if (!$data = $m::find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        return $this->showResponse($data);
+    }
+
+    public function update(Request $request)
+    {
+        $id = \Auth::user()->id;
+        $m  = self::MODEL;
+
+        if (!$data = $m::find($id)) {
+            return $this->notFoundResponse();
+        }
+
+        if (!Bouncer::allows($this->edititems)) {
+            return $this->unauthorizedResponse();
+        }
+
+        try
+        {
+            $input = $request->all();
+            $data->fill($input);
+            $data->save();
+            return $this->showResponse($data);
+        } catch (\Exception $ex) {
+            $data = ['exception' => $ex->getMessage()];
+            return $this->clientErrorResponse($data);
+        }
+
+    }
+
     private function getUser()
     {
         $m    = self::MODEL;

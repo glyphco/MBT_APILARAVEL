@@ -35,20 +35,20 @@ class Me extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        //'name',
         'avatar',
         'slug',
-        'street_address',
+        'nighborhood',
         'city',
         'state',
         'postalcode',
-        'lat',
-        'lng',
-        'location',
-        'locationname',
-        'subloactionname',
+        'bio',
         'imageurl',
         'backgroundurl',
+        'autoacceptfollows',
+        'privacyevents',
+        'privacylikes',
+        'privacypyf',
     ];
 
     protected $table = 'users';
@@ -59,7 +59,17 @@ class Me extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'facebook_id', 'google_id', 'location',
+        'password',
+        'remember_token',
+        'facebook_id',
+        'google_id',
+        'email',
+        'is_online',
+        'is_banned',
+        'banned_until',
+        'updated_at',
+        'deleted_at',
+        'confirmed',
     ];
 
     /**

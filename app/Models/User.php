@@ -40,6 +40,7 @@ class User extends Authenticatable
         'imageurl',
         'backgroundurl',
         'slug',
+        'bio',
         'confirmed',
         'autoacceptfollows',
         'is_banned',
@@ -48,16 +49,16 @@ class User extends Authenticatable
         'last_active',
         'is_online',
         'remember_token',
-        'street_address',
+        'neighborhood',
         'city',
         'state',
         'postalcode',
-        'lat',
-        'lng',
-        'local_tz',
-        'location',
+
         'imageurl',
         'backgroundurl',
+        'privacyevents',
+        'privacylikes',
+        'privacypyf',
     ];
 
     /**
@@ -66,7 +67,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'location',
+        'password', 'remember_token',
     ];
 
     /**
