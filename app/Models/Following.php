@@ -16,4 +16,13 @@ class following extends Model
         'status',
     ];
 
+    public function users()
+    {
+        return $this->hasMany('App\Models\User', 'id', 'user_id')->select('id', 'name', 'avatar');
+    }
+
+    public function followers()
+    {
+        return $this->hasMany('App\Models\User', 'id', 'following_id')->select('id', 'name', 'avatar');
+    }
 }

@@ -122,11 +122,43 @@ class Me extends Authenticatable
         return $this->morphedByMany('App\Models\Venues', 'likeable')->whereDeletedAt(null);
     }
 
+    // // pyfs
+    // public function following()
+    // {
+    //     return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+    //         ->select('following_id as user_id', 'name', 'avatar');
+    // }
+
     // pyfs
-    public function following()
+    public function pyfs()
     {
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id')
+            ->wherePivot('status', 3)
+            ->select('user_id as user_id', 'name', 'avatar');
+
         return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id')
+            ->wherePivot('status', 3)
             ->select('following_id as user_id', 'name', 'avatar');
     }
 
+    public function followers()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id')
+            ->wherePivot('status', 3)
+            ->select('user_id as user_id', 'name', 'avatar');
+    }
+
+    public function blocked()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id')
+            ->wherePivot('status', 0)
+            ->select('user_id as user_id', 'name', 'avatar');
+    }
+
+    public function requested()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id')
+            ->wherePivot('status', 0)
+            ->select('user_id as user_id', 'name', 'avatar');
+    }
 }

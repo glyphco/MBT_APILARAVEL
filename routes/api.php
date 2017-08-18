@@ -64,7 +64,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
 // ME
     Route::get('/me', 'MeController@userinfo');
     Route::put('/me/setlocation', 'MeController@setLocation');
-    Route::get('/me/pyfs', 'MeController@getPyf');
+    Route::get('/me/pyfs', 'MeController@getPyfs');
     Route::get('/me/followers', 'MeController@getFollowers');
     Route::get('/me/followers/requests', 'MeController@getFollowersRequests');
     Route::get('/me/followers/blocked', 'MeController@getFollowersBlocked');

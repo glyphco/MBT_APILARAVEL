@@ -146,23 +146,9 @@ class User extends Authenticatable
             ->select('user_id as user_id', 'name', 'avatar');
     }
 
-// // accessor allowing you call $user->pyfs
-    //     public function getPyfsAttribute()
-    //     {
-    //         if (!array_key_exists('pyfs', $this->relations)) {
-    //             $this->loadPyfs();
-    //         }
-
-//         return $this->getRelation('pyfs');
-    //     }
-
-//     protected function loadPyfs()
-    //     {
-    //         if (!array_key_exists('pyfs', $this->relations)) {
-    //             $pyfs = $this->pyfs();
-
-//             $this->setRelation('pyfs', $pyfs);
-    //         }
-    //     }
+    public function following()
+    {
+        return $this->hasMany('App\Models\Following');
+    }
 
 }

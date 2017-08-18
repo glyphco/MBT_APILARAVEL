@@ -135,54 +135,42 @@ class MeController extends BaseController
 
 //FOLLOWING
 
-//peopleyoufollow
+//followers
     public function getPyfs()
     {
-
-        $m = self::MODEL;
-
-        if ($data = $m::with(['following'])->find(\Auth::id())->following) {
+        if ($data = \App\Models\Me::with('pyfs')
+            ->find(\Auth::user()->id)
+            ->pyfs) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
     }
 
-//followers
     public function getFollowers()
     {
-        if ($data = \App\Models\Following::where('following_id', \Auth::user()->id)
-            ->where('status', 3)
-            ->get()) {
+        if ($data = \App\Models\Me::with('requested')
+            ->find(\Auth::user()->id)
+            ->requested) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
     }
 
-    public function getPyf()
+    public function getFollowersRequests()
     {
-        if ($data = \App\Models\Following::where('user_id', \Auth::user()->id)
-            ->where('status', 3)
-            ->get()) {
+        if ($data = \App\Models\Me::with('requested')
+            ->find(\Auth::user()->id)
+            ->requested) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
     }
 
-    public function getfollowersRequests()
+    public function getFollowersBlocked()
     {
-        if ($data = \App\Models\Following::where('follower_id', \Auth::user()->id)
-            ->where('status', 2)
-            ->get()) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
-    }
-
-    public function getfollowersBlocked()
-    {
-        if ($data = \App\Models\Following::where('follower_id', \Auth::user()->id)
-            ->where('status', 0)
-            ->get()) {
+        if ($data = \App\Models\Me::with('blocked')
+            ->find(\Auth::user()->id)
+            ->blocked) {
             return $this->showResponse($data);
         }
         return $this->notFoundResponse();
