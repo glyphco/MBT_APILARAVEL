@@ -223,7 +223,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::put('/user/{id}', 'UserController@update');
     Route::get('/user/{id}/details', 'UserController@details');
     Route::get('/user/{id}/edit', 'UserController@edit');
-    Route::get('/user/{id}/follow', 'FollowController@follow');
+    Route::post('/user/{id}/follow', 'FollowController@follow');
     Route::post('/user/{id}/followrespond', 'FollowController@respond');
 
     Route::group(['middleware' => 'can:view-users'], function () {
