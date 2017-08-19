@@ -133,47 +133,61 @@ class MeController extends BaseController
         //return array_pluck(\Auth::user()->getAbilities()->toArray(), ['name', 'entity_type', 'entity_id'], 'id');
     }
 
-//FOLLOWING
+//******************************************
+    //************************* followers **
+    //**************************************
 
-//followers
-    public function getPyfs()
+    public function getPyfs(Request $request)
     {
-        if ($data = \App\Models\Me::with('pyfs')
-            ->find(\Auth::user()->id)
-            ->pyfs) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
+        $data = \App\Models\Me::whereHas('usersfollowingusersreverse', function ($query) {
+            $query->where('user_id', \Auth::id())
+                ->where('status', 3);
+        });
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+        return $this->listResponse($data);
     }
 
-    public function getFollowers()
+    public function getFollowers(Request $request)
     {
-        if ($data = \App\Models\Me::with('followers')
-            ->find(\Auth::user()->id)
-            ->followers) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
+        $data = \App\Models\Me::whereHas('usersfollowingusers', function ($query) {
+            $query->where('following_id', \Auth::id())
+                ->where('status', 3);
+        });
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+        return $this->listResponse($data);
+
     }
 
-    public function getFollowersRequests()
+    public function getFollowersRequests(Request $request)
     {
-        if ($data = \App\Models\Me::with('requested')
-            ->find(\Auth::user()->id)
-            ->requested) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
+        $data = \App\Models\Me::whereHas('usersfollowingusers', function ($query) {
+            $query->where('following_id', \Auth::id())
+                ->where('status', 2);
+        });
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+        return $this->listResponse($data);
     }
 
-    public function getFollowersBlocked()
+    public function getFollowersBlocked(Request $request)
     {
-        if ($data = \App\Models\Me::with('blocked')
-            ->find(\Auth::user()->id)
-            ->blocked) {
-            return $this->showResponse($data);
-        }
-        return $this->notFoundResponse();
+        $data = \App\Models\Me::whereHas('usersfollowingusers', function ($query) {
+            $query->where('following_id', \Auth::id())
+                ->where('status', 0);
+        });
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+        return $this->listResponse($data);
     }
 
     public function setLocation(Request $request)
