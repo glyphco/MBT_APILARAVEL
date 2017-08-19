@@ -161,4 +161,33 @@ class Me extends Authenticatable
             ->wherePivot('status', 0)
             ->select('user_id as user_id', 'name', 'avatar');
     }
+
+    //General structure to get a list of users that follow a person
+    // must use with with:
+    //
+    // \App\Models\Me::whereHas('pfm', function ($query) {
+    //        $query->where('following_id', \Auth::id());
+    //    })
+    //
+    //to limit the results to a user
+
+    public function usersfollowingusers()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'user_id', 'following_id');
+    }
+
+    //General structure to get a list of users that a person follows
+    // must use with with:
+    //
+    // $data = \App\Models\Me::whereHas('usersfollowingusersreverse', function ($query) {
+    //     $query->where('user_id', \Auth::id())
+    //         ->where('status', 3);
+    // });
+    //
+    //to limit the results to a user
+
+    public function usersfollowingusersreverse()
+    {
+        return $this->belongsToMany('App\Models\User', 'following', 'following_id', 'user_id');
+    }
 }
