@@ -42,6 +42,8 @@ class CreateUsersTable extends Migration
 
             $table->boolean('autoacceptfollows')->default(1);
 
+            $table->string('email_token')->nullable()->default(null);
+
             $table->boolean('confirmed')->default(0);
             $table->boolean('is_online')->default(false);
             $table->boolean('is_banned')->default(false);

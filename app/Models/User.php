@@ -53,12 +53,13 @@ class User extends Authenticatable
         'city',
         'state',
         'postalcode',
-
+        'email_token',
         'imageurl',
         'backgroundurl',
         'privacyevents',
         'privacylikes',
         'privacypyf',
+
     ];
 
     /**
