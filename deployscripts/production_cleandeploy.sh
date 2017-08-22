@@ -19,6 +19,7 @@ echo '---Composer Self-Update Complete---' >> $logfile 2>&1
 #---- 2/4 - Start Pre-Composer update ----#
 cd $root >> $logfile 2>&1
 sudo chmod -R 777 storage
+sudo chmod -R 777 bootstrap/cache
 php artisan config:cache
 echo '---Pre Composer Update Complete---' >> $logfile 2>&1
 
@@ -35,7 +36,7 @@ echo '---Optimized---' >> $logfile 2>&1
 
 #---- 4/4 - Start Database destroy and rebuild
 php artisan droptables  >> $logfile 2>&1
-php artisan migrate  >> $logfile 2>&1
+php artisan migrate --force >> $logfile 2>&1
 php artisan db:seed >> $logfile 2>&1
 
 echo '---Database Migrated---' >> $logfile 2>&1
