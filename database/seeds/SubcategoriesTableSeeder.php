@@ -12,7 +12,7 @@ class SubcategoriesTableSeeder extends Seeder
      */
     public function run()
     {
-
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         \DB::table('subcategories')->delete();
 
         \DB::table('subcategories')->insert(array(
@@ -361,6 +361,8 @@ class SubcategoriesTableSeeder extends Seeder
                 'updated_at'  => '2017-08-03 20:32:54',
             ),
         ));
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
     }
 }

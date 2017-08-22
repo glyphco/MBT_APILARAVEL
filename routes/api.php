@@ -18,15 +18,6 @@
 //     return app()->version();
 // });
 
-// Route::get('/giveglypheradmin', function () {
-//     if (\Auth::user()->facebook_id == env('glyph_facebook', 0)) {
-//         Bouncer::assign('superadmin')->to(\Auth::user());
-//         return \Auth::user()->getAbilities()->toArray();
-//     } else {
-//         return 'nice try dickwad.';
-//     }
-// });
-
 // Route::get('/test2', function () {
 //     var_dump(\Auth::user());
 //     $attributes = array_pluck(\Auth::user()->getAbilities()->toArray(), 'name');
@@ -65,6 +56,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/me', 'MeController@userinfo');
     Route::put('/me/setlocation', 'MeController@setLocation');
     Route::get('/me/pyfs', 'MeController@getPyfs');
+    Route::get('/me/pyrs', 'MeController@getPyrs');
     Route::get('/me/followers', 'MeController@getFollowers');
     Route::get('/me/followers/requests', 'MeController@getFollowersRequests');
     Route::get('/me/followers/blocked', 'MeController@getFollowersBlocked');

@@ -44,8 +44,15 @@ class FollowController extends BaseController
             $this->clientErrorResponse('Cant do that');
         }
 
-        $status = $request['status'];
+        $userseesyou = 1;
+        if ($existingUserSeesYou = \App\Models\Following::where('following_id', \Auth::user()->id)
+            ->where('user_id', $user_id)
+            ->first()) {
+            $userseesyou = $existingUserSeesYou->status;
+        }
 
+        $status         = $request['status'];
+        $youseeuserword = '';
         //from 0 to 1: CANT DO THAT
         //from 0 to 2: CANT DO THAT
         //from 0 to 3: CANT DO THAT
@@ -63,61 +70,68 @@ class FollowController extends BaseController
         //from 3 to 1: unfollow
         //from 3 to 2: CANT DO THAT
 
-        if (!$existingfollow = \App\Models\Following::where('user_id', \Auth::user()->id)
+        if (!$existingYouSeeUser = \App\Models\Following::where('user_id', \Auth::user()->id)
             ->where('following_id', $user_id)
             ->first()) {
-            //No Follow Exists: allow setting to 1 or 2
+            if ($status = 2) {
+                $youseeuserword = 'requested';
+
+            }
             \App\Models\Following::create(
                 ['user_id' => \Auth::user()->id, 'following_id' => $user_id, 'status' => $status]
             );
-            return $this->clientErrorResponse($this->valid_follows[$status]);
+            return $this->clientErrorResponse(['youseeuser' => $status, 'youseeuserword' => $youseeuserword, 'userseesyou' => $userseesyou]);
         }
 
-        $currentstatus = $existingrequest->status;
+        $youseeuser = $existingYouSeeUser->status;
+
+        $youseeuserword = '';
 
 //Currently nothing
-        if ($currentstatus == 1) {
+        if ($youseeuser == 1) {
             if ($status == 2) {
-                //request user
+                $youseeuserword = 'requested';
                 if ($user->autoacceptfollows == 1) {
-                    $status = 3; //Accepted
+                    $status         = 3;
+                    $youseeuserword = 'accepted';
                 }
 
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('requested');
+                $existingYouSeeUser->status = $status;
+                $existingYouSeeUser->save();
+                return $this->showResponse(['youseeuser' => $status, 'youseeuserword' => $youseeuserword, 'userseesyou' => $userseesyou]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
 
 //Currently Requested
-        if ($status == 2) {
+        if ($youseeuser == 2) {
             if ($status == 1) {
-                //unrequest
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('request cancelled');
+                $youseeuserword             = 'request canclled';
+                $existingYouSeeUser->status = $status;
+                $existingYouSeeUser->save();
+                return $this->showResponse(['youseeuser' => $status, 'youseeuserword' => $youseeuserword, 'userseesyou' => $userseesyou]);
             }
             if ($status == 2) {
-                //request user
+                $youseeuserword = 'requested'; //(still requested)
                 if ($user->autoacceptfollows == 1) {
-                    $status = 3; //Accepted
+                    $status         = 3;
+                    $youseeuserword = 'accepted';
                 }
 
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('requested');
+                $existingYouSeeUser->status = $status;
+                $existingYouSeeUser->save();
+                return $this->showResponse(['youseeuser' => $status, 'youseeuserword' => $youseeuserword, 'userseesyou' => $userseesyou]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
 
 //Currently Following
-        if ($status == 3) {
+        if ($youseeuser == 3) {
             if ($status == 1) {
-                //unrequest
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('unfollowed');
+                $youseeuserword             = 'unrequested';
+                $existingYouSeeUser->status = $status;
+                $existingYouSeeUser->save();
+                return $this->showResponse(['youseeuser' => $status, 'youseeuserword' => $youseeuserword, 'userseesyou' => $userseesyou]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
@@ -135,7 +149,15 @@ class FollowController extends BaseController
             return $this->clientErrorResponse('[status] not found');
         }
 
-        $status = $request['status'];
+        $status          = $request['status'];
+        $userseesyouword = '';
+
+        $youseeuser = 1;
+        if ($existingYouSeeUser = \App\Models\Following::where('user_id', \Auth::user()->id)
+            ->where('following_id', $user_id)
+            ->first()) {
+            $youseeuser = $existingYouSeeUser->status;
+        }
 
         //from 0 to 1: undo block
         //from 0 to 2: CANT DO THAT
@@ -159,7 +181,7 @@ class FollowController extends BaseController
             return $this->clientErrorResponse('Cant do that');
         }
 
-        if (!$existingrequest = \App\Models\Following::where('following_id', \Auth::user()->id)
+        if (!$existingUserSeesYou = \App\Models\Following::where('following_id', \Auth::user()->id)
             ->where('user_id', $user_id)
             ->first()) {
             if ($status == 0) {
@@ -173,66 +195,66 @@ class FollowController extends BaseController
             return $this->clientErrorResponse('Cant do that');
         }
 
-        $currentstatus = $existingrequest->status;
+        $userseesyou = $existingUserSeesYou->status;
 
 //Currently blocked
-        if ($currentstatus == 0) {
+        if ($userseesyou == 0) {
             if ($status == 1) {
-                //undo the block
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('unblocked');
+                $userseesyouword             = 'unblocked';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
 
 //Currently nothing
-        if ($currentstatus == 1) {
+        if ($userseesyou == 1) {
             if ($status == 0) {
-                //block user
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('user blocked');
+                $userseesyouword             = 'user blocked';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
 
 //Currently requesting
-        if ($currentstatus == 2) {
+        if ($userseesyou == 2) {
             if ($status == 0) {
-                //block request
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('request blocked');
+                $userseesyouword             = 'request blocked';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             if ($status == 1) {
-                //ignore request
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('request ignored');
+                $userseesyouword             = 'request ignored';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             if ($status == 3) {
-                //accept request
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('request accepted');
+                $userseesyouword             = 'request accepted';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             return $this->clientErrorResponse('Cant do that');
         }
 
 //Currently following
-        if ($currentstatus == 3) {
+        if ($userseesyou == 3) {
             if ($status == 0) {
-                //block user
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('follower blocked');
+                $userseesyouword             = 'follower blocked';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             if ($status == 1) {
-                //block user
-                $existingrequest->status = $status;
-                $existingrequest->save();
-                return $this->showResponse('follower dismissed');
+                $userseesyouword             = 'follower dismissed';
+                $existingUserSeesYou->status = $status;
+                $existingUserSeesYou->save();
+                return $this->showResponse(['userseesyou' => $status, 'userseesyouword' => $userseesyouword, 'youseeuser' => $youseeuser]);
             }
             return $this->clientErrorResponse('Cant do that');
         }

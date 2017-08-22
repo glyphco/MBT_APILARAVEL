@@ -143,6 +143,21 @@ class MeController extends BaseController
             $query->where('user_id', \Auth::id())
                 ->where('status', 3);
         });
+        $data = $data->selectRaw('*, 3 as youseeuser');
+
+        $pp = $request->input('pp', 25);
+        if ($pp > 100) {$pp = 100;}
+        $data = $data->paginate($pp);
+        return $this->listResponse($data);
+    }
+
+    public function getPyrs(Request $request)
+    {
+        $data = \App\Models\Me::whereHas('usersfollowingusersreverse', function ($query) {
+            $query->where('user_id', \Auth::id())
+                ->where('status', 2);
+        });
+        $data = $data->selectRaw('*, 2 as youseeuser');
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -156,6 +171,7 @@ class MeController extends BaseController
             $query->where('following_id', \Auth::id())
                 ->where('status', 3);
         });
+        $data = $data->selectRaw('*, 3 as userseesyou');
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -170,6 +186,7 @@ class MeController extends BaseController
             $query->where('following_id', \Auth::id())
                 ->where('status', 2);
         });
+        $data = $data->selectRaw('*, 2 as userseesyou');
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -183,6 +200,7 @@ class MeController extends BaseController
             $query->where('following_id', \Auth::id())
                 ->where('status', 0);
         });
+        $data = $data->selectRaw('*, 0 as userseesyou');
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
