@@ -14,41 +14,42 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
+        echo ('seeding for ' . config('env'));
+        switch (config('env')) {
+            case 'local':
+                $this->call(RolesSeeder::class);
+                $this->call(CategoriesTableSeeder::class);
+                $this->call(SubcategoriesTableSeeder::class);
+                $this->call(SuperAdminDataSeeder::class);
+                $this->call('UserDataSeeder');
+                $this->call('VenueDataSeeder');
+                $this->call('PageDataSeeder');
+                $this->call('ShowDataSeeder');
 
-        $this->call(RolesSeeder::class);
-        $this->call(CategoriesTableSeeder::class);
-        $this->call(SubcategoriesTableSeeder::class);
-        $this->call(SuperAdminDataSeeder::class);
+                $this->call('EventDataSeeder');
 
-        if (App::Environment() === 'local') {
-            // run local queries or model factories
+                $this->call('MveDataSeeder');
 
-            //Fake Data Follows:
-            $this->call('UserDataSeeder');
-            $this->call('VenueDataSeeder');
-            $this->call('PageDataSeeder');
-            $this->call('ShowDataSeeder');
+                $this->call('UserLikesSeeder');
 
-            $this->call('EventDataSeeder');
+                break;
 
-            $this->call('MveDataSeeder');
+            case 'fresh':
+                $this->call(RolesSeeder::class);
+                $this->call(CategoriesTableSeeder::class);
+                $this->call(SubcategoriesTableSeeder::class);
+                $this->call(SuperAdminDataSeeder::class);
 
-            $this->call('UserLikesSeeder');
+                break;
 
-        } else {
-            // run production queries or model factories
+            case 'production':
+                $this->call(CategoriesTableSeeder::class);
+                $this->call(SubcategoriesTableSeeder::class);
+                break;
 
-            //Fake Data Follows:
-            //$this->call('UserDataSeeder');
-            //$this->call('VenueDataSeeder');
-            //$this->call('PageDataSeeder');
-            //$this->call('ShowDataSeeder');
-
-            //$this->call('EventDataSeeder');
-
-            //$this->call('MveDataSeeder');
-
-            //$this->call('UserLikesSeeder');
+            default:
+                # code...
+                break;
         }
 
     }
@@ -423,7 +424,7 @@ class UserLikesSeeder extends Seeder
             // $followbackstatus = Faker\Factory::create()->randomElement($array = array(0, 1, 1, 1, 2, 2, 2));
 
             $pyf = \App\Models\Following::firstOrCreate(
-                ['user_id' => $user_id, 'following_id' => $following_id, 'status' => $followstatus]
+                ['user_id' => $user_id, 'following_id' => $following_id], ['status' => $followstatus]
             );
 
             // $inversefriendship = \App\Models\Following::firstOrCreate(
