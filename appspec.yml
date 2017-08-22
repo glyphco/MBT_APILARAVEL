@@ -20,5 +20,5 @@ permissions:
       - file
 hooks:
  AfterInstall:
-    - location: deployscripts/composerupdate.sh
+    - location: deployscripts/production_cleandeploy.sh
       timeout: 600
