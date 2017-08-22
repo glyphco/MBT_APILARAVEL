@@ -39,7 +39,6 @@ class DatabaseSeeder extends Seeder
                 $this->call(CategoriesTableSeeder::class);
                 $this->call(SubcategoriesTableSeeder::class);
                 $this->call(SuperAdminDataSeeder::class);
-
                 break;
 
             case 'production':
@@ -48,7 +47,7 @@ class DatabaseSeeder extends Seeder
                 break;
 
             default:
-                # code...
+
                 break;
         }
 

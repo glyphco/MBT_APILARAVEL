@@ -20,5 +20,5 @@ permissions:
       - file
 hooks:
  AfterInstall:
-    - location: deployscripts/production_cleandeploy.sh
+    - location: deployscripts/production.sh
       timeout: 600
