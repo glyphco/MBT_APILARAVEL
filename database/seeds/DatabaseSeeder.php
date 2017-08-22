@@ -14,42 +14,51 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-        echo ('seeding for ' . config('env'));
-        switch (config('env')) {
-            case 'local':
-                $this->call(RolesSeeder::class);
-                $this->call(CategoriesTableSeeder::class);
-                $this->call(SubcategoriesTableSeeder::class);
-                $this->call(SuperAdminDataSeeder::class);
-                $this->call('UserDataSeeder');
-                $this->call('VenueDataSeeder');
-                $this->call('PageDataSeeder');
-                $this->call('ShowDataSeeder');
 
-                $this->call('EventDataSeeder');
+        $this->call(RolesSeeder::class);
+        $this->call(CategoriesTableSeeder::class);
+        $this->call(SubcategoriesTableSeeder::class);
+        $this->call(SuperAdminDataSeeder::class);
+        //         $this->call('UserDataSeeder');
+        //         $this->call('VenueDataSeeder');
+        //         $this->call('PageDataSeeder');
+        //         $this->call('ShowDataSeeder');
 
-                $this->call('MveDataSeeder');
+        // switch (config('env')) {
+        //     case 'local':
+        //         $this->call(RolesSeeder::class);
+        //         $this->call(CategoriesTableSeeder::class);
+        //         $this->call(SubcategoriesTableSeeder::class);
+        //         $this->call(SuperAdminDataSeeder::class);
+        //         $this->call('UserDataSeeder');
+        //         $this->call('VenueDataSeeder');
+        //         $this->call('PageDataSeeder');
+        //         $this->call('ShowDataSeeder');
 
-                $this->call('UserLikesSeeder');
+        //         $this->call('EventDataSeeder');
 
-                break;
+        //         $this->call('MveDataSeeder');
 
-            case 'fresh':
-                $this->call(RolesSeeder::class);
-                $this->call(CategoriesTableSeeder::class);
-                $this->call(SubcategoriesTableSeeder::class);
-                $this->call(SuperAdminDataSeeder::class);
-                break;
+        //         $this->call('UserLikesSeeder');
 
-            case 'production':
-                $this->call(CategoriesTableSeeder::class);
-                $this->call(SubcategoriesTableSeeder::class);
-                break;
+        //         break;
 
-            default:
+        //     case 'fresh':
+        //         $this->call(RolesSeeder::class);
+        //         $this->call(CategoriesTableSeeder::class);
+        //         $this->call(SubcategoriesTableSeeder::class);
+        //         $this->call(SuperAdminDataSeeder::class);
+        //         break;
 
-                break;
-        }
+        //     case 'production':
+        //         $this->call(CategoriesTableSeeder::class);
+        //         $this->call(SubcategoriesTableSeeder::class);
+        //         break;
+
+        //     default:
+
+        //         break;
+        // }
 
     }
 
