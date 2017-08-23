@@ -20,7 +20,7 @@ class Venue extends Model
     protected $fillable = [
         'name',
         'slug',
-        'category',
+        //'category',
         'street_address',
         'city',
         'state',
@@ -31,10 +31,10 @@ class Venue extends Model
 
         'neighborhood',
         'website',
-        'tagline',
+        //'tagline',
         'description',
-        'phone',
-        'email',
+        //'phone',
+        //'email',
         'location',
         'public',
         'confirmed',
@@ -45,7 +45,7 @@ class Venue extends Model
      *
      * @var array
      */
-    protected $hidden = ['location',
+    protected $hidden = ['location', 'category', 'tagline', 'phone', 'email',
     ];
 
     /**

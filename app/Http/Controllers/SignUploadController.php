@@ -16,12 +16,12 @@ class SignUploadController extends BaseController
     protected $client;
 
     protected $validitems = [
-        'event' => ['edit-events', 'App\Models\Event', 'for' => ['main']],
-        'mve'   => ['edit-events', 'App\Models\Mve', 'for' => ['main']],
-        'page'  => ['edit-pages', 'App\Models\Page', 'for' => ['main']],
-        'show'  => ['edit-shows', 'App\Models\Show', 'for' => ['main']],
-        'venue' => ['edit-venues', 'App\Models\Venue', 'for' => ['main']],
-        'user'  => ['edit-users', 'App\Models\User', 'for' => ['main']],
+        'event' => ['permission' => 'edit-events', 'model' => 'App\Models\Event', 'for' => ['main']],
+        'mve'   => ['permission' => 'edit-events', 'model' => 'App\Models\Mve', 'for' => ['main']],
+        'page'  => ['permission' => 'edit-pages', 'model' => 'App\Models\Page', 'for' => ['main']],
+        'show'  => ['permission' => 'edit-shows', 'model' => 'App\Models\Show', 'for' => ['main']],
+        'venue' => ['permission' => 'edit-venues', 'model' => 'App\Models\Venue', 'for' => ['main']],
+        'user'  => ['permission' => 'edit-users', 'model' => 'App\Models\User', 'for' => ['main']],
     ];
 
     public function __construct(S3Client $client)
@@ -87,16 +87,16 @@ class SignUploadController extends BaseController
 
 //Find the item
         if ($item == 'user') {
-            if (!$data = $this->validitems[$item][1]::find($id)) {
+            if (!$data = $this->validitems[$item]['model']::BannedAndNotBanned()->ConfirmedAndUnconfirmed()->find($id)) {
                 $this->notFoundResponse()->send();
             }
         } else {
-            if (!$data = $this->validitems[$item][1]::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
+            if (!$data = $this->validitems[$item]['model']::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
                 $this->notFoundResponse()->send();
             }
         }
 
-        if (!((Bouncer::allows($this->validitems[$item][0])) or (Bouncer::allows('edit', $data)))) {
+        if (!((Bouncer::allows($this->validitems[$item]['permission'])) or (Bouncer::allows('edit', $data)))) {
             $this->unauthorizedResponse()->send();
         }
         return $data;

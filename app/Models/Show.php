@@ -19,7 +19,7 @@ class Show extends Model
     protected $fillable = [
         'name',
         'description',
-        'summary',
+        //'summary',
         'tagline',
         'slug',
         'imageurl',
@@ -38,7 +38,7 @@ class Show extends Model
      *
      * @var array
      */
-    protected $hidden = [
+    protected $hidden = ['summary',
     ];
 
     /**

@@ -16,18 +16,18 @@ class Page extends Model
      */
     protected $fillable = [
         'name',
-        'email',
+        //'email',
         'slug',
         //'category',
         'description',
         'tagline',
-        'summary',
+        //'summary',
 
         'city',
         'state',
         'postalcode',
 
-        'phone',
+        //'phone',
         'location',
 
         'categoriesjson',
@@ -52,7 +52,7 @@ class Page extends Model
      *
      * @var array
      */
-    protected $hidden = [
+    protected $hidden = ['summary', 'phone', 'email',
     ];
 
     /**

@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller as BaseController;
+use App\Traits\UserBanableTrait;
+use App\Traits\UserConfirmableTrait;
 use Bouncer;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
@@ -9,12 +11,13 @@ use Silber\Bouncer\Database\HasRolesAndAbilities;
 class UserController extends BaseController
 {
 
-    use HasRolesAndAbilities;
+    use UserConfirmableTrait, UserBanableTrait, HasRolesAndAbilities;
 
     const MODEL                = 'App\Models\User';
     protected $validationRules = ['email' => 'required', 'name' => 'required', 'password' => 'required'];
     protected $viewitems       = 'view-users';
     protected $edititems       = 'edit-users';
+    protected $confirmitems    = 'edit-users';
     protected $banitems        = 'ban-users';
 
 //These are public calls
@@ -184,10 +187,83 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
         $m    = self::MODEL;
-        $data = $m::orderBy('name', 'ASC');
+        $data = $m::withoutGlobalScope(\App\Scopes\UserConfirmedScope::class);
+
+        if ($request->exists('confirmed')) {
+            $data = $data->where('confirmed', 1);
+        }
+
+        if ($request->exists('unconfirmed')) {
+            $data = $data->where('confirmed', 0);
+        }
+
+        if ($request->exists('banned')) {
+            $data = $data->where('banned', 1);
+        }
 
         if ($request->exists('q')) {
             $data = $data->where('name', 'like', '%' . $request['q'] . '%');
+        }
+
+        if ($request->has('rank')) {
+            switch ($request->input('rank')) {
+                case 'superadmin':
+                    $data = $data
+                        ->whereIs('superadmin');
+                    break;
+
+                case 'admin':
+                    $data = $data
+                        ->whereIs('admin');
+                    break;
+
+                case 'mastereditor':
+                    $data = $data
+                        ->whereIs('mastereditor');
+                    break;
+
+                case 'contributor':
+                    $data = $data
+                        ->whereIs('contributor');
+                    break;
+
+                default:
+
+                    break;
+            }
+        }
+
+        if ($request->has('sortby')) {
+            switch ($request->input('sortby')) {
+                case 'name':
+                    $data = $data
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                case 'email':
+                    $data = $data
+                        ->orderBy('email', 'asc')
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                case 'created_at':
+                    $data = $data
+                        ->orderBy('created_at', 'asc');
+                    break;
+
+                case 'is_banned':
+                    $data = $data
+                        ->orderBy('is_banned', 'desc')
+                        ->orderBy('name', 'ASC');
+                    break;
+
+                default:
+                    $data = $data
+                        ->orderBy('name', 'ASC');
+                    break;
+            }
+        } else {
+            $data = $data->orderBy('name', 'ASC');
         }
 
         $pp = $request->input('pp', 25);

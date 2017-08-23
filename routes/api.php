@@ -31,7 +31,7 @@ Route::get('/', 'pub\GeneralController@getVer');
 Route::get('/tests/ver', 'pub\GeneralController@getVer');
 Route::get('/tests/php', 'pub\GeneralController@getVer');
 
-Route::get('/test', 'TestController@index');
+//Route::get('/test', 'TestController@index');
 
 Route::group(['middleware' => ['cors']], function () {
 
@@ -216,6 +216,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/user/{id}/edit', 'UserController@edit');
     Route::post('/user/{id}/follow', 'FollowController@follow');
     Route::post('/user/{id}/followrespond', 'FollowController@respond');
+    Route::get('/user/{id}/confirm', 'UserController@confirm');
+    Route::get('/user/{id}/unconfirm', 'UserController@unconfirm');
+    Route::get('/user/{id}/ban', 'UserController@ban');
+    Route::get('/user/{id}/unban', 'UserController@unban');
 
     Route::group(['middleware' => 'can:view-users'], function () {
         Route::get('/user', 'UserController@index');
@@ -261,3 +265,8 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/bots/bot2', 'bots\Bot2Controller@index');
     Route::get('/bots/bot3', 'bots\Bot3Controller@index');
 });
+
+Route::get('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
+Route::post('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
+Route::put('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
+Route::delete('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');

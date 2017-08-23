@@ -23,6 +23,7 @@ class Event extends Model
         'mve_id',
         'venue_id',
         'venue_name',
+        //'venue_tagline',
         'venue_imageurl',
         'street_address',
         'city',
@@ -32,7 +33,6 @@ class Event extends Model
         'lng',
         'location',
         'local_tz',
-        'venue_tagline',
 
         'price',
         'pricemin',
@@ -47,7 +47,7 @@ class Event extends Model
         'local_start',
         'local_end',
 
-        'info',
+        //'info',
         'private_info',
         'order',
 
@@ -74,7 +74,7 @@ class Event extends Model
      * @var array
      */
     protected $hidden = [
-        'location',
+        'location', 'venue_tagline', 'info',
     ];
 
     /**

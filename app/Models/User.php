@@ -71,6 +71,13 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new \App\Scopes\UserConfirmedScope);
+        static::addGlobalScope(new \App\Scopes\UserNotBannedScope);
+    }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT
      *
@@ -129,6 +136,26 @@ class User extends Authenticatable
     public function eventsImAttending()
     {
         return $this->belongsToMany('App\Models\Event', 'attending', 'user_id')->current()->wherePivot('user_id', \Auth::id());
+    }
+
+    public function scopeUnconfirmed($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\UserConfirmedScope::class)->where('confirmed', '=', 0);
+    }
+
+    public function scopeConfirmedAndUnconfirmed($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\UserConfirmedScope::class);
+    }
+
+    public function scopeBanned($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\UserNotBannedScope::class)->where('banned', '=', 1);
+    }
+
+    public function scopeBannedAndNotBanned($query)
+    {
+        return $query->withoutGlobalScope(\App\Scopes\UserNotBannedScope::class);
     }
 
     // pyfs
