@@ -71,7 +71,7 @@ class MaintenanceController extends BaseController
 
         if ((Bouncer::allows('edit-pages')) or (Bouncer::allows('admin-pages'))) {
             $data['pages']['all'] = \App\Models\Page::count();
-            $data['shows']['all'] = \App\Models\show::count();
+            $data['shows']['all'] = \App\Models\Show::count();
         }
 
         if (Bouncer::allows('confirm-pages')) {
