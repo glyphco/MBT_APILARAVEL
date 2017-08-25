@@ -35,6 +35,7 @@ class Venue extends Model
         'description',
         //'phone',
         //'email',
+        'imageurl',
         'location',
         'public',
         'confirmed',
