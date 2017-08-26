@@ -100,6 +100,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/page/editable', 'PageController@editable');
     Route::get('/page/{id}', 'PageController@show');
     Route::put('/page/{id}', 'PageController@update');
+    Route::delete('/page/{id}', 'PageController@destroy');
     Route::get('/page/{id}/details', 'PageController@details');
     Route::get('/page/{id}/edit', 'PageController@edit');
     Route::get('/page/{id}/like', 'PageController@like');
@@ -124,6 +125,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/show/editable', 'ShowController@editable');
     Route::get('/show/{id}', 'ShowController@show');
     Route::put('/show/{id}', 'ShowController@update');
+    Route::delete('/show/{id}', 'ShowController@destroy');
     Route::get('/show/{id}/details', 'ShowController@details');
     Route::get('/show/{id}/edit', 'ShowController@edit');
     Route::get('/show/{id}/like', 'ShowController@like');
@@ -155,6 +157,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/mve/editable', 'MveController@editable');
     Route::get('/mve/{id}', 'MveController@show');
     Route::put('/mve/{id}', 'MveController@update');
+    Route::delete('/mve/{id}', 'MveController@destroy');
     Route::get('/mve/{id}/edit', 'MveController@edit');
     Route::get('/mve/{id}/confirm', 'MveController@confirm');
     Route::get('/mve/{id}/unconfirm', 'MveController@unconfirm');

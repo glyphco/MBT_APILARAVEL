@@ -82,6 +82,8 @@ class VenueController extends BaseController
             'likes',
         ]);
 
+        $data = $data->withoutGlobalScope(\App\Scopes\VenuePublicScope::class)->withoutGlobalScope(\App\Scopes\VenueConfirmedScope::class);
+
         if ($request->exists('confirmed')) {
             $data = $data->where('confirmed', '=', 1);
         }

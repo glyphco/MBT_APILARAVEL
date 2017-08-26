@@ -79,6 +79,7 @@ class PageController extends BaseController
             'eventsAsParticipant',
             'likes',
         ]);
+        $data = $data->withoutGlobalScope(\App\Scopes\PagePublicScope::class)->withoutGlobalScope(\App\Scopes\PageConfirmedScope::class);
 
         if ($request->exists('confirmed')) {
             $data = $data->where('confirmed', '=', 1);

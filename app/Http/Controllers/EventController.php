@@ -752,6 +752,21 @@ class EventController extends BaseController
         $data = $m::current(); //tz unneeded for current
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
+        $data = $data
+            ->withCount([
+                'attendingyes',
+                'attendingmaybe',
+                //'attendingwish',
+                'pyfsattendingyes',
+                'pyfsattendingmaybe',
+                //'pyfsattendingwish',
+            ])
+            ->with([
+                'iattending',
+                'pyfsattendingyes_list',
+                //'pyfsattendingmaybe_list',
+                //'pyfsattendingwish_list',
+            ]);
 
         $data = $data->near($lat, $lng, $dist, 'METERS');
 

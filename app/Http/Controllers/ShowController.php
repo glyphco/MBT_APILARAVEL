@@ -112,6 +112,8 @@ class ShowController extends BaseController
         $m    = self::MODEL;
         $data = $m::withCount(['events', 'likes']);
 
+        $data = $data->withoutGlobalScope(\App\Scopes\ShowConfirmedScope::class)->withoutGlobalScope(\App\Scopes\ShowPublicScope::class);
+
         if ($request->exists('confirmed')) {
             $data = $data->where('confirmed', '=', 1);
         }
