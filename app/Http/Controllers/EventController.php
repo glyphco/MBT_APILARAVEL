@@ -829,6 +829,7 @@ class EventController extends BaseController
             ])
             ->distance($lat, $lng)
             ->with([
+                'iattending',
                 'eventparticipants',
                 'attendingyes_list',
                 'attendingmaybe_list',

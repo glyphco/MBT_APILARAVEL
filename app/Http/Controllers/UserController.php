@@ -187,7 +187,8 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
         $m    = self::MODEL;
-        $data = $m::withoutGlobalScope(\App\Scopes\UserConfirmedScope::class);
+        $data = $m::withoutGlobalScope(\App\Scopes\UserConfirmedScope::class)
+            ->withoutGlobalScope(\App\Scopes\UserNotBannedScope::class);
 
         if ($request->exists('confirmed')) {
             $data = $data->where('confirmed', 1);
