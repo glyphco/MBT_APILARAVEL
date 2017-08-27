@@ -168,7 +168,9 @@ class UserController extends BaseController
     {
         //autorelates venue and participants in model
         $m = self::MODEL;
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::withoutGlobalScope(\App\Scopes\UserConfirmedScope::class)
+            ->withoutGlobalScope(\App\Scopes\UserNotBannedScope::class)
+            ->find($id)) {
             return $this->notFoundResponse();
         }
 
