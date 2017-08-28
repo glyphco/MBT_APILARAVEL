@@ -14,7 +14,7 @@ class UploadController extends BaseController
         'event' => ['edit-events', 'App\Models\Event'],
         'mve'   => ['edit-events', 'App\Models\Mve'],
         'page'  => ['edit-pages', 'App\Models\Page'],
-        'show'  => ['edit-shows', 'App\Models\Show'],
+        'show'  => ['edit-pages', 'App\Models\Show'],
         'user'  => ['edit-users', 'App\Models\User'],
     ];
 

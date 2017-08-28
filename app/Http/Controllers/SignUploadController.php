@@ -19,7 +19,7 @@ class SignUploadController extends BaseController
         'event' => ['permission' => 'edit-events', 'model' => 'App\Models\Event', 'for' => ['main']],
         'mve'   => ['permission' => 'edit-events', 'model' => 'App\Models\Mve', 'for' => ['main']],
         'page'  => ['permission' => 'edit-pages', 'model' => 'App\Models\Page', 'for' => ['main']],
-        'show'  => ['permission' => 'edit-shows', 'model' => 'App\Models\Show', 'for' => ['main']],
+        'show'  => ['permission' => 'edit-pages', 'model' => 'App\Models\Show', 'for' => ['main']],
         'venue' => ['permission' => 'edit-venues', 'model' => 'App\Models\Venue', 'for' => ['main']],
         'user'  => ['permission' => 'edit-users', 'model' => 'App\Models\User', 'for' => ['main']],
     ];
