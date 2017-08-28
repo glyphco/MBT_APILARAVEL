@@ -17,6 +17,7 @@ class EventProducer extends Model
         'name',
         'details',
         'page_id',
+        'imageurl',
         'order',
     ];
 
