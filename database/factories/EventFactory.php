@@ -55,6 +55,13 @@ $factory->define('App\Models\Event', function (Faker\Generator $faker) {
     $a = $faker->numberBetween(2, 10);
     $z = $a + $faker->numberBetween(2, 10);
 
+    $valid_prices = [
+        0 => '',
+        1 => 'free',
+        2 => 'donation',
+        3 => 'sliding',
+    ];
+
     $PRICE_EMPTY = 0; // 1
     //1  0,00
     //7  0,0z

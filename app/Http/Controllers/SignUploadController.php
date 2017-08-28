@@ -85,20 +85,23 @@ class SignUploadController extends BaseController
             $this->clientErrorResponse('Could not save: [' . $for . '] not allowed')->send();
         }
 
-//Find the item
+//Find the item, check bouncer
         if ($item == 'user') {
             if (!$data = $this->validitems[$item]['model']::BannedAndNotBanned()->ConfirmedAndUnconfirmed()->find($id)) {
                 $this->notFoundResponse()->send();
+            }
+            if (!((Bouncer::allows($this->validitems[$item]['permission'])) or ((int) \Auth::user()->id === (int) $id))) {
+                $this->unauthorizedResponse()->send();
             }
         } else {
             if (!$data = $this->validitems[$item]['model']::PublicAndPrivate()->ConfirmedAndUnconfirmed()->find($id)) {
                 $this->notFoundResponse()->send();
             }
+            if (!((Bouncer::allows($this->validitems[$item]['permission'])) or (Bouncer::allows('edit', $data)))) {
+                $this->unauthorizedResponse()->send();
+            }
         }
 
-        if (!((Bouncer::allows($this->validitems[$item]['permission'])) or (Bouncer::allows('edit', $data)))) {
-            $this->unauthorizedResponse()->send();
-        }
         return $data;
     }
 

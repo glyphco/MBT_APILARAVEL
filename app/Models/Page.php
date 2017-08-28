@@ -69,11 +69,7 @@ class Page extends Model
 
     public function eventsAsParticipant()
     {
-
-        return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\EventParticipant',
-            'page_id', 'id'
-        )
+        return $this->belongsToMany('App\Models\Event', 'event_participants', 'page_id', 'event_id')
             ->where('events.confirmed', '=', 1)
             ->where('events.public', '=', 1)
             ->orderby('UTC_start');
@@ -81,10 +77,7 @@ class Page extends Model
 
     public function eventsAsParticipantCurrent()
     {
-        return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\EventParticipant',
-            'page_id', 'id'
-        )
+        return $this->belongsToMany('App\Models\Event', 'event_participants', 'page_id', 'event_id')
             ->current()
             ->where('events.confirmed', '=', 1)
             ->where('events.public', '=', 1)
@@ -93,10 +86,7 @@ class Page extends Model
 
     public function eventsAsProducer()
     {
-        return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\EventProducer',
-            'page_id', 'id'
-        )
+        return $this->belongsToMany('App\Models\Event', 'event_producers', 'page_id', 'event_id')
             ->where('events.confirmed', '=', 1)
             ->where('events.public', '=', 1)
             ->orderby('UTC_start');
@@ -104,10 +94,7 @@ class Page extends Model
 
     public function eventsAsProducerCurrent()
     {
-        return $this->hasManyThrough(
-            'App\Models\Event', 'App\Models\EventProducer',
-            'page_id', 'id'
-        )
+        return $this->belongsToMany('App\Models\Event', 'event_producers', 'page_id', 'event_id')
             ->current()
             ->where('events.confirmed', '=', 1)
             ->where('events.public', '=', 1)
