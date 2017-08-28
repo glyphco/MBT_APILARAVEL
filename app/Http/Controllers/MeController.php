@@ -73,9 +73,9 @@ class MeController extends BaseController
             return $this->notFoundResponse();
         }
 
-        if (!Bouncer::allows($this->edititems)) {
-            return $this->unauthorizedResponse();
-        }
+        // if (!Bouncer::allows($this->edititems)) {
+        //     return $this->unauthorizedResponse();
+        // }
 
         try
         {

@@ -317,6 +317,7 @@ class ShowController extends BaseController
         $m = self::MODEL;
         if ($data = $m::with('eventslistcurrent')
             ->withCount('events')
+            ->withCount('ilike')
             ->withCount('likes')
             ->withCount('pyfslike')
             ->with('pyfslike')
