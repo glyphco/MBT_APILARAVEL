@@ -158,7 +158,7 @@ class EventController extends BaseController
     {
 
         $m    = self::MODEL;
-        $data = $m::with('mve');
+        $data = $m::with('mve')->current();
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
