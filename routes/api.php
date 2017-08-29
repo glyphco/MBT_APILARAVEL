@@ -179,6 +179,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/current', 'EventController@current');
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
+    Route::delete('/event/{id}/', 'EventController@destroy');
     Route::get('/event/{id}/edit', 'EventController@edit');
     Route::get('/event/{id}/details', 'EventController@details');
     //Events are attended, not liked.

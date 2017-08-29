@@ -14,42 +14,28 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-        echo ('seeding for ' . config('env'));
-        switch (config('env')) {
-            case 'local':
-                $this->call(RolesSeeder::class);
-                $this->call(CategoriesTableSeeder::class);
-                $this->call(SubcategoriesTableSeeder::class);
-                $this->call(SuperAdminDataSeeder::class);
-                $this->call('UserDataSeeder');
-                $this->call('VenueDataSeeder');
-                $this->call('PageDataSeeder');
-                $this->call('ShowDataSeeder');
 
-                $this->call('EventDataSeeder');
+//DEV
+        // $this->call(RolesSeeder::class);
+        // $this->call(CategoriesTableSeeder::class);
+        // $this->call(SubcategoriesTableSeeder::class);
+        // $this->call(SuperAdminDataSeeder::class);
+        // $this->call('UserDataSeeder');
+        // $this->call('VenueDataSeeder');
+        // $this->call('PageDataSeeder');
+        // $this->call('ShowDataSeeder');
 
-                $this->call('MveDataSeeder');
+        // $this->call('EventDataSeeder');
 
-                $this->call('UserLikesSeeder');
+        // $this->call('MveDataSeeder');
 
-                break;
+        // $this->call('UserLikesSeeder');
 
-            case 'fresh':
-                $this->call(RolesSeeder::class);
-                $this->call(CategoriesTableSeeder::class);
-                $this->call(SubcategoriesTableSeeder::class);
-                $this->call(SuperAdminDataSeeder::class);
-
-                break;
-
-            case 'production':
-
-                break;
-
-            default:
-
-                break;
-        }
+//FRESH
+        // $this->call(RolesSeeder::class);
+        // $this->call(CategoriesTableSeeder::class);
+        // $this->call(SubcategoriesTableSeeder::class);
+        // $this->call(SuperAdminDataSeeder::class);
 
     }
 

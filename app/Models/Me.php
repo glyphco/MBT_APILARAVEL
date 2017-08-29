@@ -36,8 +36,8 @@ class Me extends Authenticatable
      */
     protected $fillable = [
         //'name',
-        'avatar',
-        'slug',
+        //'avatar',
+        //'slug',
         'nighborhood',
         'city',
         'state',
