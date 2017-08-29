@@ -189,23 +189,24 @@ class EventController extends BaseController
             switch ($request->input('sortby')) {
                 case 'date':
                     $data = $data
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderByRaw('date(UTC_start) ASC')
                         ->orderBy('venue_name', 'ASC')
                         ->orderBy('name', 'DESC');
                     break;
                 case 'venue':
                     $data = $data
                         ->orderBy('venue_name', 'ASC')
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderByRaw('date(UTC_start) ASC')
                         ->orderBy('name', 'DESC');
                     break;
                 case 'event':
                     $data = $data
-                        ->orderBy('name', 'DESC');
+                        ->orderBy('name', 'DESC')
+                        ->orderByRaw('date(UTC_start) ASC');
                     break;
                 default:
                     $data = $data
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderByRaw('date(UTC_start) ASC')
                         ->orderBy('venue_name', 'ASC')
                         ->orderBy('name', 'DESC');
                     break;
