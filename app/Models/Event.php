@@ -117,7 +117,7 @@ class Event extends Model
         return $this->hasMany('App\Models\EventParticipant');
     }
 
-    public function eventproducer()
+    public function eventproducers()
     {
         return $this->hasMany('App\Models\EventProducer');
     }

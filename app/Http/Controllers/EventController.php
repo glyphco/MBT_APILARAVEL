@@ -299,7 +299,7 @@ class EventController extends BaseController
             'categories',
             'eventshows',
             'eventparticipants',
-            'eventproducer',
+            'eventproducers',
 
         ])
             ->withCount([
@@ -335,7 +335,15 @@ class EventController extends BaseController
         //autorelates venue and participants in model
         $m = self::MODEL;
         if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()
-            ->with('eventparticipants')
+            ->with([
+                'mve',
+                'venue',
+                'categories',
+                'eventshows',
+                'eventparticipants',
+                'eventproducers',
+
+            ])
             ->find($id)) {
             return $this->notFoundResponse();
         }
@@ -455,9 +463,10 @@ class EventController extends BaseController
             }
 
             $saveshow = [
-                'id'      => $show['id'],
-                'name'    => $show['name'],
-                'img_url' => $show['img_url'],
+                'show_id'  => $show['id'],
+                'name'     => $show['name'],
+                'info'     => $show['tagline'],
+                'imageurl' => $show['imageurl'],
             ];
 
             $extra = [
@@ -551,7 +560,7 @@ class EventController extends BaseController
                 'public'    => 1,
             ];
 
-            $data = \App\Models\EventShow::create(array_merge($saveproducer, $extra));
+            $data = \App\Models\EventProducer::create(array_merge($saveproducer, $extra));
 
             $producerarray[] = $saveproducer;
 
@@ -817,7 +826,7 @@ class EventController extends BaseController
             'categories',
             'eventshows',
             'eventparticipants',
-            'eventproducer',
+            'eventproducers',
 
         ])
             ->withCount([
