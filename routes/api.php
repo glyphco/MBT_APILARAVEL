@@ -177,6 +177,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/today', 'EventController@today');
     Route::get('/event/today/map', 'EventController@todayMap');
     Route::get('/event/current', 'EventController@current');
+    Route::get('/event/mapallcurrent', 'EventController@mapAllCurrent');
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
     Route::delete('/event/{id}/', 'EventController@destroy');
@@ -194,6 +195,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/{id}/revokeadmin/{userid}', 'EventController@revokeadmin');
     Route::get('/event/{id}/editors', 'EventController@geteditors');
     Route::get('/event/{id}/admins', 'EventController@getadmins');
+
 //Attending
 
 //Event Shows
