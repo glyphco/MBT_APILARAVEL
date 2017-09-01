@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller as BaseController;
 use App\Traits\UserBanableTrait;
 use App\Traits\UserConfirmableTrait;
 use Bouncer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
@@ -113,6 +114,14 @@ class UserController extends BaseController
         try
         {
             $input = $request->all();
+            if ((array_key_exists('is_banned', $input)) && ($input['is_banned'] == 1)) {
+                if (
+                    (array_key_exists('banned_until', $input)) && (is_null($input['banned_until']))) {
+                    $input['banned_until'] = Carbon::now()->addDays(10)->toDateString();
+                }
+            } else {
+                $input['banned_until'] = null;
+            }
             $data->fill($input);
             $data->save();
             return $this->showResponse($data);
