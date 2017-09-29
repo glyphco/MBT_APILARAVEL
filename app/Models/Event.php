@@ -149,9 +149,9 @@ class Event extends Model
         return $filter->where(function ($query) use ($datetime) {
             $query
             //Start in date range
-            ->whereDate('UTC_start', '>=', $datetime)
+            ->where('UTC_start', '>=', $datetime)
             //End in date range
-                ->orWhereDate('UTC_end', '>=', $datetime);
+                ->orWhere('UTC_end', '>=', $datetime);
         });
     }
 
@@ -186,9 +186,9 @@ class Event extends Model
         return $filter->where(function ($query) use ($datetime) {
             $query
             //Start in date range
-            ->whereDate('UTC_start', '>=', $datetime)
+            ->where('UTC_start', '>=', $datetime)
             //End in date range
-                ->orWhereDate('UTC_end', '>=', $datetime);
+                ->orWhere('UTC_end', '>=', $datetime);
         });
     }
 
