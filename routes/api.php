@@ -273,6 +273,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/bots/bot3', 'bots\Bot3Controller@index');
 });
 
+Route::group(['prefix' => 'chicagocomedy'], function () {
+    Route::get('/events', 'chicagocomedy\EventController@index');
+});
+
 Route::get('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
 Route::post('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
 Route::put('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');
