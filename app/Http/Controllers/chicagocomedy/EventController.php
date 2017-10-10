@@ -6,6 +6,7 @@ use App\Traits\ItemConfirmableTrait;
 use App\Traits\ItemHasAdminsTrait;
 use App\Traits\ItemHasEditorsTrait;
 use App\Traits\ItemPrivateableTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class EventController extends BaseController
@@ -62,7 +63,80 @@ class EventController extends BaseController
         if ($pp > 100) {$pp = 100;}
         $data = $data->paginate($pp);
 
+        $data = $this->addEventExtras($data);
+
         return $this->listResponse($data);
 
     }
+
+    private function addEventExtras($data)
+    {
+
+        foreach ($data as $item) {
+            $item->offsetSet('imageIcon', '');
+            $item->offsetSet('imageSm', '');
+            $item->offsetSet('imageLg', '');
+            $item->offsetSet('venueimageIcon', '');
+            $item->offsetSet('venueimageSm', '');
+            $item->offsetSet('venueimageLg', '');
+            $item->offsetSet('agesWord', '');
+            $item->offsetSet('agesIcon', '');
+            $item->offsetSet('localstarttime', '');
+
+            if (isset($item->imageurl)) {
+                $item->offsetSet('imageIcon', preg_replace('/\.[^.]+$/', '', $item->imageurl) . "_icon.jpg");
+                $item->offsetSet('imageSm', preg_replace('/\.[^.]+$/', '', $item->imageurl) . "_sm.jpg");
+                $item->offsetSet('imageLg', preg_replace('/\.[^.]+$/', '', $item->imageurl) . "_lg.jpg");
+            }
+
+            if (isset($item->venueimageurl)) {
+                $item->offsetSet('venueimageIcon', preg_replace('/\.[^.]+$/', '', $item->venueimageurl) . "_icon.jpg");
+                $item->offsetSet('venueimageSm', preg_replace('/\.[^.]+$/', '', $item->venueimageurl) . "_sm.jpg");
+                $item->offsetSet('venueimageLg', preg_replace('/\.[^.]+$/', '', $item->venueimageurl) . "_lg.jpg");
+            }
+
+            if (isset($item->ages)) {
+                switch ($item->ages) {
+                    case 0:
+                        $item->offsetSet('agesWord', '');
+                        $item->offsetSet('agesIcon', '');
+                        break;
+                    case 1:
+                        $item->offsetSet('agesWord', 'family');
+                        //This didnt work :(
+                        $item->offsetSet('agesIcon', '<span class=\"fa-stack\"><i class=\"fa fa-male fa-stack-1x\" style="left: -4px;\"></i><i class=\"fa fa-male fa-stack-1x\" style="font-size: .75em; left: 2px;top: 2px;\"></i><i class=\"fa fa-female fa-stack-1x\" style="left: 8px;\"></i></span>');
+                        $item->offsetSet('agesIcon', '');
+                        break;
+                    case 2:
+                        $item->offsetSet('agesWord', 'all ages');
+                        $item->offsetSet('agesIcon', '');
+                        break;
+                    case 3:
+                        $item->offsetSet('agesWord', '18+');
+                        $item->offsetSet('agesIcon', '');
+                        break;
+                    case 4:
+                        $item->offsetSet('agesWord', '21+');
+                        $item->offsetSet('agesIcon', '');
+                        break;
+                    default:
+                        $item->offsetSet('agesWord', '');
+                        $item->offsetSet('agesIcon', '');
+                }
+            }
+            if (isset($item->local_start)) {
+                $carbontime = new Carbon($item->local_start, $item->local_tz);
+                //dd($carbontime->minute);
+                if ($carbontime->minute != 0) {
+                    $item->offsetSet('localstarttime', $carbontime->format('ga'));
+                } else {
+                    $item->offsetSet('localstarttime', $carbontime->format('g:ia'));
+                }
+                $item->offsetSet('localstartdate', $carbontime->format('D Mj'));
+            }
+
+        }
+        return $data;
+    }
+
 }
