@@ -161,11 +161,11 @@ class EventController extends BaseController
 
             if (isset($item->pricemin)) {
                 $item->offsetSet('priceMinMax', '$' . $item->pricemin);
-                if ((isset($item->pricemin)) && ($item->pricemax != $item->pricemin) && ($item->pricemax != 0)) {
+                if ((isset($item->pricemax)) && ($item->pricemax != $item->pricemin) && ($item->pricemax != 0)) {
                     $item->offsetSet('priceMinMax', $item->priceMinMax . ' - $' . $item->pricemax);
                 }
             }
-            if (($item->pricemin == 0) && ($item->pricemax == 0)) {
+            if ((isset($item->pricemin)) && (isset($item->pricemax)) && ($item->pricemin == 0) && ($item->pricemax == 0)) {
                 $item->offsetSet('priceMinMax', '');
             }
 

@@ -34,6 +34,11 @@ trait APIResponderTrait
         return response()->json($response, $response['code']);
     }
 
+    protected function pureResponse($data)
+    {
+        return response()->json($data, 200);
+    }
+
     protected function notFoundResponse()
     {
         $response = [
