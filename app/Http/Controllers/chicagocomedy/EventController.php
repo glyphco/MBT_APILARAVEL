@@ -87,7 +87,10 @@ class EventController extends BaseController
             $item->offsetSet('agesWord', '');
             $item->offsetSet('agesIcon', '');
             $item->offsetSet('localstarttime', '');
+            $item->offsetSet('localendtime', '');
+            $item->offsetSet('localtimes', '');
             $item->offsetSet('localstartdate', '');
+            $item->offsetSet('localenddate', '');
             $item->offsetSet('priceWord', '');
             $item->offsetSet('priceMinMax', '');
 
@@ -177,7 +180,20 @@ class EventController extends BaseController
                 } else {
                     $item->offsetSet('localstarttime', $carbontime->format('g:ia'));
                 }
-                $item->offsetSet('localstartdate', $carbontime->format('D Mj'));
+                $item->offsetSet('localtimes', $item->localstarttime);
+                $item->offsetSet('localstartdate', $carbontime->format('D M j'));
+            }
+
+            if (isset($item->local_end)) {
+                $carbontime = new Carbon($item->local_end, $item->local_tz);
+                //dd($carbontime->minute);
+                if ($carbontime->minute != 0) {
+                    $item->offsetSet('localendtime', $carbontime->format('ga'));
+                } else {
+                    $item->offsetSet('localendtime', $carbontime->format('g:ia'));
+                }
+                $item->offsetSet('localtimes', $item->localtimes . '-' . $item->localendtime);
+                $item->offsetSet('localenddate', $carbontime->format('D M j'));
             }
 
         }
