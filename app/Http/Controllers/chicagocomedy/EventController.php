@@ -59,13 +59,18 @@ class EventController extends BaseController
         $data = $data->near($lat, $lng, $dist, 'METERS');
         $data = $data->orderBy('UTC_start', 'asc');
 
-        $pp = $request->input('pp', 25);
-        if ($pp > 100) {$pp = 100;}
-        $data = $data->paginate($pp);
+        // $pp = $request->input('pp', 25);
+        // if ($pp > 100) {$pp = 100;}
+        // $data = $data->paginate($pp);
+        // $data = $this->addEventExtras($data);
+
+        // return $this->listResponse($data);
+
+        $data = $data->get();
 
         $data = $this->addEventExtras($data);
 
-        return $this->listResponse($data);
+        return $this->pureResponse($data);
 
     }
 
@@ -82,6 +87,9 @@ class EventController extends BaseController
             $item->offsetSet('agesWord', '');
             $item->offsetSet('agesIcon', '');
             $item->offsetSet('localstarttime', '');
+            $item->offsetSet('localstartdate', '');
+            $item->offsetSet('priceWord', '');
+            $item->offsetSet('priceMinMax', '');
 
             if (isset($item->imageurl)) {
                 $item->offsetSet('imageIcon', preg_replace('/\.[^.]+$/', '', $item->imageurl) . "_icon.jpg");
@@ -124,6 +132,43 @@ class EventController extends BaseController
                         $item->offsetSet('agesIcon', '');
                 }
             }
+
+            if (isset($item->price)) {
+                switch ($item->price) {
+                    case 0:
+                        $item->offsetSet('priceWord', '');
+                        break;
+                    case 1:
+                        $item->offsetSet('priceWord', 'free');
+                        break;
+                    case 2:
+                        $item->offsetSet('priceWord', 'donation');
+                        break;
+                    case 3:
+                        $item->offsetSet('priceWord', 'sliding');
+                        break;
+                    default:
+                        $item->offsetSet('priceWord', '');
+                }
+            }
+
+            if ((isset($item->pricemin)) && (isset($item->pricemax)) && ($item->pricemin > $item->pricemax)) {
+                //swap 'em
+                $tmp = $item->pricemin;
+                $item->offsetSet('pricemin', $item->pricemax);
+                $item->offsetSet('pricemax', $tmp);
+            }
+
+            if (isset($item->pricemin)) {
+                $item->offsetSet('priceMinMax', '$' . $item->pricemin);
+                if ((isset($item->pricemin)) && ($item->pricemax != $item->pricemin) && ($item->pricemax != 0)) {
+                    $item->offsetSet('priceMinMax', $item->priceMinMax . ' - $' . $item->pricemax);
+                }
+            }
+            if (($item->pricemin == 0) && ($item->pricemax == 0)) {
+                $item->offsetSet('priceMinMax', '');
+            }
+
             if (isset($item->local_start)) {
                 $carbontime = new Carbon($item->local_start, $item->local_tz);
                 //dd($carbontime->minute);
