@@ -191,6 +191,15 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
 
+        //dd(Bouncer::role()->all()->toarray());
+
+        $role = '';
+        if ($roles = $data->roles->toarray()) {
+            if (!empty($roles)) {
+                $role = $roles[0]["name"];
+            }
+        }
+        $data->offsetSet('role', $role);
         return $this->showResponse($data);
     }
 
