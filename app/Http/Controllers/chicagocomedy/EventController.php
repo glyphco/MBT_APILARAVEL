@@ -175,7 +175,7 @@ class EventController extends BaseController
             if (isset($item->local_start)) {
                 $carbontime = new Carbon($item->local_start, $item->local_tz);
                 //dd($carbontime->minute);
-                if ($carbontime->minute != 0) {
+                if ($carbontime->minute == 0) {
                     $item->offsetSet('localstarttime', $carbontime->format('ga'));
                 } else {
                     $item->offsetSet('localstarttime', $carbontime->format('g:ia'));
@@ -187,7 +187,7 @@ class EventController extends BaseController
             if (isset($item->local_end)) {
                 $carbontime = new Carbon($item->local_end, $item->local_tz);
                 //dd($carbontime->minute);
-                if ($carbontime->minute != 0) {
+                if ($carbontime->minute == 0) {
                     $item->offsetSet('localendtime', $carbontime->format('ga'));
                 } else {
                     $item->offsetSet('localendtime', $carbontime->format('g:ia'));
