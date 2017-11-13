@@ -327,4 +327,109 @@ class ShowController extends BaseController
         return $this->notFoundResponse();
     }
 
+    public function pullShows($date)
+    {
+        $year       = date("Y", $date); //A full numeric representation of a year, 4 digits
+        $month      = date("n", $date); //Numeric representation of a month, without leading zeros
+        $day        = date("j", $date); //Day of the month without leading zeros
+        $dateString = $year . "-" . $month . "-" . $day;
+        //$dateString = date('D, M j Y' ,$date);
+        $week       = (int) ((date('d', $date) - 1) / 7) + 1;
+        $weekinyear = (int) date("W", $date);
+        $weekday    = date("N", $date);
+
+        $data = app(self::MODEL);
+        $data = $data->whereHas('showrepeatmeta', function ($query) use ($dateString, $year, $month, $day, $week, $weekday) {
+            $query
+                ->where(function ($query) use ($dateString) {
+                    $query
+                        ->where('repeat_start', '<=', $dateString)
+                        ->where(function ($query) use ($dateString) {
+                            $query
+                                ->where('repeat_end', '>=', $dateString)
+                                ->orWhereNull('repeat_end');
+                        });
+                })
+                ->where(function ($query) use ($dateString, $year, $month, $day, $week, $weekday) {
+                    $query
+                    //            ->whereraw("DATEDIFF( '". $dateString . "', repeat_start ) % repeat_interval = 0")
+
+                    //Matching for Daily records (every X days):
+                    ->where(function ($query) use ($dateString, $weekday, $day, $week, $month) {
+                        $query
+                            ->whereraw("DATEDIFF( '" . $dateString . "', repeat_start ) % repeat_interval = 0")
+                            ->where(function ($query) use ($weekday, $day, $week, $month) {
+                                $query
+                                    ->WhereNull('show_repeatmeta.repeat_weekday')
+                                    ->WhereNull('show_repeatmeta.repeat_day')
+                                    ->WhereNull('show_repeatmeta.repeat_week')
+                                    ->WhereNull('show_repeatmeta.repeat_month');
+                            });
+                    })
+
+                    //Matching for weekly records (every x weeks on a friday):
+                    //interval matches on weeks between dates
+                    //repeat should only match on weekday
+                        ->orwhere(function ($query) use ($dateString, $weekday, $day, $week, $month) {
+                            $query
+                                ->whereraw("TIMESTAMPDIFF( WEEK,'" . $dateString . "', repeat_start ) % repeat_interval = 0")
+                                ->where(function ($query) use ($weekday, $week, $day, $month) {
+                                    $query
+                                        ->where('show_repeatmeta.repeat_weekday', '=', $weekday)
+                                        ->where('show_repeatmeta.repeat_day', '=', '*')
+                                        ->where('show_repeatmeta.repeat_week', '=', '*')
+                                        ->where('show_repeatmeta.repeat_month', '=', '*');
+                                });
+                        })
+
+                    //Matching for monthy records (every x months on the Yth):
+                    //interval matches on month between dates
+                    //repeat should only match on day (rest must be *)
+                        ->orwhere(function ($query) use ($dateString, $weekday, $day, $week, $month) {
+                            $query
+                                ->whereraw("TIMESTAMPDIFF( MONTH,'" . $dateString . "', repeat_start ) % repeat_interval = 0")
+                                ->where(function ($query) use ($weekday, $week, $day, $month) {
+                                    $query
+                                        ->where('show_repeatmeta.repeat_weekday', '=', '*')
+                                        ->where('show_repeatmeta.repeat_day', '=', $day)
+                                        ->where('show_repeatmeta.repeat_week', '=', '*')
+                                        ->where('show_repeatmeta.repeat_month', '=', '*');
+                                });
+                        })
+
+                    //Matching for yearly records (every x months on a friday):
+                    //interval matches on years between dates
+                    //repeat can match
+                        ->orwhere(function ($query) use ($dateString, $weekday, $day, $week, $month) {
+                            $query
+                                ->whereraw("TIMESTAMPDIFF( YEAR,'" . $dateString . "', repeat_start ) % repeat_interval = 0")
+                                ->where(function ($query) use ($weekday, $week, $day, $month) {
+                                    $query
+                                        ->where('show_repeatmeta.repeat_weekday', '=', '*')
+                                        ->where(function ($query) use ($day) {
+                                            $query
+                                                ->where('show_repeatmeta.repeat_day', '=', $day)
+                                                ->orWhere('show_repeatmeta.repeat_day', '=', '*');
+                                        })
+                                        ->where('show_repeatmeta.repeat_week', '=', '*')
+                                        ->where(function ($query) use ($month) {
+                                            $query
+                                                ->where('show_repeatmeta.repeat_month', '=', $month)
+                                                ->orWhere('show_repeatmeta.repeat_month', '=', '*');
+                                        });
+                                });
+                        })
+
+                    ;
+                })
+            ;
+        });
+
+        if ($withMeta) {
+            $data = $data->with('showrepeatmeta');
+        }
+
+        return $data->get();
+    }
+
 }

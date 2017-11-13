@@ -31,10 +31,12 @@ class EventController extends BaseController
     public function index(Request $request)
     {
 
-        $lat  = "41.818408221760095";
-        $lng  = "-87.81646728515625";
-        $dist = "38624.159999999996";
-        $tz   = "America/Chicago";
+        $lat    = "41.818408221760095";
+        $lng    = "-87.81646728515625";
+        $dist   = "38624.159999999996";
+        $tz     = "America/Chicago";
+        $cat    = "1";
+        $subcat = "";
 
         if ($request->has('tz') && $this->isValidTimezoneId($request->input('tz'))) {
             $tz = $request->input('tz');
@@ -52,12 +54,37 @@ class EventController extends BaseController
             $dist = $request->input('dist');
         }
 
+        if ($request->has('cat')) {
+            $cat = $request->input('cat');
+        }
+
+        if ($request->has('subcat')) {
+            $subcat = $request->input('subcat');
+        }
+
         $m    = self::MODEL;
         $data = $m::current(); //tz unneeded for current
         $data = $data->where('confirmed', '=', 1);
         $data = $data->where('public', '=', 1);
+        $data = $data->where('public', '=', 1);
         $data = $data->near($lat, $lng, $dist, 'METERS');
         $data = $data->orderBy('UTC_start', 'asc');
+        //$data = $data->with('categories');
+
+        if ($cat) {
+            //dd('here');
+            $data = $data->wherehas('categories', function ($query) use ($cat) {
+                $query->where('category_id', $cat);
+            });
+        }
+
+        if ($subcat) {
+            $data = $data->wherehas('categories', function ($query) use ($subcat) {
+                $query->where('subcategory_id', $subcat);
+            });
+        }
+
+        //$data = $data->orderBy('distance', 'asc');
 
         // $pp = $request->input('pp', 25);
         // if ($pp > 100) {$pp = 100;}
@@ -198,6 +225,39 @@ class EventController extends BaseController
 
         }
         return $data;
+    }
+
+    private function isValidLongitude($longitude)
+    {
+        if (preg_match("/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/", $longitude)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private function isValidLatitude($latitude)
+    {
+
+        if (preg_match("/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/", $latitude)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function isValidTimezoneId($tzid)
+    {
+        $valid = array();
+        $tza   = timezone_abbreviations_list();
+        foreach ($tza as $zone) {
+            foreach ($zone as $item) {
+                $valid[$item['timezone_id']] = true;
+            }
+        }
+
+        unset($valid['']);
+        $res = isset($valid[$tzid]);
+        return $res;
     }
 
 }

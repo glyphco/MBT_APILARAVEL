@@ -45,6 +45,7 @@ Route::group(['middleware' => ['cors']], function () {
 // Guest
     Route::get('/public/events/today', 'pub\EventController@today');
     Route::get('/public/events/mapallcurrent', 'EventController@mapAllCurrent');
+    Route::get('/public/events/current', 'EventController@current');
     //Route::get('/public/event/{id}', 'pub\EventController@getEvent');
     //Route::get('/slug/{slugsearch}', 'pub\SlugController@index');
 });
