@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 
 class MveController extends BaseController
 {
+    //MVE = multi venue event? (im not sure -sd 2023.05.10)
     use ItemConfirmableTrait, ItemPrivateableTrait, ItemHasAdminsTrait, ItemHasEditorsTrait;
 
     const MODEL                = 'App\Models\Mve';
