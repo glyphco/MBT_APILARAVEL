@@ -44,6 +44,8 @@ Route::group(['middleware' => ['cors']], function () {
 
 // Guest
     Route::get('/public/events/today', 'pub\EventController@today');
+    Route::get('/public/events/mapallcurrent', 'EventController@mapAllCurrent');
+    Route::get('/public/events/current', 'EventController@current');
     //Route::get('/public/event/{id}', 'pub\EventController@getEvent');
     //Route::get('/slug/{slugsearch}', 'pub\SlugController@index');
 });
@@ -177,8 +179,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/today', 'EventController@today');
     Route::get('/event/today/map', 'EventController@todayMap');
     Route::get('/event/current', 'EventController@current');
+    Route::get('/event/mapallcurrent', 'EventController@mapAllCurrent');
     Route::get('/event/{id}/', 'EventController@show');
     Route::put('/event/{id}/', 'EventController@update');
+    Route::delete('/event/{id}/', 'EventController@destroy');
     Route::get('/event/{id}/edit', 'EventController@edit');
     Route::get('/event/{id}/details', 'EventController@details');
     //Events are attended, not liked.
@@ -193,6 +197,7 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/event/{id}/revokeadmin/{userid}', 'EventController@revokeadmin');
     Route::get('/event/{id}/editors', 'EventController@geteditors');
     Route::get('/event/{id}/admins', 'EventController@getadmins');
+
 //Attending
 
 //Event Shows
@@ -267,6 +272,10 @@ Route::group(['middleware' => ['cors', 'jwt.auth']], function () {
     Route::get('/bots/bot1', 'bots\Bot1Controller@index');
     Route::get('/bots/bot2', 'bots\Bot2Controller@index');
     Route::get('/bots/bot3', 'bots\Bot3Controller@index');
+});
+
+Route::group(['prefix' => 'chicagocomedy'], function () {
+    Route::get('/events', 'chicagocomedy\EventController@index');
 });
 
 Route::get('{catchall}', 'ErrorController@fourohfour')->where('catchall', '(.*)');

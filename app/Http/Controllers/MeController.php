@@ -54,27 +54,19 @@ class MeController extends BaseController
 
     public function edit()
     {
-        $id = \Auth::user()->id;
-        //autorelates venue and participants in model
         $m = self::MODEL;
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::find(\Auth::user()->id)) {
             return $this->notFoundResponse();
         }
-
         return $this->showResponse($data);
     }
 
     public function update(Request $request)
     {
-        $id = \Auth::user()->id;
-        $m  = self::MODEL;
+        $m = self::MODEL;
 
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::find(\Auth::user()->id)) {
             return $this->notFoundResponse();
-        }
-
-        if (!Bouncer::allows($this->edititems)) {
-            return $this->unauthorizedResponse();
         }
 
         try

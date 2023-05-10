@@ -39,7 +39,7 @@ class EventController extends BaseController
 
         $m = '\App\Models\Event';
 
-        $data = $m::with(['event.eventshows', 'event.eventproducers', 'categories', 'venue'])
+        $data = $m::with(['event.eventshows', 'event.eventproducers', 'event.participants', 'categories', 'venue'])
             ->withCount([
                 'attendingyes',
                 'attendingmaybe',

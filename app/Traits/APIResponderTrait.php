@@ -34,6 +34,11 @@ trait APIResponderTrait
         return response()->json($response, $response['code']);
     }
 
+    protected function pureResponse($data)
+    {
+        return response()->json($data, 200);
+    }
+
     protected function notFoundResponse()
     {
         $response = [
@@ -61,8 +66,8 @@ trait APIResponderTrait
         $response = [
             'code'    => 200,
             'status'  => 'success',
-            'data'    => '',
-            'message' => 'Resource deleted',
+            'data'    => 'Item was Deleted',
+            'message' => 'Deleted',
         ];
         return response()->json($response, $response['code']);
     }
@@ -83,7 +88,7 @@ trait APIResponderTrait
         $response = [
             'code'    => 401,
             'status'  => 'error',
-            'data'    => '',
+            'data'    => 'You dont have permission',
             'message' => 'Unauthorized',
         ];
         return response()->json($response, $response['code']);

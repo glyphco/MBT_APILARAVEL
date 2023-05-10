@@ -117,7 +117,7 @@ class Event extends Model
         return $this->hasMany('App\Models\EventParticipant');
     }
 
-    public function eventproducer()
+    public function eventproducers()
     {
         return $this->hasMany('App\Models\EventProducer');
     }
@@ -127,22 +127,41 @@ class Event extends Model
         return $this->hasMany('App\Models\EventCategory', 'event_id')->with(['category', 'subcategory']);
     }
 
-    public function scopeCurrent($filter)
+    // public function scopeCurrent($filter)
+    // {
+
+    //     return $filter->where(function ($query) {
+    //         $query
+    //         //Start in date range
+    //         ->whereDate('UTC_start', '>=', Carbon::now()->subHours(3)->toDateTimeString())
+    //         //End in date range
+    //             ->orWhereDate('UTC_end', '>=', Carbon::now()->toDateTimeString());
+    //     });
+    // }
+
+    public function scopeCurrent($filter, $tz = 'America/Chicago')
     {
 
-        return $filter->where(function ($query) {
+        $datetime = Carbon::now($tz)->subHours(3)->setTimezone('UTC')->toDateTimeString();
+        //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
+        //$enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
+
+        return $filter->where(function ($query) use ($datetime) {
             $query
             //Start in date range
-            ->whereDate('UTC_start', '>=', Carbon::now()->subHours(3)->toDateTimeString())
+            ->where('UTC_start', '>=', $datetime)
             //End in date range
-                ->orWhereDate('UTC_end', '>=', Carbon::now()->toDateTimeString());
+                ->orWhere('UTC_end', '>=', $datetime);
         });
     }
 
     public function scopeToday($filter, $tz = 'America/Chicago')
     {
 
-        $datetime = Carbon::now()->subHours(3)->toDateTimeString();
+        $datetime = Carbon::now($tz)->subHours(3)->setTimezone('UTC')->toDateTimeString();
+        // dump(Carbon::now($tz)->toDateTimeString());
+        // dump(Carbon::now($tz)->setTimezone('UTC')->toDateTimeString());
+        // dd($datetime);
         //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
         $enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
 
@@ -154,6 +173,38 @@ class Event extends Model
             //End in date range
                 ->orWhereBetween('UTC_end', [$datetime, $enddatetime]);
 
+        });
+    }
+
+    public function scopeBackstageCurrent($filter, $tz = 'America/Chicago')
+    {
+
+        $datetime = Carbon::now($tz)->startOfDay()->setTimezone('UTC')->toDateTimeString();
+        //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
+        //$enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
+
+        return $filter->where(function ($query) use ($datetime) {
+            $query
+            //Start in date range
+            ->where('UTC_start', '>=', $datetime)
+            //End in date range
+                ->orWhere('UTC_end', '>=', $datetime);
+        });
+    }
+
+    public function scopeBackstagePast($filter, $tz = 'America/Chicago')
+    {
+
+        $datetime = Carbon::now($tz)->subHours(3)->setTimezone('UTC')->toDateTimeString();
+        //get the datetime for your timezone's end of day, add 4 hours, then convert that to utc
+        //$enddatetime = Carbon::now($tz)->endOfDay()->addHours(4)->setTimezone('UTC')->toDateTimeString();
+
+        return $filter->where(function ($query) use ($datetime) {
+            $query
+            //Start in date range
+            ->whereDate('UTC_start', '<=', $datetime)
+            //End in date range
+                ->orWhereDate('UTC_end', '<=', $datetime);
         });
     }
 

@@ -158,7 +158,7 @@ class EventController extends BaseController
     {
 
         $m    = self::MODEL;
-        $data = $m::with('mve');
+        $data = $m::with('mve')->backstageCurrent();
 
         $pp = $request->input('pp', 25);
         if ($pp > 100) {$pp = 100;}
@@ -189,29 +189,30 @@ class EventController extends BaseController
             switch ($request->input('sortby')) {
                 case 'date':
                     $data = $data
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('UTC_start', 'ASC')
                         ->orderBy('venue_name', 'ASC')
                         ->orderBy('name', 'DESC');
                     break;
                 case 'venue':
                     $data = $data
                         ->orderBy('venue_name', 'ASC')
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('UTC_start', 'ASC')
                         ->orderBy('name', 'DESC');
                     break;
                 case 'event':
                     $data = $data
-                        ->orderBy('name', 'DESC');
+                        ->orderBy('name', 'DESC')
+                        ->orderByRaw('date(UTC_start) ASC');
                     break;
                 default:
                     $data = $data
-                        ->orderByRaw('date(UTC_start) desc')
+                        ->orderBy('UTC_start', 'ASC')
                         ->orderBy('venue_name', 'ASC')
                         ->orderBy('name', 'DESC');
                     break;
             }
         } else {
-            $data = $data->orderByRaw('date(UTC_start) desc')
+            $data = $data->orderBy('UTC_start', 'ASC')
                 ->orderBy('venue_name', 'ASC')->orderBy('name', 'DESC');
         }
 
@@ -298,7 +299,7 @@ class EventController extends BaseController
             'categories',
             'eventshows',
             'eventparticipants',
-            'eventproducer',
+            'eventproducers',
 
         ])
             ->withCount([
@@ -334,7 +335,15 @@ class EventController extends BaseController
         //autorelates venue and participants in model
         $m = self::MODEL;
         if (!$data = $m::PublicAndPrivate()->ConfirmedAndUnconfirmed()
-            ->with('eventparticipants')
+            ->with([
+                'mve',
+                'venue',
+                'categories',
+                'eventshows',
+                'eventparticipants',
+                'eventproducers',
+
+            ])
             ->find($id)) {
             return $this->notFoundResponse();
         }
@@ -454,9 +463,10 @@ class EventController extends BaseController
             }
 
             $saveshow = [
-                'id'      => $show['id'],
-                'name'    => $show['name'],
-                'img_url' => $show['img_url'],
+                'show_id'  => $show['id'],
+                'name'     => $show['name'],
+                'info'     => $show['tagline'],
+                'imageurl' => $show['imageurl'],
             ];
 
             $extra = [
@@ -550,7 +560,7 @@ class EventController extends BaseController
                 'public'    => 1,
             ];
 
-            $data = \App\Models\EventShow::create(array_merge($saveproducer, $extra));
+            $data = \App\Models\EventProducer::create(array_merge($saveproducer, $extra));
 
             $producerarray[] = $saveproducer;
 
@@ -724,6 +734,84 @@ class EventController extends BaseController
 
     }
 
+    public function mapCurrent(Request $request)
+    {
+        $tz   = 'America/Chicago';
+        $lat  = '41.875792256780315';
+        $lng  = '-87.62811183929443';
+        $dist = '5000';
+
+        if ($request->has('tz') && $this->isValidTimezoneId($request->input('tz'))) {
+            $tz = $request->input('tz');
+        }
+
+        if ($request->has('lat') && $this->isValidLatitude($request->input('lat'))) {
+            $lat = $request->input('lat');
+        }
+
+        if ($request->has('lng') && $this->isValidLongitude($request->input('lng'))) {
+            $lng = $request->input('lng');
+        }
+
+        if ($request->has('dist')) {
+            $dist = $request->input('dist');
+        }
+
+        $m    = self::MODEL;
+        $data = $m::current($tz);
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
+        $spherelocation = $lng . ',' . $lat;
+
+        $data = $data->where(DB::raw('( ST_Distance_Sphere(location,POINT(' . $spherelocation . ')))'), '<', $dist);
+
+        $data = $data->
+            selectRaw('id, events.name, events.venue_name, events.local_start, events.lat, events.lng, ( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')
+
+            ->get();
+
+        return $this->listResponse($data);
+    }
+
+    public function mapAllCurrent(Request $request)
+    {
+        $tz   = 'America/Chicago';
+        $lat  = '41.875792256780315';
+        $lng  = '-87.62811183929443';
+        $dist = '5000';
+
+        if ($request->has('tz') && $this->isValidTimezoneId($request->input('tz'))) {
+            $tz = $request->input('tz');
+        }
+
+        if ($request->has('lat') && $this->isValidLatitude($request->input('lat'))) {
+            $lat = $request->input('lat');
+        }
+
+        if ($request->has('lng') && $this->isValidLongitude($request->input('lng'))) {
+            $lng = $request->input('lng');
+        }
+
+        if ($request->has('dist')) {
+            $dist = $request->input('dist');
+        }
+
+        $m    = self::MODEL;
+        $data = $m::current($tz);
+        $data = $data->where('confirmed', '=', 1);
+        $data = $data->where('public', '=', 1);
+
+        $spherelocation = $lng . ',' . $lat;
+
+        $data = $data->
+            selectRaw('id, events.name, events.venue_name, events.local_start, events.lat, events.lng, ( ST_Distance_Sphere(location,POINT(' . $spherelocation . '))) as distance')
+
+            ->get();
+
+        return $this->listResponse($data);
+    }
+
     public function current(Request $request)
     {
 
@@ -816,7 +904,7 @@ class EventController extends BaseController
             'categories',
             'eventshows',
             'eventparticipants',
-            'eventproducer',
+            'eventproducers',
 
         ])
             ->withCount([

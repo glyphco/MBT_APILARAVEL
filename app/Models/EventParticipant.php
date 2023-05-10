@@ -16,6 +16,8 @@ class EventParticipant extends Model
         'event_id',
         'name',
         'info',
+        'private_info',
+        'imageurl',
         'page_id',
         'start',
         'end',

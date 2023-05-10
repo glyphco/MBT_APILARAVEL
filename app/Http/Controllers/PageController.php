@@ -361,6 +361,7 @@ class PageController extends BaseController
             ->withCount('eventsAsProducer')
             ->with('eventsAsParticipantCurrent')
             ->with('eventsAsProducerCurrent')
+            ->withCount('ilike')
             ->withCount('likes')
             ->withCount('pyfslike')
             ->with('pyfslike')

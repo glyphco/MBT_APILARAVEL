@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller as BaseController;
 use App\Traits\UserBanableTrait;
 use App\Traits\UserConfirmableTrait;
 use Bouncer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
@@ -100,7 +101,9 @@ class UserController extends BaseController
 
         $m = self::MODEL;
 
-        if (!$data = $m::find($id)) {
+        if (!$data = $m::withoutGlobalScope(\App\Scopes\UserConfirmedScope::class)
+            ->withoutGlobalScope(\App\Scopes\UserNotBannedScope::class)
+            ->find($id)) {
             return $this->notFoundResponse();
         }
 
@@ -111,6 +114,14 @@ class UserController extends BaseController
         try
         {
             $input = $request->all();
+            if ((array_key_exists('is_banned', $input)) && ($input['is_banned'] == 1)) {
+                if (
+                    (array_key_exists('banned_until', $input)) && (is_null($input['banned_until']))) {
+                    $input['banned_until'] = Carbon::now()->addDays(10)->toDateString();
+                }
+            } else {
+                $input['banned_until'] = null;
+            }
             $data->fill($input);
             $data->save();
             return $this->showResponse($data);
@@ -180,6 +191,15 @@ class UserController extends BaseController
             return $this->unauthorizedResponse();
         }
 
+        //dd(Bouncer::role()->all()->toarray());
+
+        $role = '';
+        if ($roles = $data->roles->toarray()) {
+            if (!empty($roles)) {
+                $role = $roles[0]["name"];
+            }
+        }
+        $data->offsetSet('role', $role);
         return $this->showResponse($data);
     }
 
